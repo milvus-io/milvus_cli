@@ -51,6 +51,16 @@ class PyOrm(object):
         from pymilvus_orm import index_building_progress
         return index_building_progress(collectionName, index_name, using)
 
+    def getTargetCollection(self, collectionName):
+        from pymilvus_orm import Collection
+        return Collection(collectionName)
+
+    def loadCollection(self, collectionName):
+        target = self.getTargetCollection(collectionName)
+        target.load()
+        result = self.showCollectionLoadingProgress(collectionName)
+        return tabulate([[collectionName, result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=['Collection Name', 'Loaded', 'Total'], tablefmt='grid')
+
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -125,10 +135,15 @@ def indexProgress(obj, collection, index, using):
 @cli.command()
 @click.option('-c', '--collection', 'collection', help='The name of collection to load.', default='')
 @click.pass_obj
-def load(obj):
+def load(obj, collection):
     """Load specified collection."""
-    pass
-
+    try:
+        result = obj.loadCollection(collection)
+    except Exception as e:
+        click.echo(message=e, err=True)
+    else:
+        click.echo("""Load Collection '{}' successfully""".format(collection))
+        click.echo(result)
 
 
 @cli.group()
