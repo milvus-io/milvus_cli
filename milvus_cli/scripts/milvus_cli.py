@@ -61,6 +61,19 @@ class PyOrm(object):
         result = self.showCollectionLoadingProgress(collectionName)
         return tabulate([[collectionName, result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=['Collection Name', 'Loaded', 'Total'], tablefmt='grid')
 
+    def listPartitions(self, collectionName):
+        target = self.getTargetCollection(collectionName)
+        result = target.partitions
+        rows = list(map(lambda x: [x._name, x._description], result))
+        return tabulate(rows, headers=['Partition Name', 'Description'], tablefmt='grid', showindex=True)
+
+    def listIndexes(self, collectionName):
+        target = self.getTargetCollection(collectionName)
+        result = target.indexes
+        rows = list(map(lambda x: [x.field_name, x.params['index_type'],
+                    x.params['metric_type'], x.params['params']['nlist']], result))
+        return tabulate(rows, headers=['Field Name', 'Index Type', 'Metric Type', 'Nlist'], tablefmt='grid', showindex=True)
+
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -146,20 +159,37 @@ def load(obj, collection):
         click.echo(result)
 
 
-@cli.group()
+@cli.group('list')
 @click.pass_obj
-def list(obj):
+def listDetails(obj):
     """List collections, partitins and indexes."""
     pass
 
 
-@list.command()
+@listDetails.command()
 @click.option('--timeout', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None)
 @click.option('--using', 'using', help="[Optional] - Milvus link of create collection.", default='default')
 @click.option('--show-loaded', 'showLoaded', help="[Optional] - Only show loaded collections.", default=False)
 @click.pass_obj
 def collections(obj, timeout, using, showLoaded):
+    """List all collections."""
     click.echo(obj.listCollections(timeout, using, showLoaded))
+
+
+@listDetails.command()
+@click.option('-c', '--collection', 'collection', help='The name of collection.', default='')
+@click.pass_obj
+def partitions(obj, collection):
+    """List all partitions of the specified collection."""
+    click.echo(obj.listPartitions(collection))
+
+
+@listDetails.command()
+@click.option('-c', '--collection', 'collection', help='The name of collection.', default='')
+@click.pass_obj
+def indexes(obj, collection):
+    """List all indexes of the specified collection."""
+    click.echo(obj.listIndexes(collection))
 
 
 if __name__ == '__main__':
