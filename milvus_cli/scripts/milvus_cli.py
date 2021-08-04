@@ -64,7 +64,7 @@ class PyOrm(object):
     def listPartitions(self, collectionName):
         target = self.getTargetCollection(collectionName)
         result = target.partitions
-        rows = list(map(lambda x: [x._name, x._description], result))
+        rows = list(map(lambda x: [x.name, x.description], result))
         return tabulate(rows, headers=['Partition Name', 'Description'], tablefmt='grid', showindex=True)
 
     def listIndexes(self, collectionName):
@@ -73,6 +73,42 @@ class PyOrm(object):
         rows = list(map(lambda x: [x.field_name, x.params['index_type'],
                     x.params['metric_type'], x.params['params']['nlist']], result))
         return tabulate(rows, headers=['Field Name', 'Index Type', 'Metric Type', 'Nlist'], tablefmt='grid', showindex=True)
+
+    def getCollectionDetails(self, collectionName):
+        try:
+            target = self.getTargetCollection(collectionName)
+        except Exception as e:
+            return "Error!\nPlease check your input collection name."
+        rows = []
+        schema = target.schema
+        partitions = target.partitions
+        indexes = target.indexes
+        fieldSchemaDetails = "\n  - " + "\n  - ".join(map(lambda x: "{} *primary".format(
+            x.name) if x.is_primary else x.name, schema.fields))
+        schemaDetails = """Description: {}\nFields:{}""".format(
+            schema.description, fieldSchemaDetails)
+        partitionDetails = "  - " + "\n- ".join(map(lambda x: x.name, partitions))
+        indexesDetails = "  - " + "\n- ".join(map(lambda x: x.field_name, indexes))
+        rows.append(['Name', target.name])
+        rows.append(['Description', target.description])
+        rows.append(['Is Empty', target.is_empty])
+        rows.append(['Entities', target.num_entities])
+        rows.append(['Primary Field', target.primary_field.name])
+        rows.append(['Schema', schemaDetails])
+        rows.append(['Partitions', partitionDetails])
+        rows.append(['Indexes', indexesDetails])
+        return tabulate(rows, tablefmt='grid')
+    
+    def getPartitionDetails(self, collection, partitionName=''):
+        partition = collection.partition(partitionName)
+        if not partition:
+            return "No such partition!"
+        rows = []
+        rows.append(['Partition Name', partition.name])
+        rows.append(['Description', partition.description])
+        rows.append(['Is empty', partition.is_empty])
+        rows.append(['Number of Entities', partition.num_entities])
+        return tabulate(rows, tablefmt='grid')
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -162,7 +198,7 @@ def load(obj, collection):
 @cli.group('list')
 @click.pass_obj
 def listDetails(obj):
-    """List collections, partitins and indexes."""
+    """List collections, partitions and indexes."""
     pass
 
 
@@ -190,6 +226,35 @@ def partitions(obj, collection):
 def indexes(obj, collection):
     """List all indexes of the specified collection."""
     click.echo(obj.listIndexes(collection))
+
+
+@cli.group('describe')
+@click.pass_obj
+def describeDetails(obj):
+    """Describe collection or partition."""
+    pass
+
+
+@describeDetails.command('collection')
+@click.argument('collection')
+@click.pass_obj
+def describeCollection(obj, collection):
+    """Describe collection."""
+    click.echo(obj.getCollectionDetails(collection))
+
+
+@describeDetails.command('partition')
+@click.option('-c', '--collection', 'collectionName', help='The name of collection.', default='')
+@click.argument('partition')
+@click.pass_obj
+def describePartition(obj, collectionName, partition):
+    """Describe partition."""
+    try:
+        collection = obj.getTargetCollection(collectionName)
+    except Exception as e:
+        click.echo("Error when get collection!")
+    else:
+        click.echo(obj.getPartitionDetails(collection, partition))
 
 
 if __name__ == '__main__':
