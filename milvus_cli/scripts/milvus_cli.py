@@ -6,7 +6,7 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import ParameterException, validateCollectionParameter
+from utils import ParameterException, validateCollectionParameter, validateIndexParameter
 
 
 class PyOrm(object):
@@ -116,6 +116,18 @@ class PyOrm(object):
         rows.append(['Is empty', partition.is_empty])
         rows.append(['Number of Entities', partition.num_entities])
         return tabulate(rows, tablefmt='grid')
+    
+    def getIndexDetails(self, collection):
+        index = collection.index()
+        if not index:
+            return "No index!"
+        rows = []
+        rows.append(['Corresponding Collection', index.collection_name])
+        rows.append(['Corresponding Field', index.field_name])
+        rows.append(['Index Type', index.params['index_type']])
+        rows.append(['Metric Type', index.params['metric_type']])
+        rows.append(['Params', index.params['params']])
+        return tabulate(rows, tablefmt='grid')
 
     def createCollection(self, collectionName, primaryField, autoId, description, fields):
         from pymilvus_orm import Collection, DataType, FieldSchema, CollectionSchema
@@ -133,11 +145,22 @@ class PyOrm(object):
             fields=fieldList, primary_field=primaryField, auto_id=autoId, description=description)
         collection = Collection(name=collectionName, schema=schema)
         return self.getCollectionDetails(collection=collection)
-    
+
     def createPartition(self, collectionName, description, partitionName):
         collection = self.getTargetCollection(collectionName)
         collection.create_partition(partitionName, description=description)
         return self.getPartitionDetails(collection, partitionName)
+
+    def createIndex(self, collectionName, fieldName, indexType, metricType, params, timeout):
+        collection = self.getTargetCollection(collectionName)
+        indexParams = {}
+        for param in params:
+            paramList = param.split(':')
+            [paramName, paramValue] = paramList
+            indexParams[paramName] = int(paramValue)
+        index = {"index_type": indexType, "params": indexParams, "metric_type": metricType}
+        collection.create_index(fieldName, index, timeout=timeout)
+        return self.getIndexDetails(collection)
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -327,10 +350,6 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
 def createPartition(obj, collectionName, description, partition):
     """
     Create partition.
-
-    Example:
-
-      create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year -f embedding:FLOAT_VECTOR:128 -p id -d 'desc of collection'
     """
     try:
         obj.getTargetCollection(collectionName)
@@ -339,6 +358,32 @@ def createPartition(obj, collectionName, description, partition):
     else:
         click.echo(obj.createPartition(collectionName, description, partition))
         click.echo("Create partition successfully!")
+
+
+@createDetails.command('index')
+@click.option('-c', '--collection', 'collectionName', help='Collection name.', default='')
+@click.option('-f', '--field', 'fieldName', help='The name of the field to create an index for.', default='')
+@click.option('-t', '--index-type', 'indexType', help='Index type.', default='')
+@click.option('-m', '--index-metric', 'metricType', help='Index metric type.', default='')
+@click.option('-p', '--index-params', 'params', help='Index params, usage is "<Name>:<Value>"', default=None, multiple=True)
+@click.option('-e', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=int)
+@click.pass_obj
+def createIndex(obj, collectionName, fieldName, indexType, metricType, params, timeout):
+    """
+    Create index.
+
+    Example:
+
+      create index -n film -f films -t IVF_FLAT -m L2 -p nlist:128
+    """
+    try:
+        validateIndexParameter(
+            indexType, metricType, params)
+    except ParameterException as e:
+        click.echo("Error!\n{}".format(str(e)))
+    else:
+        click.echo(obj.createIndex(collectionName, fieldName, indexType, metricType, params, timeout))
+        click.echo("Create index successfully!")
 
 
 if __name__ == '__main__':
