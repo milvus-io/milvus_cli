@@ -1,7 +1,12 @@
-import click
-import os
-from tabulate import tabulate
 from pymilvus_orm import connections
+from tabulate import tabulate
+import sys
+import os
+import click
+currentdir = os.path.dirname(os.path.realpath(__file__))
+parentdir = os.path.dirname(currentdir)
+sys.path.append(parentdir)
+from utils import ParameterException, validateCollectionParameter
 
 
 class PyOrm(object):
@@ -74,9 +79,9 @@ class PyOrm(object):
                     x.params['metric_type'], x.params['params']['nlist']], result))
         return tabulate(rows, headers=['Field Name', 'Index Type', 'Metric Type', 'Nlist'], tablefmt='grid', showindex=True)
 
-    def getCollectionDetails(self, collectionName):
+    def getCollectionDetails(self, collectionName='', collection=None):
         try:
-            target = self.getTargetCollection(collectionName)
+            target = collection or self.getTargetCollection(collectionName)
         except Exception as e:
             return "Error!\nPlease check your input collection name."
         rows = []
@@ -87,8 +92,10 @@ class PyOrm(object):
             x.name) if x.is_primary else x.name, schema.fields))
         schemaDetails = """Description: {}\nFields:{}""".format(
             schema.description, fieldSchemaDetails)
-        partitionDetails = "  - " + "\n- ".join(map(lambda x: x.name, partitions))
-        indexesDetails = "  - " + "\n- ".join(map(lambda x: x.field_name, indexes))
+        partitionDetails = "  - " + \
+            "\n- ".join(map(lambda x: x.name, partitions))
+        indexesDetails = "  - " + \
+            "\n- ".join(map(lambda x: x.field_name, indexes))
         rows.append(['Name', target.name])
         rows.append(['Description', target.description])
         rows.append(['Is Empty', target.is_empty])
@@ -98,7 +105,7 @@ class PyOrm(object):
         rows.append(['Partitions', partitionDetails])
         rows.append(['Indexes', indexesDetails])
         return tabulate(rows, tablefmt='grid')
-    
+
     def getPartitionDetails(self, collection, partitionName=''):
         partition = collection.partition(partitionName)
         if not partition:
@@ -109,6 +116,23 @@ class PyOrm(object):
         rows.append(['Is empty', partition.is_empty])
         rows.append(['Number of Entities', partition.num_entities])
         return tabulate(rows, tablefmt='grid')
+
+    def createCollection(self, collectionName, primaryField, autoId, description, fields):
+        from pymilvus_orm import Collection, DataType, FieldSchema, CollectionSchema
+        fieldList = []
+        for field in fields:
+            [fieldName, fieldType, fieldData] = field.split(':')
+            isVector = False
+            if fieldType in ['BINARY_VECTOR', 'FLOAT_VECTOR']:
+                fieldList.append(FieldSchema(
+                    name=fieldName, dtype=DataType[fieldType], dim=int(fieldData)))
+            else:
+                fieldList.append(FieldSchema(
+                    name=fieldName, dtype=DataType[fieldType], description=fieldData))
+        schema = CollectionSchema(
+            fields=fieldList, primary_field=primaryField, auto_id=autoId, description=description)
+        collection = Collection(name=collectionName, schema=schema)
+        return self.getCollectionDetails(collection=collection)
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -255,6 +279,39 @@ def describePartition(obj, collectionName, partition):
         click.echo("Error when get collection!")
     else:
         click.echo(obj.getPartitionDetails(collection, partition))
+
+
+@cli.group('create')
+@click.pass_obj
+def createDetails(obj):
+    """Create collection, partition and index."""
+    pass
+
+
+@createDetails.command('collection')
+@click.option('-n', '--name', 'collectionName', help='Collection name to be created.', default='')
+@click.option('-p', '--schema-primary-field', 'primaryField', help='Primary field name.', default='')
+@click.option('-a', '--schema-auto-id', 'autoId', help='Enable auto id.', default=False, is_flag=True)
+@click.option('-d', '--schema-description', 'description', help='Description details.', default='')
+@click.option('-f', '--schema-field', 'fields', help='FieldSchema. Usage is "<Name>:<DataType>:<Dim(if vector) or Description>"', default=None, multiple=True)
+@click.pass_obj
+def createCollection(obj, collectionName, primaryField, autoId, description, fields):
+    """
+    Create partition.
+
+    Example:
+
+      create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year -f embedding:FLOAT_VECTOR:128 -p id -d 'desc of collection'
+    """
+    try:
+        validateCollectionParameter(
+            collectionName, primaryField, fields)
+    except ParameterException as e:
+        click.echo("Error!\n{}".format(str(e)))
+    else:
+        click.echo(obj.createCollection(collectionName,
+                   primaryField, autoId, description, fields))
+        click.echo("Create collection successfully!")
 
 
 if __name__ == '__main__':
