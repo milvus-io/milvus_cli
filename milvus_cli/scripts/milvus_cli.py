@@ -133,6 +133,11 @@ class PyOrm(object):
             fields=fieldList, primary_field=primaryField, auto_id=autoId, description=description)
         collection = Collection(name=collectionName, schema=schema)
         return self.getCollectionDetails(collection=collection)
+    
+    def createPartition(self, collectionName, description, partitionName):
+        collection = self.getTargetCollection(collectionName)
+        collection.create_partition(partitionName, description=description)
+        return self.getPartitionDetails(collection, partitionName)
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -312,6 +317,28 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
         click.echo(obj.createCollection(collectionName,
                    primaryField, autoId, description, fields))
         click.echo("Create collection successfully!")
+
+
+@createDetails.command('partition')
+@click.option('-c', '--collection', 'collectionName', help='Collection name.', default='')
+@click.option('-d', '--description', 'description', help='Partition description.', default='')
+@click.argument('partition')
+@click.pass_obj
+def createPartition(obj, collectionName, description, partition):
+    """
+    Create partition.
+
+    Example:
+
+      create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year -f embedding:FLOAT_VECTOR:128 -p id -d 'desc of collection'
+    """
+    try:
+        obj.getTargetCollection(collectionName)
+    except Exception as e:
+        click.echo("Error occurred when get collection by name!")
+    else:
+        click.echo(obj.createPartition(collectionName, description, partition))
+        click.echo("Create partition successfully!")
 
 
 if __name__ == '__main__':
