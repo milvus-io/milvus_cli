@@ -161,6 +161,15 @@ class PyOrm(object):
         index = {"index_type": indexType, "params": indexParams, "metric_type": metricType}
         collection.create_index(fieldName, index, timeout=timeout)
         return self.getIndexDetails(collection)
+    
+    def isCollectionExist(self, collectionName):
+        from pymilvus_orm import has_collection
+        return has_collection(collectionName, using=self.alias)
+
+    def dropCollection(self, collectionName, timeout):
+        collection = self.getTargetCollection(collectionName)
+        collection.drop(timeout=timeout)
+        return self.isCollectionExist(collectionName)
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -384,6 +393,34 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
     else:
         click.echo(obj.createIndex(collectionName, fieldName, indexType, metricType, params, timeout))
         click.echo("Create index successfully!")
+
+
+@cli.group('delete')
+@click.pass_obj
+def deleteObject(obj):
+    """Delete specified collection, partition and index."""
+    pass
+
+
+@deleteObject.command('collection')
+@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
+@click.option('-y', 'deleteCheck', help='Delete check.', default=False, is_flag=True)
+@click.argument('collection')
+@click.pass_obj
+def createPartition(obj, timeout, deleteCheck, collection):
+    """
+    Drop collection.
+    """
+    click.echo("You are trying to delete the collection with data. This action cannot be undone!")
+    if not deleteCheck:
+        return click.echo("Use '-y' if you are sure to delete the collection {}.".format(collection))
+    try:
+        obj.getTargetCollection(collection)
+    except Exception as e:
+        click.echo("Error occurred when get collection by name!")
+    else:
+        result = obj.dropCollection(collection, timeout)
+        click.echo("Drop collection successfully!") if not result else click.echo("Drop collection failed!")
 
 
 if __name__ == '__main__':
