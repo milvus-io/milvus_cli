@@ -166,10 +166,18 @@ class PyOrm(object):
         from pymilvus_orm import has_collection
         return has_collection(collectionName, using=self.alias)
 
+    def isPartitionExist(self, collection, partitionName):
+        return collection.has_partition(partitionName)
+
     def dropCollection(self, collectionName, timeout):
         collection = self.getTargetCollection(collectionName)
         collection.drop(timeout=timeout)
         return self.isCollectionExist(collectionName)
+    
+    def dropPartition(self, collectionName, partitionName, timeout):
+        collection = self.getTargetCollection(collectionName)
+        collection.drop_partition(partitionName, timeout=timeout)
+        return self.isPartitionExist(collection, partitionName)
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -407,11 +415,11 @@ def deleteObject(obj):
 @click.option('-y', 'deleteCheck', help='Delete check.', default=False, is_flag=True)
 @click.argument('collection')
 @click.pass_obj
-def createPartition(obj, timeout, deleteCheck, collection):
+def deleteCollection(obj, timeout, deleteCheck, collection):
     """
-    Drop collection.
+    Drops the collection together with its index files.
     """
-    click.echo("You are trying to delete the collection with data. This action cannot be undone!")
+    click.echo("Warning!\nYou are trying to delete the collection with data. This action cannot be undone!\n")
     if not deleteCheck:
         return click.echo("Use '-y' if you are sure to delete the collection {}.".format(collection))
     try:
@@ -421,6 +429,28 @@ def createPartition(obj, timeout, deleteCheck, collection):
     else:
         result = obj.dropCollection(collection, timeout)
         click.echo("Drop collection successfully!") if not result else click.echo("Drop collection failed!")
+
+
+@deleteObject.command('partition')
+@click.option('-c', '--collection', 'collectionName', help='Collection name', default=None)
+@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
+@click.option('-y', 'deleteCheck', help='Delete check.', default=False, is_flag=True)
+@click.argument('partition')
+@click.pass_obj
+def deletePartition(obj, collectionName, timeout, deleteCheck, partition):
+    """
+    Drop the partition and its corresponding index files.
+    """
+    click.echo("Warning!\nYou are trying to delete the partition with data. This action cannot be undone!\n")
+    if not deleteCheck:
+        return click.echo("Use '-y' if you are sure to delete the partition {}.".format(partition))
+    try:
+        obj.getTargetCollection(collectionName)
+    except Exception as e:
+        click.echo("Error occurred when get collection by name!")
+    else:
+        result = obj.dropPartition(collectionName, partition, timeout)
+        click.echo("Drop partition successfully!") if not result else click.echo("Drop partition failed!")
 
 
 if __name__ == '__main__':
