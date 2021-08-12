@@ -6,7 +6,7 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import ParameterException, validateCollectionParameter, validateIndexParameter
+from utils import ParameterException, validateCollectionParameter, validateIndexParameter, validateSearchParams
 
 
 class PyOrm(object):
@@ -187,6 +187,12 @@ class PyOrm(object):
         collection.drop_index(timeout=timeout)
         return self.isIndexExist(collection)
 
+    def search(self, collectionName, searchParameters):
+        collection = self.getTargetCollection(collectionName)
+        collection.load()
+        res = collection.search(**searchParameters)
+        hits = res[0]
+        return f"- Total hits: {len(hits)}, hits ids: {hits.ids} \n- Top1 hit id: {hits[0].id}, distance: {hits[0].distance}, score: {hits[0].score} "
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -480,6 +486,28 @@ def deleteIndex(obj, collectionName, timeout, deleteCheck):
     else:
         result = obj.dropIndex(collectionName, timeout)
         click.echo("Drop index successfully!") if not result else click.echo("Drop index failed!")
+
+
+@cli.command()
+@click.option('-c', '--collection', 'collectionName', help='Collection name.', default=None)
+@click.option('-d', '--data', 'data', help='The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection.', default=None)
+@click.option('-a', '--anns_field', 'annsField', help='The vector field used to search of collection.', default=None)
+@click.option('-m', '--metric_type', 'metricType', help='The parameters of search.', default=None)
+@click.option('-p', '--params', 'params', help='The parameters of search.', default=None, multiple=True)
+@click.option('-l', '--limit', 'limit', help='The max number of returned record, also known as topk.', default=None, type=int)
+@click.option('-e', '--expr', 'expr', help='The boolean expression used to filter attribute.', default=None)
+@click.option('-n', '--partition_names', 'partitionNames', help='The names of partitions to search.', default=None, multiple=True)
+# @click.option('-c', '--output_fields', 'collectionName', help='The fields to return in the search result, not supported now.', default=None)
+@click.option('-t', '--timeout', 'timeout', help=' An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=float)
+@click.pass_obj
+def search(obj, collectionName, data, annsField, metricType, params, limit, expr, partitionNames, timeout):
+    """Conducts a vector similarity search with an optional boolean expression as filter."""
+    try:
+        searchParameters = validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout)
+    except ParameterException as e:
+        click.echo("Error!\n{}".format(str(e)))
+    else:
+        click.echo(obj.search(collectionName, searchParameters))
 
 
 if __name__ == '__main__':
