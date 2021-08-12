@@ -169,6 +169,9 @@ class PyOrm(object):
     def isPartitionExist(self, collection, partitionName):
         return collection.has_partition(partitionName)
 
+    def isIndexExist(self, collection):
+        return collection.has_index()
+
     def dropCollection(self, collectionName, timeout):
         collection = self.getTargetCollection(collectionName)
         collection.drop(timeout=timeout)
@@ -178,6 +181,11 @@ class PyOrm(object):
         collection = self.getTargetCollection(collectionName)
         collection.drop_partition(partitionName, timeout=timeout)
         return self.isPartitionExist(collection, partitionName)
+    
+    def dropIndex(self, collectionName, timeout):
+        collection = self.getTargetCollection(collectionName)
+        collection.drop_index(timeout=timeout)
+        return self.isIndexExist(collection)
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -451,6 +459,27 @@ def deletePartition(obj, collectionName, timeout, deleteCheck, partition):
     else:
         result = obj.dropPartition(collectionName, partition, timeout)
         click.echo("Drop partition successfully!") if not result else click.echo("Drop partition failed!")
+
+
+@deleteObject.command('index')
+@click.option('-c', '--collection', 'collectionName', help='Collection name', default=None)
+@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
+@click.option('-y', 'deleteCheck', help='Delete check.', default=False, is_flag=True)
+@click.pass_obj
+def deleteIndex(obj, collectionName, timeout, deleteCheck):
+    """
+    Drop index and its corresponding index files.
+    """
+    click.echo("Warning!\nYou are trying to delete the index of collection. This action cannot be undone!\n")
+    if not deleteCheck:
+        return click.echo("Use '-y' if you are sure to delete the index.")
+    try:
+        obj.getTargetCollection(collectionName)
+    except Exception as e:
+        click.echo("Error occurred when get collection by name!")
+    else:
+        result = obj.dropIndex(collectionName, timeout)
+        click.echo("Drop index successfully!") if not result else click.echo("Drop index failed!")
 
 
 if __name__ == '__main__':
