@@ -530,7 +530,13 @@ def query(obj):
     Query with a set of criteria, and results in a list of records that match the query exactly.
 
     Example:
-        TODO
+        milvus_cli > query
+        Collection name: test_collection_query
+        The query expression: film_id in [ 0, 1 ]
+        Name of partitions that contain entities(split by "," if multiple) []: 
+        A list of fields to return(split by "," if multiple) []: film_date
+        timeout []: 
+        - Query results: [{'film_id': 0, 'film_date': 2000}, {'film_id': 1, 'film_date': 2001}]
     """
     collectionName = click.prompt('Collection name')
     expr = click.prompt('The query expression')
