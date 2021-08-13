@@ -6,7 +6,7 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import ParameterException, validateCollectionParameter, validateIndexParameter, validateSearchParams
+from utils import ParameterException, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 
 
 class PyOrm(object):
@@ -193,6 +193,12 @@ class PyOrm(object):
         res = collection.search(**searchParameters)
         hits = res[0]
         return f"- Total hits: {len(hits)}, hits ids: {hits.ids} \n- Top1 hit id: {hits[0].id}, distance: {hits[0].distance}, score: {hits[0].score} "
+
+    def query(self, collectionName, queryParameters):
+        collection = self.getTargetCollection(collectionName)
+        collection.load()
+        res = collection.query(**queryParameters)
+        return f"- Query results: {res}"
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -426,16 +432,15 @@ def deleteObject(obj):
 
 @deleteObject.command('collection')
 @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
-@click.option('-y', 'deleteCheck', help='Delete check.', default=False, is_flag=True)
 @click.argument('collection')
 @click.pass_obj
-def deleteCollection(obj, timeout, deleteCheck, collection):
+def deleteCollection(obj, timeout, collection):
     """
     Drops the collection together with its index files.
     """
     click.echo("Warning!\nYou are trying to delete the collection with data. This action cannot be undone!\n")
-    if not deleteCheck:
-        return click.echo("Use '-y' if you are sure to delete the collection {}.".format(collection))
+    if not click.confirm('Do you want to continue?'):
+        return
     try:
         obj.getTargetCollection(collection)
     except Exception as e:
@@ -448,16 +453,15 @@ def deleteCollection(obj, timeout, deleteCheck, collection):
 @deleteObject.command('partition')
 @click.option('-c', '--collection', 'collectionName', help='Collection name', default=None)
 @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
-@click.option('-y', 'deleteCheck', help='Delete check.', default=False, is_flag=True)
 @click.argument('partition')
 @click.pass_obj
-def deletePartition(obj, collectionName, timeout, deleteCheck, partition):
+def deletePartition(obj, collectionName, timeout, partition):
     """
     Drop the partition and its corresponding index files.
     """
     click.echo("Warning!\nYou are trying to delete the partition with data. This action cannot be undone!\n")
-    if not deleteCheck:
-        return click.echo("Use '-y' if you are sure to delete the partition {}.".format(partition))
+    if not click.confirm('Do you want to continue?'):
+        return
     try:
         obj.getTargetCollection(collectionName)
     except Exception as e:
@@ -470,15 +474,14 @@ def deletePartition(obj, collectionName, timeout, deleteCheck, partition):
 @deleteObject.command('index')
 @click.option('-c', '--collection', 'collectionName', help='Collection name', default=None)
 @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
-@click.option('-y', 'deleteCheck', help='Delete check.', default=False, is_flag=True)
 @click.pass_obj
-def deleteIndex(obj, collectionName, timeout, deleteCheck):
+def deleteIndex(obj, collectionName, timeout):
     """
     Drop index and its corresponding index files.
     """
     click.echo("Warning!\nYou are trying to delete the index of collection. This action cannot be undone!\n")
-    if not deleteCheck:
-        return click.echo("Use '-y' if you are sure to delete the index.")
+    if not click.confirm('Do you want to continue?'):
+        return
     try:
         obj.getTargetCollection(collectionName)
     except Exception as e:
@@ -501,13 +504,45 @@ def deleteIndex(obj, collectionName, timeout, deleteCheck):
 @click.option('-t', '--timeout', 'timeout', help=' An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=float)
 @click.pass_obj
 def search(obj, collectionName, data, annsField, metricType, params, limit, expr, partitionNames, timeout):
-    """Conducts a vector similarity search with an optional boolean expression as filter."""
+    """
+    Conducts a vector similarity search with an optional boolean expression as filter.
+
+    Example:
+        search -c test_collection_search -d '[[1.0,1.0]]' -a films -m L2 -l 2 -e film_id>0
+    """
     try:
         searchParameters = validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout)
     except ParameterException as e:
         click.echo("Error!\n{}".format(str(e)))
     else:
         click.echo(obj.search(collectionName, searchParameters))
+
+
+@cli.command()
+# @click.option('-c', '--collection', 'collectionName', help='Collection name.', default=None)
+# @click.option('-e', '--expr', 'expr', help='The query expression.', default=None)
+# @click.option('-p', '--partition_names', 'partitionNames', help='Name of partitions that contain entities.', default=None, multiple=True)
+# @click.option('-o', '--output_fields', 'outputFields', help='A list of fields to return.', default=None, multiple=True)
+# @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=float)
+@click.pass_obj
+def query(obj):
+    """
+    Query with a set of criteria, and results in a list of records that match the query exactly.
+
+    Example:
+        TODO
+    """
+    collectionName = click.prompt('Collection name')
+    expr = click.prompt('The query expression')
+    partitionNames = click.prompt('Name of partitions that contain entities(split by "," if multiple)', default='')
+    outputFields = click.prompt('A list of fields to return(split by "," if multiple)', default='')
+    timeout = click.prompt('timeout', default='')
+    try:
+        queryParameters = validateQueryParams(expr, partitionNames, outputFields, timeout)
+    except ParameterException as e:
+        click.echo("Error!\n{}".format(str(e)))
+    else:
+        click.echo(obj.query(collectionName, queryParameters))
 
 
 if __name__ == '__main__':

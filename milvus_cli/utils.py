@@ -175,3 +175,21 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
     if timeout:
       result['timeout'] = float(timeout)
     return result
+
+def validateQueryParams(expr, partitionNames, outputFields, timeout):
+    result = {}
+    if not expr:
+        raise ParameterException('expr is empty!')
+    result['expr'] = expr
+    if not outputFields:
+        result['output_fields'] = None
+    else:
+        nameList = outputFields.replace(' ', '').split(',')
+        result['output_fields'] = nameList
+    if not partitionNames:
+        result['partition_names'] = None
+    else:
+        nameList = partitionNames.replace(' ', '').split(',')
+        result['partition_names'] = nameList
+    result['timeout'] = float(timeout) if timeout else None
+    return result
