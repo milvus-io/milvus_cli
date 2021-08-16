@@ -58,11 +58,11 @@ def connection(obj, showAll):
 @show.command('loading_progress')
 @click.option('-c', '--collection', 'collection', help='The name of collection is loading', default='')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The names of partitions are loading', default=None, multiple=True)
-@click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection', default='default')
+# @click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection', default='default')
 @click.pass_obj
-def loadingProgress(obj, collection, partition, using):
+def loadingProgress(obj, collection, partition):
     """Show #loaded entities vs #total entities."""
-    result = obj.showCollectionLoadingProgress(collection, partition, using)
+    result = obj.showCollectionLoadingProgress(collection, partition)
     click.echo(tabulate([[result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=[
                'num_loaded_entities', 'num_total_entities'], tablefmt='pretty'))
 
@@ -70,10 +70,10 @@ def loadingProgress(obj, collection, partition, using):
 @show.command('index_progress')
 @click.option('-c', '--collection', 'collection', help='The name of collection is loading', default='')
 @click.option('-i', '--index', 'index', help='[Optional] - Index name.', default='')
-@click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection.', default='default')
+# @click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection.', default='default')
 @click.pass_obj
-def indexProgress(obj, collection, index, using):
-    result = obj.showIndexBuildingProgress(collection, index, using)
+def indexProgress(obj, collection, index):
+    result = obj.showIndexBuildingProgress(collection, index)
     click.echo(tabulate([[result.get('indexed_rows'), result.get('total_rows')]], headers=[
                'indexed_rows', 'total_rows'], tablefmt='pretty'))
 
@@ -101,12 +101,12 @@ def listDetails(obj):
 
 @listDetails.command()
 @click.option('--timeout', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None)
-@click.option('--using', 'using', help="[Optional] - Milvus link of create collection.", default='default')
+# @click.option('--using', 'using', help="[Optional] - Milvus link of create collection.", default='default')
 @click.option('--show-loaded', 'showLoaded', help="[Optional] - Only show loaded collections.", default=False)
 @click.pass_obj
-def collections(obj, timeout, using, showLoaded):
+def collections(obj, timeout, showLoaded):
     """List all collections."""
-    click.echo(obj.listCollections(timeout, using, showLoaded))
+    click.echo(obj.listCollections(timeout, showLoaded))
 
 
 @listDetails.command()

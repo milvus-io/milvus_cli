@@ -219,7 +219,7 @@ class PyOrm(object):
         from pymilvus_orm import connections
         connections.connect(self.alias, host=self.host, port=self.port)
 
-    def showConnection(self, alias, showAll=False):
+    def showConnection(self, alias="default", showAll=False):
         from pymilvus_orm import connections
         tempAlias = self.alias if self.alias else alias
         allConnections = connections.list_connections()
@@ -233,10 +233,10 @@ class PyOrm(object):
         else:
             return "Connection not found!"
 
-    def listCollections(self, timeout=None, using="default", showLoadedOnly=False):
+    def listCollections(self, timeout=None, showLoadedOnly=False):
         from pymilvus_orm import list_collections
         result = []
-        collectionNames = list_collections(timeout, using)
+        collectionNames = list_collections(timeout, self.alias)
         for name in collectionNames:
             loadingProgress = self.showCollectionLoadingProgress(name)
             loaded, total = loadingProgress.values()
@@ -246,13 +246,13 @@ class PyOrm(object):
                 result.append([name, isLoaded, "{}/{}".format(loaded, total)])
         return tabulate(result, headers=['Collection Name', 'Loaded', 'Entities(Loaded/Total)'], tablefmt='grid', showindex=True)
 
-    def showCollectionLoadingProgress(self, collectionName, partition_names=None, using='default'):
+    def showCollectionLoadingProgress(self, collectionName, partition_names=None):
         from pymilvus_orm import loading_progress
-        return loading_progress(collectionName, partition_names, using)
+        return loading_progress(collectionName, partition_names, self.alias)
 
-    def showIndexBuildingProgress(self, collectionName, index_name="", using="default"):
+    def showIndexBuildingProgress(self, collectionName, index_name=""):
         from pymilvus_orm import index_building_progress
-        return index_building_progress(collectionName, index_name, using)
+        return index_building_progress(collectionName, index_name, self.alias)
 
     def getTargetCollection(self, collectionName):
         from pymilvus_orm import Collection
