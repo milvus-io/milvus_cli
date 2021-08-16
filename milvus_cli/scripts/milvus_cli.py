@@ -40,6 +40,12 @@ def version():
     click.echo(f"Milvus Cli v{getPackageVersion()}")
 
 
+@cli.command()
+def clear():
+    """Clear screen."""
+    click.clear()
+
+
 @cli.group()
 @click.pass_obj
 def show(obj):
