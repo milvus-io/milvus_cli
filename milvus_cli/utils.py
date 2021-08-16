@@ -256,11 +256,11 @@ class PyOrm(object):
         for name in collectionNames:
             loadingProgress = self.showCollectionLoadingProgress(name)
             loaded, total = loadingProgress.values()
-            isLoaded = (total > 0) and (loaded == total)
-            shouldBeAdded = isLoaded if showLoadedOnly else True
-            if shouldBeAdded:
-                result.append([name, isLoaded, "{}/{}".format(loaded, total)])
-        return tabulate(result, headers=['Collection Name', 'Loaded', 'Entities(Loaded/Total)'], tablefmt='grid', showindex=True)
+            # isLoaded = (total > 0) and (loaded == total)
+            # shouldBeAdded = isLoaded if showLoadedOnly else True
+            # if shouldBeAdded:
+            result.append([name, "{}/{}".format(loaded, total)])
+        return tabulate(result, headers=['Collection Name', 'Entities(Loaded/Total)'], tablefmt='grid', showindex=True)
 
     def showCollectionLoadingProgress(self, collectionName, partition_names=None):
         from pymilvus_orm import loading_progress
@@ -277,6 +277,12 @@ class PyOrm(object):
     def loadCollection(self, collectionName):
         target = self.getTargetCollection(collectionName)
         target.load()
+        result = self.showCollectionLoadingProgress(collectionName)
+        return tabulate([[collectionName, result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=['Collection Name', 'Loaded', 'Total'], tablefmt='grid')
+
+    def releaseCollection(self, collectionName):
+        target = self.getTargetCollection(collectionName)
+        target.release()
         result = self.showCollectionLoadingProgress(collectionName)
         return tabulate([[collectionName, result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=['Collection Name', 'Loaded', 'Total'], tablefmt='grid')
 

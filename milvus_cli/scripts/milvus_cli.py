@@ -106,6 +106,20 @@ def load(obj, collection):
         click.echo(result)
 
 
+@cli.command()
+@click.option('-c', '--collection', 'collection', help='The name of collection to be released.')
+@click.pass_obj
+def release(obj, collection):
+    """Release specified collection."""
+    try:
+        result = obj.releaseCollection(collection)
+    except Exception as e:
+        click.echo(message=e, err=True)
+    else:
+        click.echo("""Release Collection '{}' successfully""".format(collection))
+        click.echo(result)
+
+
 @cli.group('list')
 @click.pass_obj
 def listDetails(obj):
