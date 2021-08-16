@@ -12,7 +12,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'milvus_cli = milvus_cli.scripts.milvus_cli:cli',
+            'milvus_cli = milvus_cli.scripts.milvus_cli:runCliPrompt',
         ],
     },
 )

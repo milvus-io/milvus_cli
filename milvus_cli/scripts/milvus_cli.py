@@ -418,13 +418,16 @@ def query(obj):
         click.echo(obj.query(collectionName, queryParameters))
 
 
-if __name__ == '__main__':
+def runCliPrompt():
     while True:
         astr = input('milvus_cli > ')
         try:
-            # print('astr===> ', astr)
             cli(astr.split())
         except SystemExit:
             # trap argparse error message
             # print('error', SystemExit)
             continue
+
+
+if __name__ == '__main__':
+    runCliPrompt()
