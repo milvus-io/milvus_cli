@@ -492,24 +492,34 @@ def deleteIndex(obj, collectionName, timeout):
 
 
 @cli.command()
-@click.option('-c', '--collection', 'collectionName', help='Collection name.', default=None)
-@click.option('-d', '--data', 'data', help='The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection.', default=None)
-@click.option('-a', '--anns_field', 'annsField', help='The vector field used to search of collection.', default=None)
-@click.option('-m', '--metric_type', 'metricType', help='The parameters of search.', default=None)
-@click.option('-p', '--params', 'params', help='The parameters of search.', default=None, multiple=True)
-@click.option('-l', '--limit', 'limit', help='The max number of returned record, also known as topk.', default=None, type=int)
-@click.option('-e', '--expr', 'expr', help='The boolean expression used to filter attribute.', default=None)
-@click.option('-n', '--partition_names', 'partitionNames', help='The names of partitions to search.', default=None, multiple=True)
-# @click.option('-c', '--output_fields', 'collectionName', help='The fields to return in the search result, not supported now.', default=None)
-@click.option('-t', '--timeout', 'timeout', help=' An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=float)
+# @click.option('-c', '--collection', 'collectionName', help='Collection name.', default=None)
+# @click.option('-d', '--data', 'data', help='The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection.', default=None)
+# @click.option('-a', '--anns_field', 'annsField', help='The vector field used to search of collection.', default=None)
+# @click.option('-m', '--metric_type', 'metricType', help='The parameters of search.', default=None)
+# @click.option('-p', '--params', 'params', help='The parameters of search.', default=None, multiple=True)
+# @click.option('-l', '--limit', 'limit', help='The max number of returned record, also known as topk.', default=None, type=int)
+# @click.option('-e', '--expr', 'expr', help='The boolean expression used to filter attribute.', default=None)
+# @click.option('-n', '--partition_names', 'partitionNames', help='The names of partitions to search.', default=None, multiple=True)
+# # @click.option('-c', '--output_fields', 'collectionName', help='The fields to return in the search result, not supported now.', default=None)
+# @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=float)
 @click.pass_obj
-def search(obj, collectionName, data, annsField, metricType, params, limit, expr, partitionNames, timeout):
+# def search(obj, collectionName, data, annsField, metricType, params, limit, expr, partitionNames, timeout):
+def search(obj):
     """
     Conducts a vector similarity search with an optional boolean expression as filter.
 
     Example:
         search -c test_collection_search -d '[[1.0,1.0]]' -a films -m L2 -l 2 -e film_id>0
     """
+    collectionName = click.prompt('Collection name')
+    data = click.prompt('The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection')
+    annsField = click.prompt('The vector field used to search of collection', default='')
+    metricType = click.prompt('Metric type', default='')
+    params = click.prompt('The parameters of search(split by "," if multiple)', default='')
+    limit = click.prompt('The max number of returned record, also known as topk', default='')
+    expr = click.prompt('The boolean expression used to filter attribute', default='')
+    partitionNames = click.prompt('The names of partitions to search(split by "," if multiple)', default='')
+    timeout = click.prompt('timeout', default='')
     try:
         searchParameters = validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout)
     except ParameterException as e:

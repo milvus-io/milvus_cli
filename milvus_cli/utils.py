@@ -136,7 +136,10 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
             'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
     # Validate params
     paramDict = {}
-    for param in params:
+    paramsList = params.replace(' ', '').split(',')
+    for param in paramsList:
+        if not param:
+            continue
         paramList = param.split(':')
         if not (len(paramList) == 2):
             raise ParameterException(
@@ -167,7 +170,7 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
     # Validate partitionNames
     if partitionNames:
       try:
-        result['partition_names'] = list(partitionNames)
+        result['partition_names'] = partitionNames.replace(' ', '').split(',')
       except Exception as e:
         raise ParameterException(
             'Format(list[str]) "partitionNames" error! {}'.format(str(e)))
