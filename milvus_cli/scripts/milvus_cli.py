@@ -5,7 +5,7 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import PyOrm, getPackageVersion, ParameterException, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
+from utils import PyOrm, getPackageVersion, ParameterException, ConnectException, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
@@ -52,7 +52,7 @@ def show(obj):
 @click.pass_obj
 def connection(obj, showAll):
     """Show current/all connection details"""
-    click.echo(obj.showConnection('default', showAll))
+    click.echo(obj.showConnection(showAll=showAll))
 
 
 @show.command('loading_progress')
@@ -62,9 +62,13 @@ def connection(obj, showAll):
 @click.pass_obj
 def loadingProgress(obj, collection, partition):
     """Show #loaded entities vs #total entities."""
-    result = obj.showCollectionLoadingProgress(collection, partition)
-    click.echo(tabulate([[result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=[
-               'num_loaded_entities', 'num_total_entities'], tablefmt='pretty'))
+    try:
+        result = obj.showCollectionLoadingProgress(collection, partition)
+    except Exception as e:
+        click.echo(message=e, err=True)
+    else:
+        click.echo(tabulate([[result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=[
+            'num_loaded_entities', 'num_total_entities'], tablefmt='pretty'))
 
 
 @show.command('index_progress')
@@ -73,9 +77,13 @@ def loadingProgress(obj, collection, partition):
 # @click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection.', default='default')
 @click.pass_obj
 def indexProgress(obj, collection, index):
-    result = obj.showIndexBuildingProgress(collection, index)
-    click.echo(tabulate([[result.get('indexed_rows'), result.get('total_rows')]], headers=[
-               'indexed_rows', 'total_rows'], tablefmt='pretty'))
+    try:
+        result = obj.showIndexBuildingProgress(collection, index)
+    except Exception as e:
+        click.echo(message=e, err=True)
+    else:
+        click.echo(tabulate([[result.get('indexed_rows'), result.get('total_rows')]], headers=[
+            'indexed_rows', 'total_rows'], tablefmt='pretty'))
 
 
 @cli.command()
@@ -106,7 +114,10 @@ def listDetails(obj):
 @click.pass_obj
 def collections(obj, timeout, showLoaded):
     """List all collections."""
-    click.echo(obj.listCollections(timeout, showLoaded))
+    try:
+        click.echo(obj.listCollections(timeout, showLoaded))
+    except Exception as e:
+        click.echo(message=e, err=True)
 
 
 @listDetails.command()
@@ -114,7 +125,10 @@ def collections(obj, timeout, showLoaded):
 @click.pass_obj
 def partitions(obj, collection):
     """List all partitions of the specified collection."""
-    click.echo(obj.listPartitions(collection))
+    try:
+        click.echo(obj.listPartitions(collection))
+    except Exception as e:
+        click.echo(message=e, err=True)
 
 
 @listDetails.command()
@@ -122,7 +136,10 @@ def partitions(obj, collection):
 @click.pass_obj
 def indexes(obj, collection):
     """List all indexes of the specified collection."""
-    click.echo(obj.listIndexes(collection))
+    try:
+        click.echo(obj.listIndexes(collection))
+    except Exception as e:
+        click.echo(message=e, err=True)
 
 
 @cli.group('describe')
@@ -137,7 +154,10 @@ def describeDetails(obj):
 @click.pass_obj
 def describeCollection(obj, collection):
     """Describe collection."""
-    click.echo(obj.getCollectionDetails(collection))
+    try:
+        click.echo(obj.getCollectionDetails(collection))
+    except Exception as e:
+        click.echo(message=e, err=True)
 
 
 @describeDetails.command('partition')
@@ -149,7 +169,7 @@ def describePartition(obj, collectionName, partition):
     try:
         collection = obj.getTargetCollection(collectionName)
     except Exception as e:
-        click.echo("Error when get collection!")
+        click.echo(f"Error when get collection!\n{str(e)}")
     else:
         click.echo(obj.getPartitionDetails(collection, partition))
 
@@ -179,8 +199,11 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
     try:
         validateCollectionParameter(
             collectionName, primaryField, fields)
-    except ParameterException as e:
-        click.echo("Error!\n{}".format(str(e)))
+        obj.checkConnection()
+    except ParameterException as pe:
+        click.echo("Error!\n{}".format(str(pe)))
+    except ConnectException as ce:
+        click.echo("Error!\n{}".format(str(ce)))
     else:
         click.echo(obj.createCollection(collectionName,
                    primaryField, autoId, description, fields))
@@ -199,7 +222,7 @@ def createPartition(obj, collectionName, description, partition):
     try:
         obj.getTargetCollection(collectionName)
     except Exception as e:
-        click.echo("Error occurred when get collection by name!")
+        click.echo(f"Error occurred when get collection by name!\n{str(e)}")
     else:
         click.echo(obj.createPartition(collectionName, description, partition))
         click.echo("Create partition successfully!")
@@ -224,10 +247,14 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
     try:
         validateIndexParameter(
             indexType, metricType, params)
-    except ParameterException as e:
-        click.echo("Error!\n{}".format(str(e)))
+        obj.checkConnection()
+    except ParameterException as pe:
+        click.echo("Error!\n{}".format(str(pe)))
+    except ConnectException as ce:
+        click.echo("Error!\n{}".format(str(ce)))
     else:
-        click.echo(obj.createIndex(collectionName, fieldName, indexType, metricType, params, timeout))
+        click.echo(obj.createIndex(collectionName, fieldName,
+                   indexType, metricType, params, timeout))
         click.echo("Create index successfully!")
 
 
@@ -246,16 +273,18 @@ def deleteCollection(obj, timeout, collection):
     """
     Drops the collection together with its index files.
     """
-    click.echo("Warning!\nYou are trying to delete the collection with data. This action cannot be undone!\n")
+    click.echo(
+        "Warning!\nYou are trying to delete the collection with data. This action cannot be undone!\n")
     if not click.confirm('Do you want to continue?'):
         return
     try:
         obj.getTargetCollection(collection)
     except Exception as e:
-        click.echo("Error occurred when get collection by name!")
+        click.echo(f"Error occurred when get collection by name!\n{str(e)}")
     else:
         result = obj.dropCollection(collection, timeout)
-        click.echo("Drop collection successfully!") if not result else click.echo("Drop collection failed!")
+        click.echo("Drop collection successfully!") if not result else click.echo(
+            "Drop collection failed!")
 
 
 @deleteObject.command('partition')
@@ -267,16 +296,18 @@ def deletePartition(obj, collectionName, timeout, partition):
     """
     Drop the partition and its corresponding index files.
     """
-    click.echo("Warning!\nYou are trying to delete the partition with data. This action cannot be undone!\n")
+    click.echo(
+        "Warning!\nYou are trying to delete the partition with data. This action cannot be undone!\n")
     if not click.confirm('Do you want to continue?'):
         return
     try:
         obj.getTargetCollection(collectionName)
     except Exception as e:
-        click.echo("Error occurred when get collection by name!")
+        click.echo(f"Error occurred when get collection by name!\n{str(e)}")
     else:
         result = obj.dropPartition(collectionName, partition, timeout)
-        click.echo("Drop partition successfully!") if not result else click.echo("Drop partition failed!")
+        click.echo("Drop partition successfully!") if not result else click.echo(
+            "Drop partition failed!")
 
 
 @deleteObject.command('index')
@@ -287,16 +318,18 @@ def deleteIndex(obj, collectionName, timeout):
     """
     Drop index and its corresponding index files.
     """
-    click.echo("Warning!\nYou are trying to delete the index of collection. This action cannot be undone!\n")
+    click.echo(
+        "Warning!\nYou are trying to delete the index of collection. This action cannot be undone!\n")
     if not click.confirm('Do you want to continue?'):
         return
     try:
         obj.getTargetCollection(collectionName)
     except Exception as e:
-        click.echo("Error occurred when get collection by name!")
+        click.echo(f"Error occurred when get collection by name!\n{str(e)}")
     else:
         result = obj.dropIndex(collectionName, timeout)
-        click.echo("Drop index successfully!") if not result else click.echo("Drop index failed!")
+        click.echo("Drop index successfully!") if not result else click.echo(
+            "Drop index failed!")
 
 
 @cli.command()
@@ -320,18 +353,28 @@ def search(obj):
         search -c test_collection_search -d '[[1.0,1.0]]' -a films -m L2 -l 2 -e film_id>0
     """
     collectionName = click.prompt('Collection name')
-    data = click.prompt('The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection')
-    annsField = click.prompt('The vector field used to search of collection', default='')
+    data = click.prompt(
+        'The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection')
+    annsField = click.prompt(
+        'The vector field used to search of collection', default='')
     metricType = click.prompt('Metric type', default='')
-    params = click.prompt('The parameters of search(split by "," if multiple)', default='')
-    limit = click.prompt('The max number of returned record, also known as topk', default='')
-    expr = click.prompt('The boolean expression used to filter attribute', default='')
-    partitionNames = click.prompt('The names of partitions to search(split by "," if multiple)', default='')
+    params = click.prompt(
+        'The parameters of search(split by "," if multiple)', default='')
+    limit = click.prompt(
+        'The max number of returned record, also known as topk', default='')
+    expr = click.prompt(
+        'The boolean expression used to filter attribute', default='')
+    partitionNames = click.prompt(
+        'The names of partitions to search(split by "," if multiple)', default='')
     timeout = click.prompt('timeout', default='')
     try:
-        searchParameters = validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout)
-    except ParameterException as e:
-        click.echo("Error!\n{}".format(str(e)))
+        searchParameters = validateSearchParams(
+            data, annsField, metricType, params, limit, expr, partitionNames, timeout)
+        obj.checkConnection()
+    except ParameterException as pe:
+        click.echo("Error!\n{}".format(str(pe)))
+    except ConnectException as ce:
+        click.echo("Error!\n{}".format(str(ce)))
     else:
         click.echo(obj.search(collectionName, searchParameters))
 
@@ -358,13 +401,19 @@ def query(obj):
     """
     collectionName = click.prompt('Collection name')
     expr = click.prompt('The query expression')
-    partitionNames = click.prompt('Name of partitions that contain entities(split by "," if multiple)', default='')
-    outputFields = click.prompt('A list of fields to return(split by "," if multiple)', default='')
+    partitionNames = click.prompt(
+        'Name of partitions that contain entities(split by "," if multiple)', default='')
+    outputFields = click.prompt(
+        'A list of fields to return(split by "," if multiple)', default='')
     timeout = click.prompt('timeout', default='')
     try:
-        queryParameters = validateQueryParams(expr, partitionNames, outputFields, timeout)
-    except ParameterException as e:
-        click.echo("Error!\n{}".format(str(e)))
+        queryParameters = validateQueryParams(
+            expr, partitionNames, outputFields, timeout)
+        obj.checkConnection()
+    except ParameterException as pe:
+        click.echo("Error!\n{}".format(str(pe)))
+    except ConnectException as ce:
+        click.echo("Error!\n{}".format(str(ce)))
     else:
         click.echo(obj.query(collectionName, queryParameters))
 

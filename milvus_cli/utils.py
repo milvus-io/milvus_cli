@@ -14,6 +14,15 @@ class ParameterException(Exception):
     def __str__(self):
         return str(self.msg)
 
+class ConnectException(Exception):
+    "Custom Exception for milvus connection."
+
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return str(self.msg)
+
 
 FiledDataTypes = [
     "BOOL",
@@ -218,6 +227,13 @@ class PyOrm(object):
         self.port = port
         from pymilvus_orm import connections
         connections.connect(self.alias, host=self.host, port=self.port)
+    
+    def checkConnection(self):
+        from pymilvus_orm import list_collections
+        try:
+            list_collections(timeout=10.0, using=self.alias)
+        except Exception as e:
+            raise ConnectException(f'Connect to Milvus error!{str(e)}')
 
     def showConnection(self, alias="default", showAll=False):
         from pymilvus_orm import connections
