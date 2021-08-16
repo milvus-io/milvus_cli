@@ -440,6 +440,7 @@ def query(obj):
 
 def runCliPrompt():
     while True:
+        import readline
         astr = input('milvus_cli > ')
         try:
             cli(astr.split())
