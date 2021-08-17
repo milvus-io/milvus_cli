@@ -19,9 +19,9 @@ def cli(ctx):
 
 
 @cli.command()
-@click.option('--alias', 'alias', help="[Optional] - Milvus link alias name, default is `default`.", default='default', type=str)
-@click.option('--host', 'host', help="[Optional] - Host name, default is `127.0.0.1`.", default='127.0.0.1', type=str)
-@click.option('--port', 'port', help="[Optional] - Port, default is `19530`.", default=19530, type=int)
+@click.option('-a', '--alias', 'alias', help="Milvus link alias name, default is `default`.", default='default', type=str)
+@click.option('-h', '--host', 'host', help="Host name, default is `127.0.0.1`.", default='127.0.0.1', type=str)
+@click.option('-p', '--port', 'port', help="Port, default is `19530`.", default=19530, type=int)
 @click.pass_obj
 def connect(obj, alias, host, port):
     """Connect to Milvus."""
@@ -54,7 +54,7 @@ def show(obj):
 
 
 @show.command()
-@click.option('--all', 'showAll', help="[Optional] - Show all connections.", default=False, is_flag=True)
+@click.option('-a', '--all', 'showAll', help="Show all connections.", default=False, is_flag=True)
 @click.pass_obj
 def connection(obj, showAll):
     """Show current/all connection details"""
@@ -62,7 +62,7 @@ def connection(obj, showAll):
 
 
 @show.command('loading_progress')
-@click.option('-c', '--collection', 'collection', help='The name of collection is loading', default='')
+@click.option('-c', '--collection', 'collection', help='The name of collection is loading')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The names of partitions are loading', default=None, multiple=True)
 # @click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection', default='default')
 @click.pass_obj
@@ -439,15 +439,18 @@ def query(obj):
 
 
 def runCliPrompt():
-    while True:
-        import readline
-        astr = input('milvus_cli > ')
-        try:
-            cli(astr.split())
-        except SystemExit:
-            # trap argparse error message
-            # print('error', SystemExit)
-            continue
+    try:
+        while True:
+            import readline
+            astr = input('milvus_cli > ')
+            try:
+                cli(astr.split())
+            except SystemExit:
+                # trap argparse error message
+                # print('error', SystemExit)
+                continue
+    except KeyboardInterrupt:
+        sys.exit(0)
 
 
 if __name__ == '__main__':
