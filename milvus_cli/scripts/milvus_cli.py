@@ -5,20 +5,20 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import PyOrm, getPackageVersion, ParameterException, ConnectException, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
+from utils import PyOrm, getPackageVersion, checkEmpty, ParameterException, ConnectException, validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
 
-@click.group()
+@click.group(no_args_is_help=False)
 @click.pass_context
 def cli(ctx):
     """Milvus CLI"""
     ctx.obj = PyOrm()
 
 
-@cli.command()
+@cli.command(no_args_is_help=False)
 @click.option('-a', '--alias', 'alias', help="Milvus link alias name, default is `default`.", default='default', type=str)
 @click.option('-h', '--host', 'host', help="Host name, default is `127.0.0.1`.", default='127.0.0.1', type=str)
 @click.option('-p', '--port', 'port', help="Port, default is `19530`.", default=19530, type=int)
@@ -46,11 +46,11 @@ def clear():
     click.clear()
 
 
-@cli.group()
+@cli.group(no_args_is_help=False)
 @click.pass_obj
 def show(obj):
     """Show connection, loading_progress and index_progress."""
-    pass
+    obj.checkConnection()
 
 
 @show.command()
@@ -69,6 +69,8 @@ def connection(obj, showAll):
 def loadingProgress(obj, collection, partition):
     """Show #loaded entities vs #total entities."""
     try:
+        validateParamsByCustomFunc(
+            obj.getTargetCollection, 'Collection Name Error!', collection)
         result = obj.showCollectionLoadingProgress(collection, partition)
     except Exception as e:
         click.echo(message=e, err=True)
@@ -84,6 +86,8 @@ def loadingProgress(obj, collection, partition):
 @click.pass_obj
 def indexProgress(obj, collection, index):
     try:
+        validateParamsByCustomFunc(
+            obj.getTargetCollection, 'Collection Name Error!', collection)
         result = obj.showIndexBuildingProgress(collection, index)
     except Exception as e:
         click.echo(message=e, err=True)
@@ -98,6 +102,8 @@ def indexProgress(obj, collection, index):
 def load(obj, collection):
     """Load specified collection."""
     try:
+        validateParamsByCustomFunc(
+            obj.getTargetCollection, 'Collection Name Error!', collection)
         result = obj.loadCollection(collection)
     except Exception as e:
         click.echo(message=e, err=True)
@@ -112,6 +118,8 @@ def load(obj, collection):
 def release(obj, collection):
     """Release specified collection."""
     try:
+        validateParamsByCustomFunc(
+            obj.getTargetCollection, 'Collection Name Error!', collection)
         result = obj.releaseCollection(collection)
     except Exception as e:
         click.echo(message=e, err=True)
@@ -120,11 +128,11 @@ def release(obj, collection):
         click.echo(result)
 
 
-@cli.group('list')
+@cli.group('list', no_args_is_help=False)
 @click.pass_obj
 def listDetails(obj):
     """List collections, partitions and indexes."""
-    pass
+    obj.checkConnection()
 
 
 @listDetails.command()
@@ -146,6 +154,8 @@ def collections(obj, timeout, showLoaded):
 def partitions(obj, collection):
     """List all partitions of the specified collection."""
     try:
+        validateParamsByCustomFunc(
+            obj.getTargetCollection, 'Collection Name Error!', collection)
         click.echo(obj.listPartitions(collection))
     except Exception as e:
         click.echo(message=e, err=True)
@@ -157,16 +167,18 @@ def partitions(obj, collection):
 def indexes(obj, collection):
     """List all indexes of the specified collection."""
     try:
+        validateParamsByCustomFunc(
+            obj.getTargetCollection, 'Collection Name Error!', collection)
         click.echo(obj.listIndexes(collection))
     except Exception as e:
         click.echo(message=e, err=True)
 
 
-@cli.group('describe')
+@cli.group('describe', no_args_is_help=False)
 @click.pass_obj
 def describeDetails(obj):
     """Describe collection or partition."""
-    pass
+    obj.checkConnection()
 
 
 @describeDetails.command('collection')
@@ -189,16 +201,16 @@ def describePartition(obj, collectionName, partition):
     try:
         collection = obj.getTargetCollection(collectionName)
     except Exception as e:
-        click.echo(f"Error when get collection!\n{str(e)}")
+        click.echo(f"Error when getting collection by name!\n{str(e)}")
     else:
         click.echo(obj.getPartitionDetails(collection, partition))
 
 
-@cli.group('create')
+@cli.group('create', no_args_is_help=False)
 @click.pass_obj
 def createDetails(obj):
     """Create collection, partition and index."""
-    pass
+    obj.checkConnection()
 
 
 @createDetails.command('collection')
@@ -219,7 +231,6 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
     try:
         validateCollectionParameter(
             collectionName, primaryField, fields)
-        obj.checkConnection()
     except ParameterException as pe:
         click.echo("Error!\n{}".format(str(pe)))
     except ConnectException as ce:
@@ -267,7 +278,6 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
     try:
         validateIndexParameter(
             indexType, metricType, params)
-        obj.checkConnection()
     except ParameterException as pe:
         click.echo("Error!\n{}".format(str(pe)))
     except ConnectException as ce:
@@ -278,11 +288,11 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
         click.echo("Create index successfully!")
 
 
-@cli.group('delete')
+@cli.group('delete', no_args_is_help=False)
 @click.pass_obj
 def deleteObject(obj):
     """Delete specified collection, partition and index."""
-    pass
+    obj.checkConnection()
 
 
 @deleteObject.command('collection')
@@ -370,7 +380,24 @@ def search(obj):
     Conducts a vector similarity search with an optional boolean expression as filter.
 
     Example:
-        search -c test_collection_search -d '[[1.0,1.0]]' -a films -m L2 -l 2 -e film_id>0
+
+        Collection name: test_collection_search
+
+        The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection: [[1.0, 1.0]]
+
+        The vector field used to search of collection []: films
+
+        Metric type []: L2
+
+        The parameters of search(split by "," if multiple) []: 
+
+        The max number of returned record, also known as topk []: 2
+
+        The boolean expression used to filter attribute []: film_id > 0
+
+        The names of partitions to search(split by "," if multiple) []: 
+
+        timeout []: 
     """
     collectionName = click.prompt('Collection name')
     data = click.prompt(
@@ -449,6 +476,11 @@ def runCliPrompt():
                 # trap argparse error message
                 # print('error', SystemExit)
                 continue
+            except ParameterException as pe:
+                click.echo(message=f"{str(pe)}", err=True)
+            except ConnectException as ce:
+                click.echo(
+                    message="Connect to milvus Error!\nPlease check your connection.", err=True)
     except KeyboardInterrupt:
         sys.exit(0)
 

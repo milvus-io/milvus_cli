@@ -70,6 +70,12 @@ MetricTypes = [
     "TANIMOTO"
 ]
 
+def validateParamsByCustomFunc(customFunc, errMsg, *params):
+    try:
+        customFunc(*params)
+    except Exception as e:
+        raise ParameterException(f"{errMsg}")
+
 
 def validateCollectionParameter(collectionName, primaryField, fields):
     if not collectionName:
@@ -216,6 +222,8 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
     return result
 
 
+checkEmpty = lambda x: not not x
+
 class PyOrm(object):
     host = '127.0.0.1'
     port = 19530
@@ -272,7 +280,12 @@ class PyOrm(object):
 
     def getTargetCollection(self, collectionName):
         from pymilvus_orm import Collection
-        return Collection(collectionName)
+        try:
+            target = Collection(collectionName)
+        except Exception as e:
+            raise ParameterException('Collection error!\n')
+        else:
+            return target
 
     def loadCollection(self, collectionName):
         target = self.getTargetCollection(collectionName)
