@@ -452,7 +452,7 @@ class Completer(object):
         'connect': [],
         'create': ['collection', 'partition', 'index'],
         'delete': ['collection', 'partition', 'index'],
-        'list': ['collection', 'partition', 'index'],
+        'list': ['collections', 'partitions', 'indexes'],
         'load': [],
         'query': [],
         'release': [],
@@ -467,7 +467,6 @@ class Completer(object):
         self.createCompleteFuncs(self.CMDS_DICT)
 
     def createCompleteFuncs(self, cmdDict):
-        # print('createCompleteFuncs', cmdDict)
         for cmd in cmdDict:
             sub_cmds = cmdDict[cmd]
             complete_example = self.makeComplete(cmd, sub_cmds)
