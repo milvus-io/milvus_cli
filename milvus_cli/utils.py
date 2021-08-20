@@ -447,11 +447,12 @@ class Completer(object):
     #         'list', 'load', 'query', 'release', 'search', 'show', 'version' ]
     RE_SPACE = re.compile('.*\s+$', re.M)
     CMDS_DICT = {
-        'connect': [],
         'clear': [],
         'connect': [],
         'create': ['collection', 'partition', 'index'],
         'delete': ['collection', 'partition', 'index'],
+        'describe': ['collection', 'partition'],
+        'exit': [],
         'list': ['collections', 'partitions', 'indexes'],
         'load': [],
         'query': [],
