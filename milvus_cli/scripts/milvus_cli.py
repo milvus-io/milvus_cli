@@ -85,6 +85,7 @@ def loadingProgress(obj, collection, partition):
 # @click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection.', default='default')
 @click.pass_obj
 def indexProgress(obj, collection, index):
+    """Show # indexed entities vs. # total entities."""
     try:
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
