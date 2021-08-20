@@ -43,7 +43,7 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 1.0.* | 1.0.1 | x |
 | 1.1.* | 1.1.2 | x |
 | 2.0.0-RC1 | 2.0.0rc1 | x |
-| 2.0.0-RC2 | 2.0.0rc2 | 0.1.2 |
+| 2.0.0-RC2 | 2.0.0rc2 | 0.1.3 |
 | 2.0.0-RC4 | 2.0.0rc4 |  |
 
 ## Installation
