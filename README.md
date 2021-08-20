@@ -24,9 +24,9 @@
         * [`list indexes`](#list-indexes)
         * [`list partitions`](#list-partitions)
       - [`load`](#load)
-      - [`query` (prompt command)](#-query---prompt-command)
+      - [`query` (prompt command)](#-query-prompt-command)
       - [`release`](#release)
-      - [`search`(prompt command)](#-search--prompt-command)
+      - [`search`(prompt command)](#-search-prompt-command)
       - [`show`](#show)
         * [`show connection`](#show-connection)
         * [`show index_progress`](#show-index-progress)
@@ -409,7 +409,7 @@ Options:
   --help                 Show this message and exit.
 ```
 
-#### `search`(prompt command)
+#### `search` (prompt command)
 
 ```
 milvus_cli > search --help
