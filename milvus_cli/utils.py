@@ -1,9 +1,13 @@
 from tabulate import tabulate
+import readline
+import re
+import os
 
 
 def getPackageVersion():
     import pkg_resources  # part of setuptools
     return pkg_resources.require("milvus_cli")[0].version
+
 
 class ParameterException(Exception):
     "Custom Exception for parameters checking."
@@ -13,6 +17,7 @@ class ParameterException(Exception):
 
     def __str__(self):
         return str(self.msg)
+
 
 class ConnectException(Exception):
     "Custom Exception for milvus connection."
@@ -69,6 +74,7 @@ MetricTypes = [
     "HAMMING",
     "TANIMOTO"
 ]
+
 
 def validateParamsByCustomFunc(customFunc, errMsg, *params):
     try:
@@ -222,7 +228,8 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
     return result
 
 
-checkEmpty = lambda x: not not x
+def checkEmpty(x): return not not x
+
 
 class PyOrm(object):
     host = '127.0.0.1'
@@ -235,7 +242,7 @@ class PyOrm(object):
         self.port = port
         from pymilvus_orm import connections
         connections.connect(self.alias, host=self.host, port=self.port)
-    
+
     def checkConnection(self):
         from pymilvus_orm import list_collections
         try:
@@ -433,3 +440,111 @@ class PyOrm(object):
         collection.load()
         res = collection.query(**queryParameters)
         return f"- Query results: {res}"
+
+
+class Completer(object):
+    # COMMANDS = ['clear', 'connect', 'create', 'delete', 'describe', 'exit',
+    #         'list', 'load', 'query', 'release', 'search', 'show', 'version' ]
+    RE_SPACE = re.compile('.*\s+$', re.M)
+    CMDS_DICT = {
+        'connect': [],
+        'clear': [],
+        'connect': [],
+        'create': ['collection', 'partition', 'index'],
+        'delete': ['collection', 'partition', 'index'],
+        'list': ['collection', 'partition', 'index'],
+        'load': [],
+        'query': [],
+        'release': [],
+        'search': [],
+        'show': ['connection', 'index_progress', 'loading_progress'],
+        'version': [],
+    }
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.COMMANDS = list(self.CMDS_DICT.keys())
+        self.createCompleteFuncs(self.CMDS_DICT)
+
+    def createCompleteFuncs(self, cmdDict):
+        # print('createCompleteFuncs', cmdDict)
+        for cmd in cmdDict:
+            sub_cmds = cmdDict[cmd]
+            complete_example = self.makeComplete(cmd, sub_cmds)
+            setattr(self, 'complete_%s' % cmd, complete_example)
+
+    def makeComplete(self, cmd, sub_cmds):
+        def f_complete(args):
+            f"Completions for the {cmd} command."
+            if not args:
+                return self._complete_path('.')
+            if len(args) <= 1:
+                return self._complete_2nd_level(sub_cmds, args[-1])
+            return self._complete_path(args[-1])
+        return f_complete
+
+    def _listdir(self, root):
+        "List directory 'root' appending the path separator to subdirs."
+        res = []
+        for name in os.listdir(root):
+            path = os.path.join(root, name)
+            if os.path.isdir(path):
+                name += os.sep
+            res.append(name)
+        return res
+
+    def _complete_path(self, path=None):
+        "Perform completion of filesystem path."
+        if not path:
+            return self._listdir('.')
+        dirname, rest = os.path.split(path)
+        tmp = dirname if dirname else '.'
+        res = [os.path.join(dirname, p)
+               for p in self._listdir(tmp) if p.startswith(rest)]
+        # more than one match, or single match which does not exist (typo)
+        if len(res) > 1 or not os.path.exists(path):
+            return res
+        # resolved to a single directory, so return list of files below it
+        if os.path.isdir(path):
+            return [os.path.join(path, p) for p in self._listdir(path)]
+        # exact file match terminates this completion
+        return [path + ' ']
+
+    def _complete_2nd_level(self, SUB_COMMANDS=[], cmd=None):
+        if not cmd:
+            return [c + ' ' for c in SUB_COMMANDS]
+        res = [c for c in SUB_COMMANDS if c.startswith(cmd)]
+        if len(res) > 1 or not (cmd in SUB_COMMANDS):
+            return res
+        return [cmd + ' ']
+
+    # def complete_create(self, args):
+    #     "Completions for the 'create' command."
+    #     if not args:
+    #         return self._complete_path('.')
+    #     sub_cmds = ['collection', 'partition', 'index']
+    #     if len(args) <= 1:
+    #         return self._complete_2nd_level(sub_cmds, args[-1])
+    #     return self._complete_path(args[-1])
+
+    def complete(self, text, state):
+        "Generic readline completion entry point."
+        buffer = readline.get_line_buffer()
+        line = readline.get_line_buffer().split()
+        # show all commands
+        if not line:
+            return [c + ' ' for c in self.COMMANDS][state]
+        # account for last argument ending in a space
+        if self.RE_SPACE.match(buffer):
+            line.append('')
+        # resolve command to the implementation function
+        cmd = line[0].strip()
+        if cmd in self.COMMANDS:
+            impl = getattr(self, 'complete_%s' % cmd)
+            args = line[1:]
+            if args:
+                return (impl(args) + [None])[state]
+            return [cmd + ' '][state]
+        results = [
+            c + ' ' for c in self.COMMANDS if c.startswith(cmd)] + [None]
+        return results[state]

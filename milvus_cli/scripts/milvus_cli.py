@@ -5,8 +5,9 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import PyOrm, getPackageVersion, checkEmpty, ParameterException, ConnectException, validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
-
+from utils import ParameterException, ConnectException
+from utils import getPackageVersion, validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
+from utils import PyOrm, Completer
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -466,10 +467,24 @@ def query(obj):
         click.echo(obj.query(collectionName, queryParameters))
 
 
+@cli.command('exit')
+def quitapp():
+    """Exit the CLI."""
+    global quitapp
+    quitapp = True
+
+
+quitapp = False  # global flag
+comp = Completer()
+
+
 def runCliPrompt():
     try:
-        while True:
+        while not quitapp:
             import readline
+            readline.set_completer_delims(' \t\n;')
+            readline.parse_and_bind("tab: complete")
+            readline.set_completer(comp.complete)
             astr = input('milvus_cli > ')
             try:
                 cli(astr.split())
