@@ -51,7 +51,7 @@ def clear():
 @click.pass_obj
 def show(obj):
     """Show connection, loading_progress and index_progress."""
-    obj.checkConnection()
+    pass
 
 
 @show.command()
@@ -59,6 +59,7 @@ def show(obj):
 @click.pass_obj
 def connection(obj, showAll):
     """Show current/all connection details"""
+    obj.checkConnection()
     click.echo(obj.showConnection(showAll=showAll))
 
 
@@ -70,6 +71,7 @@ def connection(obj, showAll):
 def loadingProgress(obj, collection, partition):
     """Show #loaded entities vs #total entities."""
     try:
+        obj.checkConnection()
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
         result = obj.showCollectionLoadingProgress(collection, partition)
@@ -88,6 +90,7 @@ def loadingProgress(obj, collection, partition):
 def indexProgress(obj, collection, index):
     """Show # indexed entities vs. # total entities."""
     try:
+        obj.checkConnection()
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
         result = obj.showIndexBuildingProgress(collection, index)
@@ -134,7 +137,7 @@ def release(obj, collection):
 @click.pass_obj
 def listDetails(obj):
     """List collections, partitions and indexes."""
-    obj.checkConnection()
+    pass
 
 
 @listDetails.command()
@@ -145,6 +148,7 @@ def listDetails(obj):
 def collections(obj, timeout, showLoaded):
     """List all collections."""
     try:
+        obj.checkConnection()
         click.echo(obj.listCollections(timeout, showLoaded))
     except Exception as e:
         click.echo(message=e, err=True)
@@ -156,6 +160,7 @@ def collections(obj, timeout, showLoaded):
 def partitions(obj, collection):
     """List all partitions of the specified collection."""
     try:
+        obj.checkConnection()
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
         click.echo(obj.listPartitions(collection))
@@ -169,6 +174,7 @@ def partitions(obj, collection):
 def indexes(obj, collection):
     """List all indexes of the specified collection."""
     try:
+        obj.checkConnection()
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
         click.echo(obj.listIndexes(collection))
@@ -180,7 +186,7 @@ def indexes(obj, collection):
 @click.pass_obj
 def describeDetails(obj):
     """Describe collection or partition."""
-    obj.checkConnection()
+    pass
 
 
 @describeDetails.command('collection')
@@ -189,6 +195,7 @@ def describeDetails(obj):
 def describeCollection(obj, collection):
     """Describe collection."""
     try:
+        obj.checkConnection()
         click.echo(obj.getCollectionDetails(collection))
     except Exception as e:
         click.echo(message=e, err=True)
@@ -201,6 +208,7 @@ def describeCollection(obj, collection):
 def describePartition(obj, collectionName, partition):
     """Describe partition."""
     try:
+        obj.checkConnection()
         collection = obj.getTargetCollection(collectionName)
     except Exception as e:
         click.echo(f"Error when getting collection by name!\n{str(e)}")
@@ -212,7 +220,7 @@ def describePartition(obj, collectionName, partition):
 @click.pass_obj
 def createDetails(obj):
     """Create collection, partition and index."""
-    obj.checkConnection()
+    pass
 
 
 @createDetails.command('collection')
@@ -231,6 +239,7 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
       create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year -f embedding:FLOAT_VECTOR:128 -p id -d 'desc of collection'
     """
     try:
+        obj.checkConnection()
         validateCollectionParameter(
             collectionName, primaryField, fields)
     except ParameterException as pe:
@@ -253,6 +262,7 @@ def createPartition(obj, collectionName, description, partition):
     Create partition.
     """
     try:
+        obj.checkConnection()
         obj.getTargetCollection(collectionName)
     except Exception as e:
         click.echo(f"Error occurred when get collection by name!\n{str(e)}")
@@ -278,6 +288,7 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
       create index -n film -f films -t IVF_FLAT -m L2 -p nlist:128
     """
     try:
+        obj.checkConnection()
         validateIndexParameter(
             indexType, metricType, params)
     except ParameterException as pe:
@@ -294,7 +305,7 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
 @click.pass_obj
 def deleteObject(obj):
     """Delete specified collection, partition and index."""
-    obj.checkConnection()
+    pass
 
 
 @deleteObject.command('collection')
@@ -310,6 +321,7 @@ def deleteCollection(obj, timeout, collection):
     if not click.confirm('Do you want to continue?'):
         return
     try:
+        obj.checkConnection()
         obj.getTargetCollection(collection)
     except Exception as e:
         click.echo(f"Error occurred when get collection by name!\n{str(e)}")
@@ -333,6 +345,7 @@ def deletePartition(obj, collectionName, timeout, partition):
     if not click.confirm('Do you want to continue?'):
         return
     try:
+        obj.checkConnection()
         obj.getTargetCollection(collectionName)
     except Exception as e:
         click.echo(f"Error occurred when get collection by name!\n{str(e)}")
@@ -355,6 +368,7 @@ def deleteIndex(obj, collectionName, timeout):
     if not click.confirm('Do you want to continue?'):
         return
     try:
+        obj.checkConnection()
         obj.getTargetCollection(collectionName)
     except Exception as e:
         click.echo(f"Error occurred when get collection by name!\n{str(e)}")
