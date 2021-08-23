@@ -12,11 +12,22 @@ from utils import PyOrm, Completer
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
 
-@click.group(no_args_is_help=False)
+@click.group(no_args_is_help=False, add_help_option=False, invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
     """Milvus CLI"""
     ctx.obj = PyOrm()
+
+
+def print_help_msg(command):
+    with click.Context(command) as ctx:
+        click.echo(command.get_help(ctx))
+
+
+@cli.command()
+def help():
+    """Show help messages."""
+    click.echo(print_help_msg(cli))
 
 
 @cli.command(no_args_is_help=False)

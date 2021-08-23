@@ -453,6 +453,7 @@ class Completer(object):
         'delete': ['collection', 'partition', 'index'],
         'describe': ['collection', 'partition'],
         'exit': [],
+        'help': [],
         'list': ['collections', 'partitions', 'indexes'],
         'load': [],
         'query': [],
