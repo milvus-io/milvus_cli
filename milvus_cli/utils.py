@@ -75,6 +75,21 @@ MetricTypes = [
     "TANIMOTO"
 ]
 
+DataTypeByNum = {
+    0: 'NONE',
+    1: 'BOOL',
+    2: 'INT8',
+    3: 'INT16',
+    4: 'INT32',
+    5: 'INT64',
+    10: 'FLOAT',
+    11: 'DOUBLE',
+    20: 'STRING',
+    100: 'BINARY_VECTOR',
+    101: 'FLOAT_VECTOR',
+    999: 'UNKNOWN',
+}
+
 
 def validateParamsByCustomFunc(customFunc, errMsg, *params):
     try:
@@ -328,10 +343,17 @@ class PyOrm(object):
         schema = target.schema
         partitions = target.partitions
         indexes = target.indexes
-        fieldSchemaDetails = "\n  - " + "\n  - ".join(map(lambda x: "{} *primary".format(
-            x.name) if x.is_primary else x.name, schema.fields))
-        schemaDetails = """Description: {}\nFields:{}""".format(
-            schema.description, fieldSchemaDetails)
+        fieldSchemaDetails = ''
+        for fieldSchema in schema.fields:
+            _name = f"{'*' if fieldSchema.is_primary else ''}{fieldSchema.name}"
+            _type = DataTypeByNum[fieldSchema.dtype]
+            _desc = fieldSchema.description
+            _params = fieldSchema.params
+            _dim = _params.get('dim')
+            _params_desc = f"dim: {_dim}" if _dim else ""
+            fieldSchemaDetails += f"\n - {_name} {_type} {_params_desc} {_desc}"
+        schemaDetails = """Description: {}\n\nAuto ID: {}\n\nFields(* is the primary field):{}""".format(
+            schema.description, schema.auto_id, fieldSchemaDetails)
         partitionDetails = "  - " + \
             "\n- ".join(map(lambda x: x.name, partitions))
         indexesDetails = "  - " + \
@@ -440,7 +462,10 @@ class PyOrm(object):
         collection.load()
         res = collection.query(**queryParameters)
         return f"- Query results: {res}"
-
+    
+    def insert(self, collectionName, data, partitionName=None, timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        collection.insert(data, partition_name=partitionName, timeout=timeout)
 
 class Completer(object):
     # COMMANDS = ['clear', 'connect', 'create', 'delete', 'describe', 'exit',
@@ -461,6 +486,7 @@ class Completer(object):
         'search': [],
         'show': ['connection', 'index_progress', 'loading_progress'],
         'version': [],
+        'import': [],
     }
 
     def __init__(self) -> None:
@@ -479,7 +505,7 @@ class Completer(object):
             f"Completions for the {cmd} command."
             if not args:
                 return self._complete_path('.')
-            if len(args) <= 1:
+            if len(args) <= 1 and not cmd == 'import':
                 return self._complete_2nd_level(sub_cmds, args[-1])
             return self._complete_path(args[-1])
         return f_complete
@@ -549,3 +575,47 @@ class Completer(object):
         results = [
             c + ' ' for c in self.COMMANDS if c.startswith(cmd)] + [None]
         return results[state]
+
+
+def readCsvFile(path='', withCol=True):
+    if not path or not path[-4:] == '.csv':
+        raise ParameterException('Path is empty or target file is not .csv')
+    from csv import reader
+    from json import JSONDecodeError
+    import click
+    try:
+        result = {'columns': [], 'data': []}
+        with click.open_file(path, 'r') as csv_file:
+            csv_reader = reader(csv_file, delimiter=',')
+            line_count = 0
+            # click.echo("Reading csv file...")
+            with click.progressbar(csv_reader, label='Reading csv file...', show_percent=True) as bar:
+                # for row in csv_reader:
+                for row in bar:
+                    if withCol and line_count == 0:
+                        # click.echo(f'Column names are {row}')
+                        result['columns'] = row
+                        line_count += 1
+                    else:
+                        formatRowForData(row, result['data'])
+                        line_count += 1
+            click.echo(f'''Column names are {result['columns']}''')
+            click.echo(f'Processed {line_count} lines.')
+    except FileNotFoundError as fe:
+        raise ParameterException(f'FileNotFoundError {str(fe)}')
+    except UnicodeDecodeError as ue:
+        raise ParameterException(f'UnicodeDecodeError {str(ue)}')
+    except JSONDecodeError as je:
+        raise ParameterException(f'JSONDecodeError {str(je)}')
+    else:
+        return result
+
+
+def formatRowForData(row=[], data=[]):
+    from json import loads
+    if not data:
+        for _in in range(len(row)):
+            data.append([])
+    for idx, val in enumerate(row):
+        formattedVal = loads(val)
+        data[idx].append(formattedVal)

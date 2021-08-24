@@ -5,9 +5,10 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import ParameterException, ConnectException
-from utils import getPackageVersion, validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 from utils import PyOrm, Completer
+from utils import getPackageVersion, readCsvFile
+from utils import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
+from utils import ParameterException, ConnectException
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -490,6 +491,41 @@ def query(obj):
         click.echo("Error!\n{}".format(str(ce)))
     else:
         click.echo(obj.query(collectionName, queryParameters))
+
+
+@cli.command('import')
+@click.option('-c', '--collection', 'collectionName', help='The name of collection to be imported.', default=None)
+@click.option('-p', '--partition', 'partitionName', help='The partition name which the data will be inserted to, if partition name is not passed, then the data will be inserted to “_default” partition.', default=None)
+@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.argument('path')
+@click.pass_obj
+def importData(obj, collectionName, partitionName, timeout, path):
+    """
+    Import data.
+
+    Example:
+
+        milvus_cli > import '/Users/test/Downloads/import_test.csv' -c test_collection_insert
+
+        Reading csv file...  [####################################]  100%
+
+        Column names are ['film_id', 'films']
+
+        Processed 50001 lines.
+
+        Import successfully.
+    """
+    try:
+        obj.checkConnection()
+        validateParamsByCustomFunc(
+            obj.getTargetCollection, 'Collection Name Error!', collectionName)
+        result = readCsvFile(path.replace('"', '').replace("'", ""))
+        data = result['data']
+        obj.insert(collectionName, data, partitionName, timeout)
+    except Exception as e:
+        click.echo("Error!\n{}".format(str(e)))
+    else:
+        click.echo("Import successfully.")
 
 
 @cli.command('exit')
