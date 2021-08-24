@@ -18,6 +18,7 @@
       - [`describe`](#describe)
         * [`describe collection`](#describe-collection)
         * [`describe partition`](#describe-partition)
+      - [`exit`](#exit)
       - [`help`](#help)
       - [`import`](#import)
       - [`list`](#list)
@@ -300,6 +301,18 @@ Options:
   -c, --collection TEXT  The name of collection.
   -p, --partition TEXT   The name of partition.
   --help                 Show this message and exit.
+```
+
+#### `exit`
+
+```
+milvus_cli > exit --help
+Usage: milvus_cli.py exit [OPTIONS]
+
+  Exit the CLI.
+
+Options:
+  --help  Show this message and exit.
 ```
 
 #### `help`
