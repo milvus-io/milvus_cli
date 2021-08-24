@@ -5,9 +5,8 @@
   * [Installation](#installation)
   * [Usage](#usage)
     + [commands](#commands)
-      - [`connect`](#connect)
       - [`clear`](#clear)
-      - [`connect`](#connect-1)
+      - [`connect`](#connect)
       - [`create`](#create)
         * [`create collection`](#create-collection)
         * [`create partition`](#create-partition)
@@ -19,6 +18,8 @@
       - [`describe`](#describe)
         * [`describe collection`](#describe-collection)
         * [`describe partition`](#describe-partition)
+      - [`help`](#help)
+      - [`import`](#import)
       - [`list`](#list)
         * [`list collections`](#list-collections)
         * [`list indexes`](#list-indexes)
@@ -59,32 +60,6 @@ Run `milvus_cli`
 
 ### commands
 
-#### `connect`
-
-```
-milvus_cli > --help
-Usage: milvus_cli.py [OPTIONS] COMMAND [ARGS]...
-
-  Milvus CLI
-
-Options:
-  --help  Show this message and exit.
-
-Commands:
-  clear     Clear screen.
-  connect   Connect to Milvus.
-  create    Create collection, partition and index.
-  delete    Delete specified collection, partition and index.
-  describe  Describe collection or partition.
-  list      List collections, partitions and indexes.
-  load      Load specified collection.
-  query     Query with a set of criteria, and results in a list of...
-  release   Release specified collection.
-  search    Conducts a vector similarity search with an optional boolean...
-  show      Show connection, loading_progress and index_progress.
-  version   Get Milvus CLI version.
-```
-
 #### `clear`
 
 ```
@@ -104,6 +79,10 @@ milvus_cli > connect --help
 Usage: milvus_cli.py connect [OPTIONS]
 
   Connect to Milvus.
+
+  Example:
+
+      milvus_cli > connect -h 127.0.0.1 -p 19530 -a default
 
 Options:
   -a, --alias TEXT    Milvus link alias name, default is `default`.
@@ -158,12 +137,18 @@ Options:
 
 ```
 milvus_cli > create partition --help
-Usage: milvus_cli.py create partition [OPTIONS] PARTITION
+Usage: milvus_cli.py create partition [OPTIONS]
 
   Create partition.
 
+  Example:
+
+      milvus_cli > create partition -c test_collection_insert -p partition2 -d
+      test_add_partition
+
 Options:
   -c, --collection TEXT   Collection name.
+  -p, --partition TEXT    The name of partition.
   -d, --description TEXT  Partition description.
   --help                  Show this message and exit.
 ```
@@ -213,11 +198,16 @@ Commands:
 
 ```
 milvus_cli > delete collection --help
-Usage: milvus_cli.py delete collection [OPTIONS] COLLECTION
+Usage: milvus_cli.py delete collection [OPTIONS]
 
   Drops the collection together with its index files.
 
+  Example:
+
+      milvus_cli > delete collection -c test_collection_query
+
 Options:
+  -c, --collection TEXT  The name of collection to be deleted.
   -t, --timeout INTEGER  An optional duration of time in seconds to allow for
                          the RPC. If timeout is set to None, the client keeps
                          waiting until the server responds or an error occurs.
@@ -228,12 +218,17 @@ Options:
 
 ```
 milvus_cli > delete partition --help
-Usage: milvus_cli.py delete partition [OPTIONS] PARTITION
+Usage: milvus_cli.py delete partition [OPTIONS]
 
   Drop the partition and its corresponding index files.
 
+  Example:
+
+      milvus_cli > delete partition -c test_collection_insert -p partition2
+
 Options:
   -c, --collection TEXT  Collection name
+  -p, --partition TEXT   The name of partition.
   -t, --timeout INTEGER  An optional duration of time in seconds to allow for
                          the RPC. If timeout is set to None, the client keeps
                          waiting until the server responds or an error occurs.
@@ -276,24 +271,92 @@ Commands:
 
 ```
 milvus_cli > describe collection --help
-Usage: milvus_cli.py describe collection [OPTIONS] COLLECTION
+Usage: milvus_cli.py describe collection [OPTIONS]
 
   Describe collection.
 
+  Example:
+
+      milvus_cli > describe collection -c test_collection_insert
+
 Options:
-  --help  Show this message and exit.
+  -c, --collection TEXT  The name of collection.
+  --help                 Show this message and exit.
 ```
 
 ##### `describe partition`
 
 ```
 milvus_cli > describe partition --help
-Usage: milvus_cli.py describe partition [OPTIONS] PARTITION
+Usage: milvus_cli.py describe partition [OPTIONS]
 
   Describe partition.
 
+  Example:
+
+      milvus_cli > describe partition -c test_collection_insert -p _default
+
 Options:
   -c, --collection TEXT  The name of collection.
+  -p, --partition TEXT   The name of partition.
+  --help                 Show this message and exit.
+```
+
+#### `help`
+
+```
+milvus_cli > help
+Usage:  [OPTIONS] COMMAND [ARGS]...
+
+  Milvus CLI
+
+Commands:
+  clear     Clear screen.
+  connect   Connect to Milvus.
+  create    Create collection, partition and index.
+  delete    Delete specified collection, partition and index.
+  describe  Describe collection or partition.
+  exit      Exit the CLI.
+  help      Show help messages.
+  import    Import data.
+  list      List collections, partitions and indexes.
+  load      Load specified collection.
+  query     Query with a set of criteria, and results in a list of...
+  release   Release specified collection.
+  search    Conducts a vector similarity search with an optional boolean...
+  show      Show connection, loading_progress and index_progress.
+  version   Get Milvus CLI version.
+```
+
+#### `import`
+
+```
+milvus_cli > import --help
+Usage: milvus_cli.py import [OPTIONS] PATH
+
+  Import data.
+
+  Example:
+
+      milvus_cli > import '/Users/test/Downloads/import_test.csv' -c
+      test_collection_insert
+
+      Reading csv file...  [####################################]  100%
+
+      Column names are ['film_id', 'films']
+
+      Processed 50001 lines.
+
+      Import successfully.
+
+Options:
+  -c, --collection TEXT  The name of collection to be imported.
+  -p, --partition TEXT   The partition name which the data will be inserted
+                         to, if partition name is not passed, then the data
+                         will be inserted to “_default” partition.
+  -t, --timeout FLOAT    An optional duration of time in seconds to allow for
+                         the RPC. If timeout is set to None, the client keeps
+                         waiting until the server responds or an error occurs.
   --help                 Show this message and exit.
 ```
 
