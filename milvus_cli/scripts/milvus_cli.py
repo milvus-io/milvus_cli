@@ -37,7 +37,13 @@ def help():
 @click.option('-p', '--port', 'port', help="Port, default is `19530`.", default=19530, type=int)
 @click.pass_obj
 def connect(obj, alias, host, port):
-    """Connect to Milvus."""
+    """
+    Connect to Milvus.
+
+    Example:
+
+        milvus_cli > connect -h 127.0.0.1 -p 19530 -a default
+    """
     try:
         obj.connect(alias, host, port)
     except Exception as e:
@@ -202,10 +208,16 @@ def describeDetails(obj):
 
 
 @describeDetails.command('collection')
-@click.argument('collection')
+@click.option('-c', '--collection', 'collection', help='The name of collection.', default='')
 @click.pass_obj
 def describeCollection(obj, collection):
-    """Describe collection."""
+    """
+    Describe collection.
+
+    Example:
+
+        milvus_cli > describe collection -c test_collection_insert
+    """
     try:
         obj.checkConnection()
         click.echo(obj.getCollectionDetails(collection))
@@ -215,10 +227,16 @@ def describeCollection(obj, collection):
 
 @describeDetails.command('partition')
 @click.option('-c', '--collection', 'collectionName', help='The name of collection.', default='')
-@click.argument('partition')
+@click.option('-p', '--partition', 'partition', help='The name of partition.', default=None)
 @click.pass_obj
 def describePartition(obj, collectionName, partition):
-    """Describe partition."""
+    """
+    Describe partition.
+    
+    Example:
+
+        milvus_cli > describe partition -c test_collection_insert -p _default
+    """
     try:
         obj.checkConnection()
         collection = obj.getTargetCollection(collectionName)
@@ -266,12 +284,16 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
 
 @createDetails.command('partition')
 @click.option('-c', '--collection', 'collectionName', help='Collection name.', default='')
+@click.option('-p', '--partition', 'partition', help='The name of partition.', default=None)
 @click.option('-d', '--description', 'description', help='Partition description.', default='')
-@click.argument('partition')
 @click.pass_obj
-def createPartition(obj, collectionName, description, partition):
+def createPartition(obj, collectionName, partition, description):
     """
     Create partition.
+
+    Example:
+
+        milvus_cli > create partition -c test_collection_insert -p partition2 -d test_add_partition
     """
     try:
         obj.checkConnection()
@@ -321,12 +343,16 @@ def deleteObject(obj):
 
 
 @deleteObject.command('collection')
+@click.option('-c', '--collection', 'collectionName', help='The name of collection to be deleted.', default='')
 @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
-@click.argument('collection')
 @click.pass_obj
-def deleteCollection(obj, timeout, collection):
+def deleteCollection(obj, collectionName, timeout):
     """
     Drops the collection together with its index files.
+
+    Example:
+
+        milvus_cli > delete collection -c test_collection_query
     """
     click.echo(
         "Warning!\nYou are trying to delete the collection with data. This action cannot be undone!\n")
@@ -334,23 +360,27 @@ def deleteCollection(obj, timeout, collection):
         return
     try:
         obj.checkConnection()
-        obj.getTargetCollection(collection)
+        obj.getTargetCollection(collectionName)
     except Exception as e:
         click.echo(f"Error occurred when get collection by name!\n{str(e)}")
     else:
-        result = obj.dropCollection(collection, timeout)
+        result = obj.dropCollection(collectionName, timeout)
         click.echo("Drop collection successfully!") if not result else click.echo(
             "Drop collection failed!")
 
 
 @deleteObject.command('partition')
 @click.option('-c', '--collection', 'collectionName', help='Collection name', default=None)
+@click.option('-p', '--partition', 'partition', help='The name of partition.', default=None)
 @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
-@click.argument('partition')
 @click.pass_obj
-def deletePartition(obj, collectionName, timeout, partition):
+def deletePartition(obj, collectionName, partition, timeout):
     """
     Drop the partition and its corresponding index files.
+
+    Example:
+
+        milvus_cli > delete partition -c test_collection_insert -p partition2
     """
     click.echo(
         "Warning!\nYou are trying to delete the partition with data. This action cannot be undone!\n")
