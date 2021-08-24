@@ -479,6 +479,7 @@ class Completer(object):
         'describe': ['collection', 'partition'],
         'exit': [],
         'help': [],
+        'import': [],
         'list': ['collections', 'partitions', 'indexes'],
         'load': [],
         'query': [],
@@ -486,7 +487,6 @@ class Completer(object):
         'search': [],
         'show': ['connection', 'index_progress', 'loading_progress'],
         'version': [],
-        'import': [],
     }
 
     def __init__(self) -> None:
