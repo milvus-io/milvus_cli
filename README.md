@@ -19,6 +19,8 @@
       - [`describe`](#describe)
         * [`describe collection`](#describe-collection)
         * [`describe partition`](#describe-partition)
+      - [`help`](#help)
+      - [`import`](#import)
       - [`list`](#list)
         * [`list collections`](#list-collections)
         * [`list indexes`](#list-indexes)
@@ -294,6 +296,64 @@ Usage: milvus_cli.py describe partition [OPTIONS] PARTITION
 
 Options:
   -c, --collection TEXT  The name of collection.
+  --help                 Show this message and exit.
+```
+
+#### `help`
+
+```
+milvus_cli > help
+Usage:  [OPTIONS] COMMAND [ARGS]...
+
+  Milvus CLI
+
+Commands:
+  clear     Clear screen.
+  connect   Connect to Milvus.
+  create    Create collection, partition and index.
+  delete    Delete specified collection, partition and index.
+  describe  Describe collection or partition.
+  exit      Exit the CLI.
+  help      Show help messages.
+  import    Import data.
+  list      List collections, partitions and indexes.
+  load      Load specified collection.
+  query     Query with a set of criteria, and results in a list of...
+  release   Release specified collection.
+  search    Conducts a vector similarity search with an optional boolean...
+  show      Show connection, loading_progress and index_progress.
+  version   Get Milvus CLI version.
+```
+
+#### `import`
+
+```
+milvus_cli > import --help
+Usage: milvus_cli.py import [OPTIONS] PATH
+
+  Import data.
+
+  Example:
+
+      milvus_cli > import '/Users/test/Downloads/import_test.csv' -c
+      test_collection_insert
+
+      Reading csv file...  [####################################]  100%
+
+      Column names are ['film_id', 'films']
+
+      Processed 50001 lines.
+
+      Import successfully.
+
+Options:
+  -c, --collection TEXT  The name of collection to be imported.
+  -p, --partition TEXT   The partition name which the data will be inserted
+                         to, if partition name is not passed, then the data
+                         will be inserted to “_default” partition.
+  -t, --timeout FLOAT    An optional duration of time in seconds to allow for
+                         the RPC. If timeout is set to None, the client keeps
+                         waiting until the server responds or an error occurs.
   --help                 Show this message and exit.
 ```
 
