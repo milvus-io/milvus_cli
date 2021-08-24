@@ -558,6 +558,9 @@ def runCliPrompt():
             except ConnectException as ce:
                 click.echo(
                     message="Connect to milvus Error!\nPlease check your connection.", err=True)
+            except Exception as e:
+                click.echo(
+                    message=f"Error occurred!\n{str(e)}", err=True)
     except KeyboardInterrupt:
         sys.exit(0)
 
