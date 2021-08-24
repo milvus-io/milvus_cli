@@ -587,13 +587,13 @@ def readCsvFile(path='', withCol=True):
         result = {'columns': [], 'data': []}
         with click.open_file(path, 'r') as csv_file:
             csv_reader = reader(csv_file, delimiter=',')
+            # For progressbar, transform it to list.
+            rows = list(csv_reader)
             line_count = 0
-            # click.echo("Reading csv file...")
-            with click.progressbar(csv_reader, label='Reading csv file...', show_percent=True) as bar:
+            with click.progressbar(rows, label='Reading csv file...', show_percent=True) as bar:
                 # for row in csv_reader:
                 for row in bar:
                     if withCol and line_count == 0:
-                        # click.echo(f'Column names are {row}')
                         result['columns'] = row
                         line_count += 1
                     else:
@@ -611,8 +611,10 @@ def readCsvFile(path='', withCol=True):
         return result
 
 
+# For readCsvFile formatting data.
 def formatRowForData(row=[], data=[]):
     from json import loads
+    # init data with empty list
     if not data:
         for _in in range(len(row)):
             data.append([])
