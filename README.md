@@ -120,7 +120,7 @@ Usage: milvus_cli.py create collection [OPTIONS]
   Example:
 
     create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year
-    -f embedding:FLOAT_VECTOR:128 -p id -d 'desc of collection'
+    -f embedding:FLOAT_VECTOR:128 -p id -d 'desc_with_no_space'
 
 Options:
   -n, --name TEXT                 Collection name to be created.
@@ -164,7 +164,7 @@ Usage: milvus_cli.py create index [OPTIONS]
 
   Example:
 
-    create index -n film -f films -t IVF_FLAT -m L2 -p nlist:128
+    create index -c film -f films -t IVF_FLAT -m L2 -p nlist:128
 
 Options:
   -c, --collection TEXT    Collection name.
@@ -460,7 +460,7 @@ Usage: milvus_cli.py query [OPTIONS]
 
       Collection name: test_collection_query
 
-      The query expression: film_id in [ 0, 1 ]
+      The query expression(field_name in [x,y]): film_id in [ 0, 1 ]
 
       Name of partitions that contain entities(split by "," if multiple) []:
 
@@ -498,9 +498,9 @@ Usage: milvus_cli.py search [OPTIONS]
 
       Collection name: test_collection_search
 
-      The vectors of search data, the length of data is number of query (nq),
+      The vectors of search data(the length of data is number of query (nq),
       the dim of every vector in data must be equal to vector field’s of
-      collection: [[1.0, 1.0]]
+      collection): [[1.0, 1.0]]
 
       The vector field used to search of collection []: films
 
