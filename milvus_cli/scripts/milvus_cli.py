@@ -266,7 +266,7 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
 
     Example:
 
-      create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year -f embedding:FLOAT_VECTOR:128 -p id -d 'desc of collection'
+      create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year -f embedding:FLOAT_VECTOR:128 -p id -d 'desc_with_no_space'
     """
     try:
         obj.checkConnection()
@@ -319,7 +319,7 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
 
     Example:
 
-      create index -n film -f films -t IVF_FLAT -m L2 -p nlist:128
+      create index -c film -f films -t IVF_FLAT -m L2 -p nlist:128
     """
     try:
         obj.checkConnection()
@@ -421,18 +421,7 @@ def deleteIndex(obj, collectionName, timeout):
 
 
 @cli.command()
-# @click.option('-c', '--collection', 'collectionName', help='Collection name.', default=None)
-# @click.option('-d', '--data', 'data', help='The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection.', default=None)
-# @click.option('-a', '--anns_field', 'annsField', help='The vector field used to search of collection.', default=None)
-# @click.option('-m', '--metric_type', 'metricType', help='The parameters of search.', default=None)
-# @click.option('-p', '--params', 'params', help='The parameters of search.', default=None, multiple=True)
-# @click.option('-l', '--limit', 'limit', help='The max number of returned record, also known as topk.', default=None, type=int)
-# @click.option('-e', '--expr', 'expr', help='The boolean expression used to filter attribute.', default=None)
-# @click.option('-n', '--partition_names', 'partitionNames', help='The names of partitions to search.', default=None, multiple=True)
-# # @click.option('-c', '--output_fields', 'collectionName', help='The fields to return in the search result, not supported now.', default=None)
-# @click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=float)
 @click.pass_obj
-# def search(obj, collectionName, data, annsField, metricType, params, limit, expr, partitionNames, timeout):
 def search(obj):
     """
     Conducts a vector similarity search with an optional boolean expression as filter.
@@ -459,7 +448,7 @@ def search(obj):
     """
     collectionName = click.prompt('Collection name')
     data = click.prompt(
-        'The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection')
+        'The vectors of search data(the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection)')
     annsField = click.prompt(
         'The vector field used to search of collection', default='')
     metricType = click.prompt('Metric type', default='')
@@ -496,7 +485,7 @@ def query(obj):
 
         Collection name: test_collection_query
 
-        The query expression: film_id in [ 0, 1 ]
+        The query expression(field_name in [x,y]): film_id in [ 0, 1 ]
 
         Name of partitions that contain entities(split by "," if multiple) []: 
 
@@ -505,7 +494,7 @@ def query(obj):
         timeout []: 
     """
     collectionName = click.prompt('Collection name')
-    expr = click.prompt('The query expression')
+    expr = click.prompt('The query expression(field_name in [x,y])')
     partitionNames = click.prompt(
         'Name of partitions that contain entities(split by "," if multiple)', default='')
     outputFields = click.prompt(

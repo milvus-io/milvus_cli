@@ -228,6 +228,8 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
     result = {}
     if not expr:
         raise ParameterException('expr is empty!')
+    if ' in ' not in expr:
+        raise ParameterException('expr only accepts "<field_name> in [<min>,<max>]"!')
     result['expr'] = expr
     if not outputFields:
         result['output_fields'] = None
