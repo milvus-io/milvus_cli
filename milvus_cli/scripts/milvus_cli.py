@@ -559,6 +559,10 @@ comp = Completer()
 
 
 def runCliPrompt():
+    args = sys.argv
+    if args and (args[-1] == '--version'):
+        print(f"Milvus Cli v{getPackageVersion()}")
+        return
     try:
         while not quitapp:
             import readline
