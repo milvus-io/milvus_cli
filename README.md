@@ -49,7 +49,7 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 2.0.0-RC4 | 2.0.0rc4 | 0.1.4 |
 
 
-![Overview](./examples/termtosvg/overview.svg)
+![Overview](./examples/termtosvg/overview2.svg)
 
 ## Installation
 
@@ -375,8 +375,6 @@ Options:
                          waiting until the server responds or an error occurs.
   --help                 Show this message and exit.
 ```
-
-![Import](./examples/termtosvg/import.svg)
 
 #### `list`
 
