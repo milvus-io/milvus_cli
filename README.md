@@ -1,4 +1,4 @@
-# milvus_cli
+# milvus_cli🚀
 
 - [milvus_cli](#milvus-cli)
   * [Overview](#overview)
@@ -48,12 +48,15 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 2.0.0-RC2 | 2.0.0rc2 | 0.1.3 |
 | 2.0.0-RC4 | 2.0.0rc4 | 0.1.4 |
 
+
+![Overview](./examples/termtosvg/overview.svg)
+
 ## Installation
 
 1. Install `Python` >= 3.8.5
 2. Install `pip`
 3. Download [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) or `git clone https://github.com/milvus-io/milvus_cli.git`
-4. Run `python -m pip install --editable .`
+4. Enter the direction(`cd milvus_cli/`) and run `python -m pip install --editable .`
 
 ## Usage
 
@@ -372,6 +375,8 @@ Options:
                          waiting until the server responds or an error occurs.
   --help                 Show this message and exit.
 ```
+
+![Import](./examples/termtosvg/import.svg)
 
 #### `list`
 
