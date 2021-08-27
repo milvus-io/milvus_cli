@@ -582,17 +582,21 @@ class Completer(object):
 def readCsvFile(path='', withCol=True):
     if not path or not path[-4:] == '.csv':
         raise ParameterException('Path is empty or target file is not .csv')
+    fileSize = os.stat(path).st_size
+    if fileSize >= 512000000:
+        raise ParameterException('File is too large! Only allow csv files less than 512MB.')
     from csv import reader
     from json import JSONDecodeError
     import click
     try:
         result = {'columns': [], 'data': []}
         with click.open_file(path, 'r') as csv_file:
+            click.echo(f'Opening csv file({fileSize} bytes)...')
             csv_reader = reader(csv_file, delimiter=',')
             # For progressbar, transform it to list.
             rows = list(csv_reader)
             line_count = 0
-            with click.progressbar(rows, label='Reading csv file...', show_percent=True) as bar:
+            with click.progressbar(rows, label='Reading csv rows...', show_percent=True) as bar:
                 # for row in csv_reader:
                 for row in bar:
                     if withCol and line_count == 0:
