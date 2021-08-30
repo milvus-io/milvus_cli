@@ -65,7 +65,8 @@ IndexParams = [
     "M",
     "efConstruction",
     "n_trees",
-    "PQM"
+    "PQM",
+    "nprobe"
 ]
 
 MetricTypes = [
@@ -207,8 +208,6 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
         raise ParameterException(
             'Format(int) "limit" error! {}'.format(str(e)))
     # Validate expr
-    if not expr:
-        raise ParameterException('expr is empty!')
     result['expr'] = expr
     # Validate partitionNames
     if partitionNames:
@@ -457,7 +456,7 @@ class PyOrm(object):
         collection.load()
         res = collection.search(**searchParameters)
         hits = res[0]
-        return f"- Total hits: {len(hits)}, hits ids: {hits.ids} \n- Top1 hit id: {hits[0].id}, distance: {hits[0].distance}, score: {hits[0].score} "
+        return tabulate(map(lambda x: [x.id, x.distance], hits), headers=['Index', 'ID', 'Distance'], tablefmt='grid', showindex=True)
 
     def query(self, collectionName, queryParameters):
         collection = self.getTargetCollection(collectionName)

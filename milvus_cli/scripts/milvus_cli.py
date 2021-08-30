@@ -9,6 +9,7 @@ from utils import PyOrm, Completer
 from utils import getPackageVersion, readCsvFile
 from utils import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 from utils import ParameterException, ConnectException
+from utils import MetricTypes, IndexParams
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -430,19 +431,19 @@ def search(obj):
 
         Collection name: test_collection_search
 
-        The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection: [[1.0, 1.0]]
+        The vectors of search data, the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection: [[1.0, 1.0], [2.0, 2.0]]
 
         The vector field used to search of collection []: films
 
         Metric type []: L2
 
-        The parameters of search(split by "," if multiple) []: 
+        The parameters of search(split by "," if multiple) []: nprobe:10
 
         The max number of returned record, also known as topk []: 2
 
         The boolean expression used to filter attribute []: film_id > 0
 
-        The names of partitions to search(split by "," if multiple) []: 
+        The names of partitions to search(split by "," if multiple) []: _default
 
         timeout []: 
     """
@@ -451,11 +452,11 @@ def search(obj):
         'The vectors of search data(the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection)')
     annsField = click.prompt(
         'The vector field used to search of collection', default='')
-    metricType = click.prompt('Metric type', default='')
+    metricType = click.prompt('Metric type', default='', type=click.Choice(MetricTypes))
     params = click.prompt(
-        'The parameters of search(split by "," if multiple)', default='')
+        f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {IndexParams})', default='')
     limit = click.prompt(
-        'The max number of returned record, also known as topk', default='')
+        'The max number of returned record, also known as topk', default=2, type=int)
     expr = click.prompt(
         'The boolean expression used to filter attribute', default='')
     partitionNames = click.prompt(
