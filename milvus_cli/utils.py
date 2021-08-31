@@ -262,18 +262,18 @@ class PyOrm(object):
         self.alias = alias
         self.host = host
         self.port = port
-        from pymilvus_orm import connections
+        from pymilvus import connections
         connections.connect(self.alias, host=self.host, port=self.port)
 
     def checkConnection(self):
-        from pymilvus_orm import list_collections
+        from pymilvus import list_collections
         try:
             list_collections(timeout=10.0, using=self.alias)
         except Exception as e:
             raise ConnectException(f'Connect to Milvus error!{str(e)}')
 
     def showConnection(self, alias="default", showAll=False):
-        from pymilvus_orm import connections
+        from pymilvus import connections
         tempAlias = self.alias if self.alias else alias
         allConnections = connections.list_connections()
         if showAll:
@@ -287,7 +287,7 @@ class PyOrm(object):
             return "Connection not found!"
 
     def listCollections(self, timeout=None, showLoadedOnly=False):
-        from pymilvus_orm import list_collections
+        from pymilvus import list_collections
         result = []
         collectionNames = list_collections(timeout, self.alias)
         for name in collectionNames:
@@ -300,15 +300,15 @@ class PyOrm(object):
         return tabulate(result, headers=['Collection Name', 'Entities(Loaded/Total)'], tablefmt='grid', showindex=True)
 
     def showCollectionLoadingProgress(self, collectionName, partition_names=None):
-        from pymilvus_orm import loading_progress
+        from pymilvus import loading_progress
         return loading_progress(collectionName, partition_names, self.alias)
 
     def showIndexBuildingProgress(self, collectionName, index_name=""):
-        from pymilvus_orm import index_building_progress
+        from pymilvus import index_building_progress
         return index_building_progress(collectionName, index_name, self.alias)
 
     def getTargetCollection(self, collectionName):
-        from pymilvus_orm import Collection
+        from pymilvus import Collection
         try:
             target = Collection(collectionName)
         except Exception as e:
@@ -399,7 +399,7 @@ class PyOrm(object):
         return tabulate(rows, tablefmt='grid')
 
     def createCollection(self, collectionName, primaryField, autoId, description, fields):
-        from pymilvus_orm import Collection, DataType, FieldSchema, CollectionSchema
+        from pymilvus import Collection, DataType, FieldSchema, CollectionSchema
         fieldList = []
         for field in fields:
             [fieldName, fieldType, fieldData] = field.split(':')
@@ -433,7 +433,7 @@ class PyOrm(object):
         return self.getIndexDetails(collection)
 
     def isCollectionExist(self, collectionName):
-        from pymilvus_orm import has_collection
+        from pymilvus import has_collection
         return has_collection(collectionName, using=self.alias)
 
     def isPartitionExist(self, collection, partitionName):

@@ -7,7 +7,7 @@ setup(
     include_package_data=True,
     install_requires=[
         'Click',
-        'pymilvus-orm==2.0.0rc4',
+        'pymilvus==2.0.0rc5',
         'tabulate'
     ],
     entry_points={
