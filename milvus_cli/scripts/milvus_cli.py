@@ -428,12 +428,47 @@ def search(obj):
     """
     Conducts a vector similarity search with an optional boolean expression as filter.
 
-    Example:
+    Example-1:
 
-        Collection name: car3
+        Collection name: car
 
         The vectors of search data, the length of data is number of query (nq), 
-        the dim of every vector in data must be equal to vector field’s of collection: [[1.0, 1.0], [2.0, 2.0]]
+        the dim of every vector in data must be equal to vector field’s of collection: examples/import_csv/search_vectors.csv
+
+        The vector field used to search of collection []: vector
+
+        Metric type []: L2
+
+        The parameters of search(split by "," if multiple) []: nprobe:10
+
+        The max number of returned record, also known as topk []: 2
+
+        The boolean expression used to filter attribute []: id > 0
+
+        The names of partitions to search(split by "," if multiple) []: _default
+
+        timeout []: 
+    
+    Example-2:
+
+        Collection name: car
+
+        \b
+        The vectors of search data, the length of data is number of query (nq), 
+        the dim of every vector in data must be equal to vector field’s of 
+        collection: 
+            [[0.71, 0.76, 0.17, 0.13, 0.42, 0.07, 0.15, 0.67, 0.58, 0.02, 0.39, 
+            0.47, 0.58, 0.88, 0.73, 0.31, 0.23, 0.57, 0.33, 0.2, 0.03, 0.43, 
+            0.78, 0.49, 0.17, 0.56, 0.76, 0.54, 0.45, 0.46, 0.05, 0.1, 0.43, 
+            0.63, 0.29, 0.44, 0.65, 0.01, 0.35, 0.46, 0.66, 0.7, 0.88, 0.07, 
+            0.49, 0.92, 0.57, 0.5, 0.16, 0.77, 0.98, 0.1, 0.44, 0.88, 0.82, 
+            0.16, 0.67, 0.63, 0.57, 0.55, 0.95, 0.13, 0.64, 0.43, 0.71, 0.81, 
+            0.43, 0.65, 0.76, 0.7, 0.05, 0.24, 0.03, 0.9, 0.46, 0.28, 0.92, 
+            0.25, 0.97, 0.79, 0.73, 0.97, 0.49, 0.28, 0.64, 0.19, 0.23, 0.51, 
+            0.09, 0.1, 0.53, 0.03, 0.23, 0.94, 0.87, 0.14, 0.42, 0.82, 0.91, 
+            0.11, 0.91, 0.37, 0.26, 0.6, 0.89, 0.6, 0.32, 0.11, 0.98, 0.67, 
+            0.12, 0.66, 0.47, 0.02, 0.15, 0.6, 0.64, 0.57, 0.14, 0.81, 0.75, 
+            0.11, 0.49, 0.78, 0.16, 0.63, 0.57, 0.18]]
 
         The vector field used to search of collection []: vector
 
@@ -451,7 +486,7 @@ def search(obj):
     """
     collectionName = click.prompt('Collection name')
     data = click.prompt(
-        'The vectors of search data(the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection)')
+        'The vectors of search data(the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection. You can also import a csv file with out headers)')
     annsField = click.prompt(
         'The vector field used to search of collection', default='')
     metricType = click.prompt('Metric type', default='', type=click.Choice(MetricTypes))
@@ -523,7 +558,7 @@ def query(obj):
 @click.pass_obj
 def importData(obj, collectionName, partitionName, timeout, path):
     """
-    Import data.
+    Import data from csv file with headers and insert into target collection.
 
     Example:
 
