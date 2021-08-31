@@ -122,11 +122,10 @@ Usage: milvus_cli.py create collection [OPTIONS]
 
   Example:
 
-    create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year
-    -f embedding:FLOAT_VECTOR:128 -p id -d 'desc_with_no_space'
+    create collection -n car -f id:INT64:primary_field -f vector:FLOAT_VECTOR:128 -f color:INT64:color -f brand:INT64:brand -p id -a -d 'car_collection'
 
 Options:
-  -n, --name TEXT                 Collection name to be created.
+  -c, --collection-name TEXT                 Collection name to be created.
   -p, --schema-primary-field TEXT
                                   Primary field name.
   -a, --schema-auto-id            Enable auto id.
@@ -147,8 +146,7 @@ Usage: milvus_cli.py create partition [OPTIONS]
 
   Example:
 
-      milvus_cli > create partition -c test_collection_insert -p partition2 -d
-      test_add_partition
+      milvus_cli > create partition -c car -p new_partition -d test_add_partition
 
 Options:
   -c, --collection TEXT   Collection name.
@@ -167,7 +165,7 @@ Usage: milvus_cli.py create index [OPTIONS]
 
   Example:
 
-    create index -c film -f films -t IVF_FLAT -m L2 -p nlist:128
+    create index -c car -f vector -t IVF_FLAT -m L2 -p nlist:128
 
 Options:
   -c, --collection TEXT    Collection name.
@@ -208,7 +206,7 @@ Usage: milvus_cli.py delete collection [OPTIONS]
 
   Example:
 
-      milvus_cli > delete collection -c test_collection_query
+      milvus_cli > delete collection -c car
 
 Options:
   -c, --collection TEXT  The name of collection to be deleted.
@@ -228,7 +226,7 @@ Usage: milvus_cli.py delete partition [OPTIONS]
 
   Example:
 
-      milvus_cli > delete partition -c test_collection_insert -p partition2
+      milvus_cli > delete partition -c car -p new_partition
 
 Options:
   -c, --collection TEXT  Collection name
@@ -246,6 +244,10 @@ milvus_cli > delete index --help
 Usage: milvus_cli.py delete index [OPTIONS]
 
   Drop index and its corresponding index files.
+
+  Example:
+
+      milvus_cli > delete index -c car
 
 Options:
   -c, --collection TEXT  Collection name
@@ -467,7 +469,7 @@ Usage: milvus_cli.py query [OPTIONS]
 
       Name of partitions that contain entities(split by "," if multiple) []:
 
-      A list of fields to return(split by "," if multiple) []: film_date
+      Fields to return(split by "," if multiple) []: film_date
 
       timeout []:
 

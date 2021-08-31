@@ -85,7 +85,6 @@ def connection(obj, showAll):
 @show.command('loading_progress')
 @click.option('-c', '--collection', 'collection', help='The name of collection is loading')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The names of partitions are loading', default=None, multiple=True)
-# @click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection', default='default')
 @click.pass_obj
 def loadingProgress(obj, collection, partition):
     """Show #loaded entities vs #total entities."""
@@ -104,7 +103,6 @@ def loadingProgress(obj, collection, partition):
 @show.command('index_progress')
 @click.option('-c', '--collection', 'collection', help='The name of collection is loading', default='')
 @click.option('-i', '--index', 'index', help='[Optional] - Index name.', default='')
-# @click.option('-u', '--using', 'using', help='[Optional] - Milvus link of create collection.', default='default')
 @click.pass_obj
 def indexProgress(obj, collection, index):
     """Show # indexed entities vs. # total entities."""
@@ -161,7 +159,6 @@ def listDetails(obj):
 
 @listDetails.command()
 @click.option('--timeout', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None)
-# @click.option('--using', 'using', help="[Optional] - Milvus link of create collection.", default='default')
 @click.option('--show-loaded', 'showLoaded', help="[Optional] - Only show loaded collections.", default=False)
 @click.pass_obj
 def collections(obj, timeout, showLoaded):
@@ -255,7 +252,7 @@ def createDetails(obj):
 
 
 @createDetails.command('collection')
-@click.option('-n', '--name', 'collectionName', help='Collection name to be created.', default='')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name to be created.', default='')
 @click.option('-p', '--schema-primary-field', 'primaryField', help='Primary field name.', default='')
 @click.option('-a', '--schema-auto-id', 'autoId', help='Enable auto id.', default=False, is_flag=True)
 @click.option('-d', '--schema-description', 'description', help='Description details.', default='')
@@ -267,7 +264,7 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
 
     Example:
 
-      create collection -n tutorial -f id:INT64:primary_field -f year:INT64:year -f embedding:FLOAT_VECTOR:128 -p id -d 'desc_with_no_space'
+      create collection -n car -f id:INT64:primary_field -f vector:FLOAT_VECTOR:128 -f color:INT64:color -f brand:INT64:brand -p id -a -d 'car_collection'
     """
     try:
         obj.checkConnection()
@@ -294,7 +291,7 @@ def createPartition(obj, collectionName, partition, description):
 
     Example:
 
-        milvus_cli > create partition -c test_collection_insert -p partition2 -d test_add_partition
+        milvus_cli > create partition -c car -p new_partition -d test_add_partition
     """
     try:
         obj.checkConnection()
@@ -320,7 +317,7 @@ def createIndex(obj, collectionName, fieldName, indexType, metricType, params, t
 
     Example:
 
-      create index -c film -f films -t IVF_FLAT -m L2 -p nlist:128
+      create index -c car -f vector -t IVF_FLAT -m L2 -p nlist:128
     """
     try:
         obj.checkConnection()
@@ -353,7 +350,7 @@ def deleteCollection(obj, collectionName, timeout):
 
     Example:
 
-        milvus_cli > delete collection -c test_collection_query
+        milvus_cli > delete collection -c car
     """
     click.echo(
         "Warning!\nYou are trying to delete the collection with data. This action cannot be undone!\n")
@@ -381,7 +378,7 @@ def deletePartition(obj, collectionName, partition, timeout):
 
     Example:
 
-        milvus_cli > delete partition -c test_collection_insert -p partition2
+        milvus_cli > delete partition -c car -p new_partition
     """
     click.echo(
         "Warning!\nYou are trying to delete the partition with data. This action cannot be undone!\n")
@@ -405,6 +402,10 @@ def deletePartition(obj, collectionName, partition, timeout):
 def deleteIndex(obj, collectionName, timeout):
     """
     Drop index and its corresponding index files.
+
+    Example:
+
+        milvus_cli > delete index -c car
     """
     click.echo(
         "Warning!\nYou are trying to delete the index of collection. This action cannot be undone!\n")
@@ -456,7 +457,7 @@ def search(obj):
     params = click.prompt(
         f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {IndexParams})', default='')
     limit = click.prompt(
-        'The max number of returned record, also known as topk', default=2, type=int)
+        'The max number of returned record, also known as topk', default=None, type=int)
     expr = click.prompt(
         'The boolean expression used to filter attribute', default='')
     partitionNames = click.prompt(
@@ -499,7 +500,7 @@ def query(obj):
     partitionNames = click.prompt(
         'Name of partitions that contain entities(split by "," if multiple)', default='')
     outputFields = click.prompt(
-        'A list of fields to return(split by "," if multiple)', default='')
+        'Fields to return(split by "," if multiple)', default='')
     timeout = click.prompt('timeout', default='')
     try:
         queryParameters = validateQueryParams(
