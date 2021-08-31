@@ -166,7 +166,12 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
     result = {}
     # Validate data
     try:
-        result['data'] = json.loads(data.replace('\'', '').replace('\"', ''))
+        if '.csv' in data:
+            csvData = readCsvFile(data, withCol=False)
+            result['data'] = csvData['data'][0]
+        else:
+            result['data'] = json.loads(
+                data.replace('\'', '').replace('\"', ''))
     except Exception as e:
         raise ParameterException(
             'Format(list[list[float]]) "Data" error! {}'.format(str(e)))
@@ -228,7 +233,8 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
     if not expr:
         raise ParameterException('expr is empty!')
     if ' in ' not in expr:
-        raise ParameterException('expr only accepts "<field_name> in [<min>,<max>]"!')
+        raise ParameterException(
+            'expr only accepts "<field_name> in [<min>,<max>]"!')
     result['expr'] = expr
     if not outputFields:
         result['output_fields'] = None
@@ -467,10 +473,11 @@ class PyOrm(object):
             return f"- Query results: {res}"
         headers = [i for i in res[0]]
         return tabulate([[_[i] for i in _] for _ in res], headers=headers, tablefmt='grid', showindex=True)
-    
+
     def insert(self, collectionName, data, partitionName=None, timeout=None):
         collection = self.getTargetCollection(collectionName)
         collection.insert(data, partition_name=partitionName, timeout=timeout)
+
 
 class Completer(object):
     # COMMANDS = ['clear', 'connect', 'create', 'delete', 'describe', 'exit',
@@ -587,7 +594,8 @@ def readCsvFile(path='', withCol=True):
         raise ParameterException('Path is empty or target file is not .csv')
     fileSize = os.stat(path).st_size
     if fileSize >= 512000000:
-        raise ParameterException('File is too large! Only allow csv files less than 512MB.')
+        raise ParameterException(
+            'File is too large! Only allow csv files less than 512MB.')
     from csv import reader
     from json import JSONDecodeError
     import click
