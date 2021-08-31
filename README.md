@@ -47,6 +47,7 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 2.0.0-RC1 | 2.0.0rc1 | x |
 | 2.0.0-RC2 | 2.0.0rc2 | 0.1.3 |
 | 2.0.0-RC4 | 2.0.0rc4 | 0.1.4 |
+| 2.0.0-RC5 | 2.0.0rc5 | 0.1.5 |
 
 
 ![Overview](./examples/termtosvg/overview2.svg)
