@@ -462,7 +462,11 @@ class PyOrm(object):
         collection = self.getTargetCollection(collectionName)
         collection.load()
         res = collection.query(**queryParameters)
-        return f"- Query results: {res}"
+        # return f"- Query results: {res}"
+        if not len(res):
+            return f"- Query results: {res}"
+        headers = [i for i in res[0]]
+        return tabulate([[_[i] for i in _] for _ in res], headers=headers, tablefmt='grid', showindex=True)
     
     def insert(self, collectionName, data, partitionName=None, timeout=None):
         collection = self.getTargetCollection(collectionName)
