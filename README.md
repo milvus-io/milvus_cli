@@ -26,9 +26,9 @@
         * [`list indexes`](#list-indexes)
         * [`list partitions`](#list-partitions)
       - [`load`](#load)
-      - [`query` (prompt command)](#-query-prompt-command)
+      - [`query` (prompt command)](#query-prompt-command)
       - [`release`](#release)
-      - [`search`(prompt command)](#-search-prompt-command)
+      - [`search`(prompt command)](#search-prompt-command)
       - [`show`](#show)
         * [`show connection`](#show-connection)
         * [`show index_progress`](#show-index-progress)
@@ -356,12 +356,11 @@ Usage: milvus_cli.py import [OPTIONS] PATH
 
   Example:
 
-      milvus_cli > import '/Users/test/Downloads/import_test.csv' -c
-      test_collection_insert
+      milvus_cli > import 'examples/import_csv/vectors.csv' -c car
 
       Reading csv file...  [####################################]  100%
 
-      Column names are ['film_id', 'films']
+      Column names are ['vector', 'color', 'brand']
 
       Processed 50001 lines.
 
@@ -463,15 +462,13 @@ Usage: milvus_cli.py query [OPTIONS]
 
       milvus_cli > query
 
-      Collection name: test_collection_query
+      Collection name: car
 
-      The query expression(field_name in [x,y]): film_id in [ 0, 1 ]
+      The query expression(field_name in [x,y]): id in [ 427284660842954108, 427284660842954199 ]
 
-      Name of partitions that contain entities(split by "," if multiple) []:
+      Name of partitions that contain entities(split by "," if multiple) []: default
 
-      Fields to return(split by "," if multiple) []: film_date
-
-      timeout []:
+      A list of fields to return(split by "," if multiple) []: color, brand
 
 Options:
   --help  Show this message and exit.
@@ -501,25 +498,24 @@ Usage: milvus_cli.py search [OPTIONS]
 
   Example:
 
-      Collection name: test_collection_search
+      Collection name: car3
 
-      The vectors of search data(the length of data is number of query (nq),
-      the dim of every vector in data must be equal to vector field’s of
-      collection): [[1.0, 1.0]]
+      The vectors of search data, the length of data is number of query (nq), 
+      the dim of every vector in data must be equal to vector field’s of collection: [<a_128_dim_vector>, <a_128_dim_vector> ...]
 
-      The vector field used to search of collection []: films
+      The vector field used to search of collection []: vector
 
       Metric type []: L2
 
-      The parameters of search(split by "," if multiple) []:
+      The parameters of search(split by "," if multiple) []: nprobe:10
 
       The max number of returned record, also known as topk []: 2
 
-      The boolean expression used to filter attribute []: film_id > 0
+      The boolean expression used to filter attribute []: id > 0
 
-      The names of partitions to search(split by "," if multiple) []:
+      The names of partitions to search(split by "," if multiple) []: _default
 
-      timeout []:
+      timeout []: 
 
 Options:
   --help  Show this message and exit.
