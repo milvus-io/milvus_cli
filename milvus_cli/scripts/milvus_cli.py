@@ -9,7 +9,7 @@ from utils import PyOrm, Completer
 from utils import getPackageVersion, readCsvFile
 from utils import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 from utils import ParameterException, ConnectException
-from utils import MetricTypes, IndexParams
+from utils import MetricTypes, IndexParams, SearchParams, IndexTypesMap
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -430,28 +430,26 @@ def search(obj):
 
     Example-1:
 
-        Collection name: car
+        Collection name (car, test_collection): car
 
         The vectors of search data, the length of data is number of query (nq), 
         the dim of every vector in data must be equal to vector field’s of collection: examples/import_csv/search_vectors.csv
 
-        The vector field used to search of collection []: vector
+        The vector field used to search of collection (vector): vector
 
-        Metric type []: L2
+        Metric type: L2
 
-        The parameters of search(split by "," if multiple) []: nprobe:10
+        Search parameter nprobe's value: 10
 
-        The max number of returned record, also known as topk []: 2
+        The max number of returned record, also known as topk: 2
 
         The boolean expression used to filter attribute []: id > 0
 
-        The names of partitions to search(split by "," if multiple) []: _default
-
-        timeout []: 
+        The names of partitions to search(split by "," if multiple) ['_default'] []: _default
     
     Example-2:
 
-        Collection name: car
+        Collection name (car, test_collection): car
 
         \b
         The vectors of search data, the length of data is number of query (nq), 
@@ -470,34 +468,46 @@ def search(obj):
             0.12, 0.66, 0.47, 0.02, 0.15, 0.6, 0.64, 0.57, 0.14, 0.81, 0.75, 
             0.11, 0.49, 0.78, 0.16, 0.63, 0.57, 0.18]]
 
-        The vector field used to search of collection []: vector
+        The vector field used to search of collection (vector): vector
 
-        Metric type []: L2
+        Metric type: L2
 
-        The parameters of search(split by "," if multiple) []: nprobe:10
+        Search parameter nprobe's value: 10
 
-        The max number of returned record, also known as topk []: 2
+        The max number of returned record, also known as topk: 2
 
         The boolean expression used to filter attribute []: id > 0
 
-        The names of partitions to search(split by "," if multiple) []: _default
+        The names of partitions to search(split by "," if multiple) ['_default'] []: _default
 
         timeout []: 
     """
-    collectionName = click.prompt('Collection name')
+    collectionName = click.prompt('Collection name', type=click.Choice(obj._list_collection_names()))
     data = click.prompt(
         'The vectors of search data(the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection. You can also import a csv file with out headers)')
     annsField = click.prompt(
-        'The vector field used to search of collection', default='')
-    metricType = click.prompt('Metric type', default='', type=click.Choice(MetricTypes))
-    params = click.prompt(
-        f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {IndexParams})', default='')
+        'The vector field used to search of collection', type=click.Choice(obj._list_field_names(collectionName, showVectorOnly=True)))
+    indexDetails = obj._list_index(collectionName)
+    if indexDetails:
+        index_type = indexDetails['index_type']
+        search_parameters = IndexTypesMap[index_type]['search_parameters']
+        metric_type = indexDetails['metric_type']
+        click.echo(f"Metric type: {metric_type}")
+        metricType = metric_type
+        params = []
+        for parameter in search_parameters:
+            paramInput = click.prompt(f'Search parameter {parameter}\'s value')
+            params += [f"{parameter}:{paramInput}"]
+    else:
+        metricType = click.prompt('Metric type', default='', type=click.Choice(MetricTypes))
+        params = click.prompt(
+            f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {SearchParams})', default='')
     limit = click.prompt(
         'The max number of returned record, also known as topk', default=None, type=int)
     expr = click.prompt(
         'The boolean expression used to filter attribute', default='')
     partitionNames = click.prompt(
-        'The names of partitions to search(split by "," if multiple)', default='')
+        f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
     timeout = click.prompt('timeout', default='')
     try:
         searchParameters = validateSearchParams(
@@ -531,12 +541,12 @@ def query(obj):
 
         timeout []: 
     """
-    collectionName = click.prompt('Collection name')
+    collectionName = click.prompt('Collection name', type=click.Choice(obj._list_collection_names()))
     expr = click.prompt('The query expression(field_name in [x,y])')
     partitionNames = click.prompt(
-        'Name of partitions that contain entities(split by "," if multiple)', default='')
+        f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
     outputFields = click.prompt(
-        'Fields to return(split by "," if multiple)', default='')
+        f'Fields to return(split by "," if multiple) {obj._list_field_names(collectionName)}', default='')
     timeout = click.prompt('timeout', default='')
     try:
         queryParameters = validateQueryParams(

@@ -2,6 +2,7 @@ from tabulate import tabulate
 import readline
 import re
 import os
+from functools import reduce
 
 
 def getPackageVersion():
@@ -46,16 +47,16 @@ IndexTypes = [
     "FLAT",
     "IVF_FLAT",
     "IVF_SQ8",
-    # "IVF_SQ8_HYBRID",
     "IVF_PQ",
+    "RNSG",
     "HNSW",
     # "NSG",
     "ANNOY",
-    "RHNSW_FLAT",
-    "RHNSW_PQ",
-    "RHNSW_SQ",
-    "BIN_FLAT",
-    "BIN_IVF_FLAT"
+    # "RHNSW_FLAT",
+    # "RHNSW_PQ",
+    # "RHNSW_SQ",
+    # "BIN_FLAT",
+    # "BIN_IVF_FLAT"
 ]
 
 IndexParams = [
@@ -66,8 +67,41 @@ IndexParams = [
     "efConstruction",
     "n_trees",
     "PQM",
-    "nprobe"
 ]
+
+IndexTypesMap = {
+    "FLAT": {
+        "index_building_parameters": [],
+        "search_parameters": ["metric_type"],
+    },
+    "IVF_FLAT": {
+        "index_building_parameters": ["nlist"],
+        "search_parameters": ["nprobe"],
+    },
+    "IVF_SQ8": {
+        "index_building_parameters": ["nlist"],
+        "search_parameters": ["nprobe"],
+    },
+    "IVF_PQ": {
+        "index_building_parameters": ["nlist", "m", "nbits"],
+        "search_parameters": ["nprobe"],
+    },
+    "RNSG": {
+        "index_building_parameters": ["out_degree", "candidate_pool_size", "search_length", "knng"],
+        "search_parameters": ["search_length"],
+    },
+    "HNSW": {
+        "index_building_parameters": ["M", "efConstruction"],
+        "search_parameters": ["ef"],
+    },
+    "ANNOY": {
+        "index_building_parameters": ["n_trees"],
+        "search_parameters": ["search_k"],
+    },
+}
+
+DupSearchParams = reduce(lambda x,y: x+IndexTypesMap[y]['search_parameters'], IndexTypesMap.keys(), [])
+SearchParams = list(dict.fromkeys(DupSearchParams))
 
 MetricTypes = [
     "L2",
@@ -141,6 +175,7 @@ def validateIndexParameter(indexType, metricType, params):
     if not params:
         raise ParameterException('Missing params')
     paramNames = []
+    buildingParameters = IndexTypesMap[indexType]['index_building_parameters']
     for param in params:
         paramList = param.split(':')
         if not (len(paramList) == 2):
@@ -148,9 +183,9 @@ def validateIndexParameter(indexType, metricType, params):
                 'Params should contain two paremeters and concat by ":".')
         [paramName, paramValue] = paramList
         paramNames.append(paramName)
-        if paramName not in IndexParams:
+        if paramName not in buildingParameters:
             raise ParameterException(
-                'Invalid index param, should be one of {}'.format(str(IndexParams)))
+                'Invalid index param, should be one of {}'.format(str(buildingParameters)))
         try:
             int(paramValue)
         except ValueError as e:
@@ -185,7 +220,10 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
             'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
     # Validate params
     paramDict = {}
-    paramsList = params.replace(' ', '').split(',')
+    if type(params) == str:
+        paramsList = params.replace(' ', '').split(',')
+    else:
+        paramsList = params
     for param in paramsList:
         if not param:
             continue
@@ -194,9 +232,9 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
             raise ParameterException(
                 'Params should contain two paremeters and concat by ":".')
         [paramName, paramValue] = paramList
-        if paramName not in IndexParams:
+        if paramName not in SearchParams:
             raise ParameterException(
-                'Invalid search parameter, should be one of {}'.format(str(IndexParams)))
+                'Invalid search parameter, should be one of {}'.format(str(SearchParams)))
         try:
             paramDict[paramName] = int(paramValue)
         except ValueError as e:
@@ -284,11 +322,43 @@ class PyOrm(object):
             return tabulate([['Host', host], ['Port', port], ['Alias', tempAlias]], tablefmt='pretty')
         else:
             return "Connection not found!"
+    
+    def _list_collection_names(self, timeout=None):
+        from pymilvus import list_collections
+        return list(list_collections(timeout, self.alias))
+    
+    def _list_partition_names(self, collectionName):
+        target = self.getTargetCollection(collectionName)
+        result = target.partitions
+        return [i.name for i in result]
+    
+    def _list_field_names(self, collectionName, showVectorOnly=False):
+        target = self.getTargetCollection(collectionName)
+        result = target.schema.fields
+        if showVectorOnly:
+            return reduce(lambda x,y: x+[y.name] if y.dtype in [100, 101] else x, result, [])
+        return [i.name for i in result]
+    
+    def _list_index(self, collectionName):
+        target = self.getTargetCollection(collectionName)
+        try:
+            result = target.index()
+        except Exception as e:
+            return {}
+        else:
+            details = {
+                'field_name': result.field_name,
+                'index_type': result.params['index_type'],
+                'metric_type': result.params['metric_type'],
+                'params': result.params['params']
+            }
+            # for p in result.params['params']:
+            #     details[p] = result.params['params'][p]
+            return details
 
     def listCollections(self, timeout=None, showLoadedOnly=False):
-        from pymilvus import list_collections
         result = []
-        collectionNames = list_collections(timeout, self.alias)
+        collectionNames = self._list_collection_names(timeout)
         for name in collectionNames:
             loadingProgress = self.showCollectionLoadingProgress(name)
             loaded, total = loadingProgress.values()
