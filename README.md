@@ -123,7 +123,7 @@ Usage: milvus_cli.py create collection [OPTIONS]
 
   Example:
 
-    create collection -n car -f id:INT64:primary_field -f vector:FLOAT_VECTOR:128 -f color:INT64:color -f brand:INT64:brand -p id -a -d 'car_collection'
+    create collection -c car -f id:INT64:primary_field -f vector:FLOAT_VECTOR:128 -f color:INT64:color -f brand:INT64:brand -p id -a -d 'car_collection'
 
 Options:
   -c, --collection-name TEXT                 Collection name to be created.
