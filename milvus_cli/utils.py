@@ -194,12 +194,11 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
             raise ParameterException(
                 'Params should contain two paremeters and concat by ":".')
         [paramName, paramValue] = paramList
-        paramDict[paramName] = paramValue
         if paramName not in IndexParams:
             raise ParameterException(
                 'Invalid search parameter, should be one of {}'.format(str(IndexParams)))
         try:
-            int(paramValue)
+            paramDict[paramName] = int(paramValue)
         except ValueError as e:
             raise ParameterException(
                 """Search parameter's value should be int.""")
