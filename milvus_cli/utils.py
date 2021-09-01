@@ -100,7 +100,8 @@ IndexTypesMap = {
     },
 }
 
-DupSearchParams = reduce(lambda x,y: x+IndexTypesMap[y]['search_parameters'], IndexTypesMap.keys(), [])
+DupSearchParams = reduce(
+    lambda x, y: x+IndexTypesMap[y]['search_parameters'], IndexTypesMap.keys(), [])
 SearchParams = list(dict.fromkeys(DupSearchParams))
 
 MetricTypes = [
@@ -322,23 +323,23 @@ class PyOrm(object):
             return tabulate([['Host', host], ['Port', port], ['Alias', tempAlias]], tablefmt='pretty')
         else:
             return "Connection not found!"
-    
+
     def _list_collection_names(self, timeout=None):
         from pymilvus import list_collections
         return list(list_collections(timeout, self.alias))
-    
+
     def _list_partition_names(self, collectionName):
         target = self.getTargetCollection(collectionName)
         result = target.partitions
         return [i.name for i in result]
-    
+
     def _list_field_names(self, collectionName, showVectorOnly=False):
         target = self.getTargetCollection(collectionName)
         result = target.schema.fields
         if showVectorOnly:
-            return reduce(lambda x,y: x+[y.name] if y.dtype in [100, 101] else x, result, [])
+            return reduce(lambda x, y: x+[y.name] if y.dtype in [100, 101] else x, result, [])
         return [i.name for i in result]
-    
+
     def _list_index(self, collectionName):
         target = self.getTargetCollection(collectionName)
         try:
@@ -526,12 +527,19 @@ class PyOrm(object):
         collection.drop_index(timeout=timeout)
         return self.isIndexExist(collection)
 
-    def search(self, collectionName, searchParameters):
+    def search(self, collectionName, searchParameters, prettierFormat=True):
         collection = self.getTargetCollection(collectionName)
         collection.load()
         res = collection.search(**searchParameters)
-        hits = res[0]
-        return tabulate(map(lambda x: [x.id, x.distance], hits), headers=['Index', 'ID', 'Distance'], tablefmt='grid', showindex=True)
+        if not prettierFormat:
+            return res
+        # hits = res[0]
+        results = []
+        for hits in res:
+            results += [tabulate(map(lambda x: [x.id, x.distance], hits), headers=[
+                                 'Index', 'ID', 'Distance'], tablefmt='grid', showindex=True)]
+        # return tabulate(map(lambda x: [x.id, x.distance], hits), headers=['Index', 'ID', 'Distance'], tablefmt='grid', showindex=True)
+        return results
 
     def query(self, collectionName, queryParameters):
         collection = self.getTargetCollection(collectionName)
@@ -709,3 +717,23 @@ def formatRowForData(row=[], data=[]):
     for idx, val in enumerate(row):
         formattedVal = loads(val)
         data[idx].append(formattedVal)
+
+
+def writeCsvFile(path, rows, headers=[]):
+    if not path:
+        raise ParameterException(f'Path should not be empty')
+    from csv import writer
+    import click
+    try:
+        with click.open_file(path, 'w+') as csv_file:
+            csv_writer = writer(csv_file, delimiter=',')
+            if headers:
+                csv_writer.writerow(headers)
+            line_count = 0
+            with click.progressbar(rows, label='Writing csv rows...', show_percent=True) as bar:
+                for row in bar:
+                    csv_writer.writerow(row)
+                    line_count += 1
+            click.echo(f'Processed {line_count} lines.')
+    except Exception as e:
+        raise ParameterException(f'Export csv file error! {str(e)}')

@@ -230,7 +230,7 @@ def describeCollection(obj, collection):
 def describePartition(obj, collectionName, partition):
     """
     Describe partition.
-    
+
     Example:
 
         milvus_cli > describe partition -c test_collection_insert -p _default
@@ -446,7 +446,7 @@ def search(obj):
         The boolean expression used to filter attribute []: id > 0
 
         The names of partitions to search(split by "," if multiple) ['_default'] []: _default
-    
+
     Example-2:
 
         Collection name (car, test_collection): car
@@ -482,7 +482,8 @@ def search(obj):
 
         timeout []: 
     """
-    collectionName = click.prompt('Collection name', type=click.Choice(obj._list_collection_names()))
+    collectionName = click.prompt(
+        'Collection name', type=click.Choice(obj._list_collection_names()))
     data = click.prompt(
         'The vectors of search data(the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection. You can also import a csv file with out headers)')
     annsField = click.prompt(
@@ -499,7 +500,8 @@ def search(obj):
             paramInput = click.prompt(f'Search parameter {parameter}\'s value')
             params += [f"{parameter}:{paramInput}"]
     else:
-        metricType = click.prompt('Metric type', default='', type=click.Choice(MetricTypes))
+        metricType = click.prompt(
+            'Metric type', default='', type=click.Choice(MetricTypes))
         params = click.prompt(
             f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {SearchParams})', default='')
     limit = click.prompt(
@@ -509,6 +511,13 @@ def search(obj):
     partitionNames = click.prompt(
         f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
     timeout = click.prompt('timeout', default='')
+    export, exportPath = False, ''
+    # if click.confirm('Would you like to export results as a csv File?'):
+    #     export = True
+    #     exportPath = click.prompt('Directory path to csv file')
+    # export = click.prompt('Would you like to export results as a csv File?', default='n', type=click.Choice(['Y', 'n']))
+    # if export:
+    #     exportPath = click.prompt('Directory path to csv file')
     try:
         searchParameters = validateSearchParams(
             data, annsField, metricType, params, limit, expr, partitionNames, timeout)
@@ -518,7 +527,15 @@ def search(obj):
     except ConnectException as ce:
         click.echo("Error!\n{}".format(str(ce)))
     else:
-        click.echo(obj.search(collectionName, searchParameters))
+        if export:
+            results = obj.search(
+                collectionName, searchParameters, prettierFormat=False)
+        else:
+            results = obj.search(collectionName, searchParameters)
+            click.echo(f"Search results:\n")
+            for idx, item in enumerate(results):
+                click.echo(f"No.{idx+1}:\n{item}\n")
+            # click.echo(obj.search(collectionName, searchParameters))
 
 
 @cli.command()
@@ -541,7 +558,8 @@ def query(obj):
 
         timeout []: 
     """
-    collectionName = click.prompt('Collection name', type=click.Choice(obj._list_collection_names()))
+    collectionName = click.prompt(
+        'Collection name', type=click.Choice(obj._list_collection_names()))
     expr = click.prompt('The query expression(field_name in [x,y])')
     partitionNames = click.prompt(
         f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
