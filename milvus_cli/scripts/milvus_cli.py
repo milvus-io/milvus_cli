@@ -578,11 +578,11 @@ def importData(obj, collectionName, partitionName, timeout, path):
             obj.getTargetCollection, 'Collection Name Error!', collectionName)
         result = readCsvFile(path.replace('"', '').replace("'", ""))
         data = result['data']
-        obj.insert(collectionName, data, partitionName, timeout)
+        entitiesNum = obj.insert(collectionName, data, partitionName, timeout)
     except Exception as e:
         click.echo("Error!\n{}".format(str(e)))
     else:
-        click.echo("Import successfully.")
+        click.echo(f"Insert successfully.\nTotal entities: {entitiesNum}")
 
 
 @cli.command('exit')

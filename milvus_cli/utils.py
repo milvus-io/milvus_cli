@@ -476,6 +476,8 @@ class PyOrm(object):
     def insert(self, collectionName, data, partitionName=None, timeout=None):
         collection = self.getTargetCollection(collectionName)
         collection.insert(data, partition_name=partitionName, timeout=timeout)
+        entitiesNum = collection.num_entities
+        return entitiesNum
 
 
 class Completer(object):
