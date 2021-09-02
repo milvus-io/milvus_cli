@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name='milvus_cli',
-    version='0.1.6beta3',
+    version='0.1.6beta2',
     author='Milvus Team',
     author_email='milvus-team@zilliz.com',
     url='https://github.com/milvus-io/milvus_cli',
