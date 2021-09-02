@@ -1,38 +1,41 @@
 # milvus_cli🚀
 
-- [milvus_cli](#milvus-cli)
-  * [Overview](#overview)
-  * [Installation](#installation)
-  * [Usage](#usage)
-    + [commands](#commands)
+- [milvus_cli🚀](#milvus_cli)
+  - [Overview](#overview)
+  - [Installation](#installation)
+    - [Preparation](#preparation)
+    - [Install from PYPI(recommend)](#install-from-pypirecommend)
+    - [Install from release/source code](#install-from-releasesource-code)
+  - [Usage](#usage)
+    - [commands](#commands)
       - [`clear`](#clear)
       - [`connect`](#connect)
       - [`create`](#create)
-        * [`create collection`](#create-collection)
-        * [`create partition`](#create-partition)
-        * [`create index`](#create-index)
+        - [`create collection`](#create-collection)
+        - [`create partition`](#create-partition)
+        - [`create index`](#create-index)
       - [`delete`](#delete)
-        * [`delete collection`](#delete-collection)
-        * [`delete partition`](#delete-partition)
-        * [`delete index`](#delete-index)
+        - [`delete collection`](#delete-collection)
+        - [`delete partition`](#delete-partition)
+        - [`delete index`](#delete-index)
       - [`describe`](#describe)
-        * [`describe collection`](#describe-collection)
-        * [`describe partition`](#describe-partition)
+        - [`describe collection`](#describe-collection)
+        - [`describe partition`](#describe-partition)
       - [`exit`](#exit)
       - [`help`](#help)
       - [`import`](#import)
       - [`list`](#list)
-        * [`list collections`](#list-collections)
-        * [`list indexes`](#list-indexes)
-        * [`list partitions`](#list-partitions)
+        - [`list collections`](#list-collections)
+        - [`list indexes`](#list-indexes)
+        - [`list partitions`](#list-partitions)
       - [`load`](#load)
       - [`query` (prompt command)](#query-prompt-command)
       - [`release`](#release)
-      - [`search`(prompt command)](#search-prompt-command)
+      - [`search` (prompt command)](#search-prompt-command)
       - [`show`](#show)
-        * [`show connection`](#show-connection)
-        * [`show index_progress`](#show-index-progress)
-        * [`show loading_progress`](#show-loading-progress)
+        - [`show connection`](#show-connection)
+        - [`show index_progress`](#show-index_progress)
+        - [`show loading_progress`](#show-loading_progress)
       - [`version`](#version)
 
 ## Overview
@@ -54,10 +57,19 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 
 ## Installation
 
+### Preparation
+
 1. Install `Python` >= 3.8.5
 2. Install `pip`
-3. Download [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) or `git clone https://github.com/milvus-io/milvus_cli.git`
-4. Enter the direction(`cd milvus_cli/`) and run `python -m pip install --editable .`
+
+### Install from PYPI(recommend)
+
+`pip install milvus-cli`
+
+### Install from release/source code
+
+1. Download [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) or `git clone https://github.com/milvus-io/milvus_cli.git`
+2. Enter the direction(`cd milvus_cli/`) and run `python -m pip install --editable .`
 
 ## Usage
 
