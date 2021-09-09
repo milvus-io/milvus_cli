@@ -53,8 +53,6 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 2.0.0-RC5 | 2.0.0rc5 | 0.1.5 |
 
 
-![Overview](./examples/termtosvg/overview2.svg)
-
 ## Installation
 
 ### Preparation
