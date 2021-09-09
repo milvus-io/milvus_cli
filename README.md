@@ -60,6 +60,7 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 ### Preparation
 
 1. Install `Python` >= 3.8.5
+
 2. Install `pip`
 
 ### Install from PYPI(recommend)
