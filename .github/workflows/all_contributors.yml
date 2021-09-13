@@ -1,7 +1,7 @@
 name: all-contributors
 
 on:
-    schedule:
+  schedule:
     # * is a special character in YAML so you have to quote this string
     #         ┌───────────── minute (0 - 59)
     #         │ ┌───────────── hour (0 - 23)
@@ -11,7 +11,8 @@ on:
     #         │ │ │ │ │
     #         │ │ │ │ │
     #         │ │ │ │ │
-    - cron:  '* 0 * * *'
+    - cron: "* 0 * * *"
+  workflow_dispatch:
 
 jobs:
   contributor:
@@ -22,8 +23,8 @@ jobs:
         with:
           # Required
           token: ${{ secrets.ALL_CONTRIBUTORS_TOKEN }}
-          repos: 'milvus-io/milvus_cli'
-          target: 'milvus-io/milvus_cli/README.md'
+          repos: "milvus-io/milvus_cli"
+          target: "milvus-io/milvus_cli/README.md"
           # Optional
           isAscend: True
-          width: '30px'
+          width: "30px"
