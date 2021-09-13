@@ -13,6 +13,9 @@ on:
     #         │ │ │ │ │
     - cron: "* 0 * * *"
   workflow_dispatch:
+    inputs:
+      message:
+        description: "Message"
 
 jobs:
   contributor:
