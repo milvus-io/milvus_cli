@@ -9,7 +9,7 @@ from utils import PyOrm, Completer
 from utils import getPackageVersion, readCsvFile
 from utils import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 from utils import ParameterException, ConnectException
-from utils import MetricTypes, IndexParams, SearchParams, IndexTypesMap
+from utils import MetricTypes, IndexParams, SearchParams, IndexTypesMap, IndexTypes
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -304,23 +304,45 @@ def createPartition(obj, collectionName, partition, description):
 
 
 @createDetails.command('index')
-@click.option('-c', '--collection', 'collectionName', help='Collection name.', default='')
-@click.option('-f', '--field', 'fieldName', help='The name of the field to create an index for.', default='')
-@click.option('-t', '--index-type', 'indexType', help='Index type.', default='')
-@click.option('-m', '--index-metric', 'metricType', help='Index metric type.', default='')
-@click.option('-p', '--index-params', 'params', help='Index params, usage is "<Name>:<Value>"', default=None, multiple=True)
-@click.option('-e', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=int)
 @click.pass_obj
-def createIndex(obj, collectionName, fieldName, indexType, metricType, params, timeout):
+def createIndex(obj):
     """
     Create index.
 
     Example:
 
-      create index -c car -f vector -t IVF_FLAT -m L2 -p nlist:128
+        milvus_cli > create index
+
+        Collection name (car, car2): car2
+
+        The name of the field to create an index for (vector): vector
+
+        Index type (FLAT, IVF_FLAT, IVF_SQ8, IVF_PQ, RNSG, HNSW, ANNOY): IVF_FLAT
+
+        Index metric type (L2, IP, HAMMING, TANIMOTO): L2
+
+        Index params nlist: 2
+
+        Timeout []: 
     """
     try:
         obj.checkConnection()
+        collectionName = click.prompt(
+            'Collection name', type=click.Choice(obj._list_collection_names()))
+        fieldName = click.prompt(
+            'The name of the field to create an index for', type=click.Choice(obj._list_field_names(collectionName, showVectorOnly=True)))
+        indexType = click.prompt(
+            'Index type', type=click.Choice(IndexTypes))
+        metricType = click.prompt(
+            'Index metric type', type=click.Choice(MetricTypes))
+        index_building_parameters = IndexTypesMap[indexType]['index_building_parameters']
+        params = []
+        for param in index_building_parameters:
+            tmpParam = click.prompt(
+                f'Index params {param}')
+            params.append(f'{param}:{tmpParam}')
+        inputTimeout = click.prompt('Timeout', default='')
+        timeout = inputTimeout if inputTimeout else None
         validateIndexParameter(
             indexType, metricType, params)
     except ParameterException as pe:
@@ -428,12 +450,13 @@ def search(obj):
     """
     Conducts a vector similarity search with an optional boolean expression as filter.
 
-    Example-1:
+    Example-1(import a csv file):
 
         Collection name (car, test_collection): car
 
-        The vectors of search data, the length of data is number of query (nq), 
-        the dim of every vector in data must be equal to vector field’s of collection: examples/import_csv/search_vectors.csv
+        The vectors of search data(the length of data is number of query (nq), 
+        the dim of every vector in data must be equal to vector field’s of 
+        collection. You can also import a csv file with out headers): examples/import_csv/search_vectors.csv
 
         The vector field used to search of collection (vector): vector
 
@@ -447,14 +470,14 @@ def search(obj):
 
         The names of partitions to search(split by "," if multiple) ['_default'] []: _default
 
-    Example-2:
+    Example-2(collection has index):
 
         Collection name (car, test_collection): car
 
         \b
-        The vectors of search data, the length of data is number of query (nq), 
+        The vectors of search data(the length of data is number of query (nq), 
         the dim of every vector in data must be equal to vector field’s of 
-        collection: 
+        collection. You can also import a csv file with out headers):
             [[0.71, 0.76, 0.17, 0.13, 0.42, 0.07, 0.15, 0.67, 0.58, 0.02, 0.39, 
             0.47, 0.58, 0.88, 0.73, 0.31, 0.23, 0.57, 0.33, 0.2, 0.03, 0.43, 
             0.78, 0.49, 0.17, 0.56, 0.76, 0.54, 0.45, 0.46, 0.05, 0.1, 0.43, 
@@ -474,6 +497,8 @@ def search(obj):
 
         Search parameter nprobe's value: 10
 
+        The specified number of decimal places of returned distance [-1]: 5
+
         The max number of returned record, also known as topk: 2
 
         The boolean expression used to filter attribute []: id > 0
@@ -481,6 +506,26 @@ def search(obj):
         The names of partitions to search(split by "," if multiple) ['_default'] []: _default
 
         timeout []: 
+    
+    Example-3(collection has no index):
+
+        Collection name (car, car2): car
+
+        The vectors of search data(the length of data is number of query (nq), 
+        the dim of every vector in data must be equal to vector field’s of 
+        collection. You can also import a csv file with out headers): examples/import_csv/search_vectors.csv
+
+        The vector field used to search of collection (vector): vector
+
+        The specified number of decimal places of returned distance [-1]: 5
+
+        The max number of returned record, also known as topk: 2
+
+        The boolean expression used to filter attribute []: 
+
+        The names of partitions to search(split by "," if multiple) ['_default'] []: 
+
+        Timeout []: 
     """
     collectionName = click.prompt(
         'Collection name', type=click.Choice(obj._list_collection_names()))
@@ -489,6 +534,7 @@ def search(obj):
     annsField = click.prompt(
         'The vector field used to search of collection', type=click.Choice(obj._list_field_names(collectionName, showVectorOnly=True)))
     indexDetails = obj._list_index(collectionName)
+    hasIndex = not not indexDetails
     if indexDetails:
         index_type = indexDetails['index_type']
         search_parameters = IndexTypesMap[index_type]['search_parameters']
@@ -500,17 +546,16 @@ def search(obj):
             paramInput = click.prompt(f'Search parameter {parameter}\'s value')
             params += [f"{parameter}:{paramInput}"]
     else:
-        metricType = click.prompt(
-            'Metric type', default='', type=click.Choice(MetricTypes))
-        params = click.prompt(
-            f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {SearchParams})', default='')
+        metricType = ''
+        params = []
+    roundDecimal = click.prompt('The specified number of decimal places of returned distance', default=-1, type=int)
     limit = click.prompt(
         'The max number of returned record, also known as topk', default=None, type=int)
     expr = click.prompt(
         'The boolean expression used to filter attribute', default='')
     partitionNames = click.prompt(
         f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
-    timeout = click.prompt('timeout', default='')
+    timeout = click.prompt('Timeout', default='')
     export, exportPath = False, ''
     # if click.confirm('Would you like to export results as a csv File?'):
     #     export = True
@@ -520,7 +565,7 @@ def search(obj):
     #     exportPath = click.prompt('Directory path to csv file')
     try:
         searchParameters = validateSearchParams(
-            data, annsField, metricType, params, limit, expr, partitionNames, timeout)
+            data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal, hasIndex=hasIndex)
         obj.checkConnection()
     except ParameterException as pe:
         click.echo("Error!\n{}".format(str(pe)))

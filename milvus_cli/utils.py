@@ -173,8 +173,8 @@ def validateIndexParameter(indexType, metricType, params):
     if metricType not in MetricTypes:
         raise ParameterException(
             'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
-    if not params:
-        raise ParameterException('Missing params')
+    # if not params:
+    #     raise ParameterException('Missing params')
     paramNames = []
     buildingParameters = IndexTypesMap[indexType]['index_building_parameters']
     for param in params:
@@ -197,7 +197,7 @@ def validateIndexParameter(indexType, metricType, params):
         raise ParameterException('Index params are duplicated.')
 
 
-def validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout):
+def validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal, hasIndex=True):
     import json
     result = {}
     # Validate data
@@ -215,35 +215,38 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
     if not annsField:
         raise ParameterException('annsField is empty!')
     result['anns_field'] = annsField
-    # Validate metricType
-    if metricType not in MetricTypes:
-        raise ParameterException(
-            'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
-    # Validate params
-    paramDict = {}
-    if type(params) == str:
-        paramsList = params.replace(' ', '').split(',')
+    if hasIndex:
+        # Validate metricType
+        if metricType not in MetricTypes:
+            raise ParameterException(
+                'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
+        # Validate params
+        paramDict = {}
+        if type(params) == str:
+            paramsList = params.replace(' ', '').split(',')
+        else:
+            paramsList = params
+        for param in paramsList:
+            if not param:
+                continue
+            paramList = param.split(':')
+            if not (len(paramList) == 2):
+                raise ParameterException(
+                    'Params should contain two paremeters and concat by ":".')
+            [paramName, paramValue] = paramList
+            if paramName not in SearchParams:
+                raise ParameterException(
+                    'Invalid search parameter, should be one of {}'.format(str(SearchParams)))
+            try:
+                paramDict[paramName] = int(paramValue)
+            except ValueError as e:
+                raise ParameterException(
+                    """Search parameter's value should be int.""")
+        result['param'] = {"metric_type": metricType}
+        if paramDict.keys():
+            result['param']['params'] = paramDict
     else:
-        paramsList = params
-    for param in paramsList:
-        if not param:
-            continue
-        paramList = param.split(':')
-        if not (len(paramList) == 2):
-            raise ParameterException(
-                'Params should contain two paremeters and concat by ":".')
-        [paramName, paramValue] = paramList
-        if paramName not in SearchParams:
-            raise ParameterException(
-                'Invalid search parameter, should be one of {}'.format(str(SearchParams)))
-        try:
-            paramDict[paramName] = int(paramValue)
-        except ValueError as e:
-            raise ParameterException(
-                """Search parameter's value should be int.""")
-    result['param'] = {"metric_type": metricType}
-    if paramDict.keys():
-        result['param']['params'] = paramDict
+        result['param'] = {}
     #  Validate limit
     try:
         result['limit'] = int(limit)
@@ -263,6 +266,8 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
     # Validate timeout
     if timeout:
         result['timeout'] = float(timeout)
+    if roundDecimal:
+        result['round_decimal'] = int(roundDecimal)
     return result
 
 
@@ -536,8 +541,8 @@ class PyOrm(object):
         # hits = res[0]
         results = []
         for hits in res:
-            results += [tabulate(map(lambda x: [x.id, x.distance], hits), headers=[
-                                 'Index', 'ID', 'Distance'], tablefmt='grid', showindex=True)]
+            results += [tabulate(map(lambda x: [x.id, x.distance, x.score], hits), headers=[
+                                 'Index', 'ID', 'Distance', 'Score'], tablefmt='grid', showindex=True)]
         # return tabulate(map(lambda x: [x.id, x.distance], hits), headers=['Index', 'ID', 'Distance'], tablefmt='grid', showindex=True)
         return results
 
