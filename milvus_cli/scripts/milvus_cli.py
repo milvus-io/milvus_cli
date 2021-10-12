@@ -651,7 +651,8 @@ def runCliPrompt():
             except Exception as e:
                 click.echo(
                     message=f"Error occurred!\n{str(e)}", err=True)
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
+        print()
         sys.exit(0)
 
 
