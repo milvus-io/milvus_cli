@@ -197,7 +197,7 @@ def validateIndexParameter(indexType, metricType, params):
         raise ParameterException('Index params are duplicated.')
 
 
-def validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout):
+def validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal):
     import json
     result = {}
     # Validate data
@@ -263,6 +263,8 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
     # Validate timeout
     if timeout:
         result['timeout'] = float(timeout)
+    if roundDecimal:
+        result['round_decimal'] = int(roundDecimal)
     return result
 
 

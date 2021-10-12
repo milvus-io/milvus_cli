@@ -504,13 +504,14 @@ def search(obj):
             'Metric type', default='', type=click.Choice(MetricTypes))
         params = click.prompt(
             f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {SearchParams})', default='')
+    roundDecimal = click.prompt('The specified number of decimal places of returned distance', default=-1, type=int)
     limit = click.prompt(
         'The max number of returned record, also known as topk', default=None, type=int)
     expr = click.prompt(
         'The boolean expression used to filter attribute', default='')
     partitionNames = click.prompt(
         f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
-    timeout = click.prompt('timeout', default='')
+    timeout = click.prompt('Timeout', default='')
     export, exportPath = False, ''
     # if click.confirm('Would you like to export results as a csv File?'):
     #     export = True
@@ -520,7 +521,7 @@ def search(obj):
     #     exportPath = click.prompt('Directory path to csv file')
     try:
         searchParameters = validateSearchParams(
-            data, annsField, metricType, params, limit, expr, partitionNames, timeout)
+            data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal)
         obj.checkConnection()
     except ParameterException as pe:
         click.echo("Error!\n{}".format(str(pe)))
