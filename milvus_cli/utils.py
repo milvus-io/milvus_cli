@@ -173,8 +173,8 @@ def validateIndexParameter(indexType, metricType, params):
     if metricType not in MetricTypes:
         raise ParameterException(
             'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
-    if not params:
-        raise ParameterException('Missing params')
+    # if not params:
+    #     raise ParameterException('Missing params')
     paramNames = []
     buildingParameters = IndexTypesMap[indexType]['index_building_parameters']
     for param in params:

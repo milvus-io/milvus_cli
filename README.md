@@ -178,18 +178,23 @@ Usage: milvus_cli.py create index [OPTIONS]
 
   Example:
 
-    create index -c car -f vector -t IVF_FLAT -m L2 -p nlist:128
+      milvus_cli > create index
+
+      Collection name (car, car2): car2
+
+      The name of the field to create an index for (vector): vector
+
+      Index type (FLAT, IVF_FLAT, IVF_SQ8, IVF_PQ, RNSG, HNSW, ANNOY):
+      IVF_FLAT
+
+      Index metric type (L2, IP, HAMMING, TANIMOTO): L2
+
+      Index params nlist: 2
+
+      Timeout []:
 
 Options:
-  -c, --collection TEXT    Collection name.
-  -f, --field TEXT         The name of the field to create an index for.
-  -t, --index-type TEXT    Index type.
-  -m, --index-metric TEXT  Index metric type.
-  -p, --index-params TEXT  Index params, usage is "<Name>:<Value>"
-  -e, --timeout INTEGER    An optional duration of time in seconds to allow
-                           for the RPC. When timeout is set to None, client
-                           waits until server response or error occur.
-  --help                   Show this message and exit.
+  --help  Show this message and exit.
 ```
 
 #### `delete`

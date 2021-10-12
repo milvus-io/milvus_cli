@@ -9,7 +9,7 @@ from utils import PyOrm, Completer
 from utils import getPackageVersion, readCsvFile
 from utils import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
 from utils import ParameterException, ConnectException
-from utils import MetricTypes, IndexParams, SearchParams, IndexTypesMap
+from utils import MetricTypes, IndexParams, SearchParams, IndexTypesMap, IndexTypes
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -304,23 +304,45 @@ def createPartition(obj, collectionName, partition, description):
 
 
 @createDetails.command('index')
-@click.option('-c', '--collection', 'collectionName', help='Collection name.', default='')
-@click.option('-f', '--field', 'fieldName', help='The name of the field to create an index for.', default='')
-@click.option('-t', '--index-type', 'indexType', help='Index type.', default='')
-@click.option('-m', '--index-metric', 'metricType', help='Index metric type.', default='')
-@click.option('-p', '--index-params', 'params', help='Index params, usage is "<Name>:<Value>"', default=None, multiple=True)
-@click.option('-e', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.', default=None, type=int)
 @click.pass_obj
-def createIndex(obj, collectionName, fieldName, indexType, metricType, params, timeout):
+def createIndex(obj):
     """
     Create index.
 
     Example:
 
-      create index -c car -f vector -t IVF_FLAT -m L2 -p nlist:128
+        milvus_cli > create index
+
+        Collection name (car, car2): car2
+
+        The name of the field to create an index for (vector): vector
+
+        Index type (FLAT, IVF_FLAT, IVF_SQ8, IVF_PQ, RNSG, HNSW, ANNOY): IVF_FLAT
+
+        Index metric type (L2, IP, HAMMING, TANIMOTO): L2
+
+        Index params nlist: 2
+
+        Timeout []: 
     """
     try:
         obj.checkConnection()
+        collectionName = click.prompt(
+            'Collection name', type=click.Choice(obj._list_collection_names()))
+        fieldName = click.prompt(
+            'The name of the field to create an index for', type=click.Choice(obj._list_field_names(collectionName, showVectorOnly=True)))
+        indexType = click.prompt(
+            'Index type', type=click.Choice(IndexTypes))
+        metricType = click.prompt(
+            'Index metric type', type=click.Choice(MetricTypes))
+        index_building_parameters = IndexTypesMap[indexType]['index_building_parameters']
+        params = []
+        for param in index_building_parameters:
+            tmpParam = click.prompt(
+                f'Index params {param}')
+            params.append(f'{param}:{tmpParam}')
+        inputTimeout = click.prompt('Timeout', default='')
+        timeout = inputTimeout if inputTimeout else None
         validateIndexParameter(
             indexType, metricType, params)
     except ParameterException as pe:
