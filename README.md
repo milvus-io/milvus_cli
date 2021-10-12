@@ -509,61 +509,86 @@ Usage: milvus_cli.py search [OPTIONS]
   Conducts a vector similarity search with an optional boolean expression as
   filter.
 
-  Example-1:
+  Example-1(import a csv file):
 
-      Collection name: car
+      Collection name (car, test_collection): car
 
-      The vectors of search data, the length of data is number of query (nq),
+      The vectors of search data(the length of data is number of query (nq),
       the dim of every vector in data must be equal to vector field’s of
-      collection: examples/import_csv/search_vectors.csv
+      collection. You can also import a csv file with out headers):
+      examples/import_csv/search_vectors.csv
 
-      The vector field used to search of collection []: vector
+      The vector field used to search of collection (vector): vector
 
-      Metric type []: L2
+      Metric type: L2
 
-      The parameters of search(split by "," if multiple) []: nprobe:10
+      Search parameter nprobe's value: 10
 
-      The max number of returned record, also known as topk []: 2
+      The max number of returned record, also known as topk: 2
 
       The boolean expression used to filter attribute []: id > 0
 
-      The names of partitions to search(split by "," if multiple) []: _default
+      The names of partitions to search(split by "," if multiple) ['_default']
+      []: _default
+
+  Example-2(collection has index):
+
+      Collection name (car, test_collection): car
+
+      The vectors of search data(the length of data is number of query (nq), 
+      the dim of every vector in data must be equal to vector field’s of 
+      collection. You can also import a csv file with out headers):
+          [[0.71, 0.76, 0.17, 0.13, 0.42, 0.07, 0.15, 0.67, 0.58, 0.02, 0.39, 
+          0.47, 0.58, 0.88, 0.73, 0.31, 0.23, 0.57, 0.33, 0.2, 0.03, 0.43, 
+          0.78, 0.49, 0.17, 0.56, 0.76, 0.54, 0.45, 0.46, 0.05, 0.1, 0.43, 
+          0.63, 0.29, 0.44, 0.65, 0.01, 0.35, 0.46, 0.66, 0.7, 0.88, 0.07, 
+          0.49, 0.92, 0.57, 0.5, 0.16, 0.77, 0.98, 0.1, 0.44, 0.88, 0.82, 
+          0.16, 0.67, 0.63, 0.57, 0.55, 0.95, 0.13, 0.64, 0.43, 0.71, 0.81, 
+          0.43, 0.65, 0.76, 0.7, 0.05, 0.24, 0.03, 0.9, 0.46, 0.28, 0.92, 
+          0.25, 0.97, 0.79, 0.73, 0.97, 0.49, 0.28, 0.64, 0.19, 0.23, 0.51, 
+          0.09, 0.1, 0.53, 0.03, 0.23, 0.94, 0.87, 0.14, 0.42, 0.82, 0.91, 
+          0.11, 0.91, 0.37, 0.26, 0.6, 0.89, 0.6, 0.32, 0.11, 0.98, 0.67, 
+          0.12, 0.66, 0.47, 0.02, 0.15, 0.6, 0.64, 0.57, 0.14, 0.81, 0.75, 
+          0.11, 0.49, 0.78, 0.16, 0.63, 0.57, 0.18]]
+
+      The vector field used to search of collection (vector): vector
+
+      Metric type: L2
+
+      Search parameter nprobe's value: 10
+
+      The specified number of decimal places of returned distance [-1]: 5
+
+      The max number of returned record, also known as topk: 2
+
+      The boolean expression used to filter attribute []: id > 0
+
+      The names of partitions to search(split by "," if multiple) ['_default']
+      []: _default
 
       timeout []:
 
-  Example-2:
+  Example-3(collection has no index):
 
-      Collection name: car
+      Collection name (car, car2): car
 
-          The vectors of search data, the length of data is number of query (nq), 
-          the dim of every vector in data must be equal to vector field’s of 
-          collection: 
-              [[0.71, 0.76, 0.17, 0.13, 0.42, 0.07, 0.15, 0.67, 0.58, 0.02, 0.39, 
-              0.47, 0.58, 0.88, 0.73, 0.31, 0.23, 0.57, 0.33, 0.2, 0.03, 0.43, 
-              0.78, 0.49, 0.17, 0.56, 0.76, 0.54, 0.45, 0.46, 0.05, 0.1, 0.43, 
-              0.63, 0.29, 0.44, 0.65, 0.01, 0.35, 0.46, 0.66, 0.7, 0.88, 0.07, 
-              0.49, 0.92, 0.57, 0.5, 0.16, 0.77, 0.98, 0.1, 0.44, 0.88, 0.82, 
-              0.16, 0.67, 0.63, 0.57, 0.55, 0.95, 0.13, 0.64, 0.43, 0.71, 0.81, 
-              0.43, 0.65, 0.76, 0.7, 0.05, 0.24, 0.03, 0.9, 0.46, 0.28, 0.92, 
-              0.25, 0.97, 0.79, 0.73, 0.97, 0.49, 0.28, 0.64, 0.19, 0.23, 0.51, 
-              0.09, 0.1, 0.53, 0.03, 0.23, 0.94, 0.87, 0.14, 0.42, 0.82, 0.91, 
-              0.11, 0.91, 0.37, 0.26, 0.6, 0.89, 0.6, 0.32, 0.11, 0.98, 0.67, 
-              0.12, 0.66, 0.47, 0.02, 0.15, 0.6, 0.64, 0.57, 0.14, 0.81, 0.75, 
-              0.11, 0.49, 0.78, 0.16, 0.63, 0.57, 0.18]]
+      The vectors of search data(the length of data is number of query (nq),
+      the dim of every vector in data must be equal to vector field’s of
+      collection. You can also import a csv file with out headers):
+      examples/import_csv/search_vectors.csv
 
-      The vector field used to search of collection []: vector
+      The vector field used to search of collection (vector): vector
 
-      Metric type []: L2
+      The specified number of decimal places of returned distance [-1]: 5
 
-      The parameters of search(split by "," if multiple) []: nprobe:10
+      The max number of returned record, also known as topk: 2
 
-      The max number of returned record, also known as topk []: 2
+      The boolean expression used to filter attribute []:
 
-      The boolean expression used to filter attribute []: id > 0
+      The names of partitions to search(split by "," if multiple) ['_default']
+      []:
 
-      The names of partitions to search(split by "," if multiple) []: _default
-
-      timeout []: 
+      Timeout []:
 
 Options:
   --help  Show this message and exit.

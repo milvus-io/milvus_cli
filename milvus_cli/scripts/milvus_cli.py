@@ -428,12 +428,13 @@ def search(obj):
     """
     Conducts a vector similarity search with an optional boolean expression as filter.
 
-    Example-1:
+    Example-1(import a csv file):
 
         Collection name (car, test_collection): car
 
-        The vectors of search data, the length of data is number of query (nq), 
-        the dim of every vector in data must be equal to vector field’s of collection: examples/import_csv/search_vectors.csv
+        The vectors of search data(the length of data is number of query (nq), 
+        the dim of every vector in data must be equal to vector field’s of 
+        collection. You can also import a csv file with out headers): examples/import_csv/search_vectors.csv
 
         The vector field used to search of collection (vector): vector
 
@@ -447,14 +448,14 @@ def search(obj):
 
         The names of partitions to search(split by "," if multiple) ['_default'] []: _default
 
-    Example-2:
+    Example-2(collection has index):
 
         Collection name (car, test_collection): car
 
         \b
-        The vectors of search data, the length of data is number of query (nq), 
+        The vectors of search data(the length of data is number of query (nq), 
         the dim of every vector in data must be equal to vector field’s of 
-        collection: 
+        collection. You can also import a csv file with out headers):
             [[0.71, 0.76, 0.17, 0.13, 0.42, 0.07, 0.15, 0.67, 0.58, 0.02, 0.39, 
             0.47, 0.58, 0.88, 0.73, 0.31, 0.23, 0.57, 0.33, 0.2, 0.03, 0.43, 
             0.78, 0.49, 0.17, 0.56, 0.76, 0.54, 0.45, 0.46, 0.05, 0.1, 0.43, 
@@ -474,6 +475,8 @@ def search(obj):
 
         Search parameter nprobe's value: 10
 
+        The specified number of decimal places of returned distance [-1]: 5
+
         The max number of returned record, also known as topk: 2
 
         The boolean expression used to filter attribute []: id > 0
@@ -481,6 +484,26 @@ def search(obj):
         The names of partitions to search(split by "," if multiple) ['_default'] []: _default
 
         timeout []: 
+    
+    Example-3(collection has no index):
+
+        Collection name (car, car2): car
+
+        The vectors of search data(the length of data is number of query (nq), 
+        the dim of every vector in data must be equal to vector field’s of 
+        collection. You can also import a csv file with out headers): examples/import_csv/search_vectors.csv
+
+        The vector field used to search of collection (vector): vector
+
+        The specified number of decimal places of returned distance [-1]: 5
+
+        The max number of returned record, also known as topk: 2
+
+        The boolean expression used to filter attribute []: 
+
+        The names of partitions to search(split by "," if multiple) ['_default'] []: 
+
+        Timeout []: 
     """
     collectionName = click.prompt(
         'Collection name', type=click.Choice(obj._list_collection_names()))
@@ -489,6 +512,7 @@ def search(obj):
     annsField = click.prompt(
         'The vector field used to search of collection', type=click.Choice(obj._list_field_names(collectionName, showVectorOnly=True)))
     indexDetails = obj._list_index(collectionName)
+    hasIndex = not not indexDetails
     if indexDetails:
         index_type = indexDetails['index_type']
         search_parameters = IndexTypesMap[index_type]['search_parameters']
@@ -500,10 +524,8 @@ def search(obj):
             paramInput = click.prompt(f'Search parameter {parameter}\'s value')
             params += [f"{parameter}:{paramInput}"]
     else:
-        metricType = click.prompt(
-            'Metric type', default='', type=click.Choice(MetricTypes))
-        params = click.prompt(
-            f'The parameters of search(input "<type>:<value>" and split by "," if multiple, type should be one of {SearchParams})', default='')
+        metricType = ''
+        params = []
     roundDecimal = click.prompt('The specified number of decimal places of returned distance', default=-1, type=int)
     limit = click.prompt(
         'The max number of returned record, also known as topk', default=None, type=int)
@@ -521,7 +543,7 @@ def search(obj):
     #     exportPath = click.prompt('Directory path to csv file')
     try:
         searchParameters = validateSearchParams(
-            data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal)
+            data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal, hasIndex=hasIndex)
         obj.checkConnection()
     except ParameterException as pe:
         click.echo("Error!\n{}".format(str(pe)))
