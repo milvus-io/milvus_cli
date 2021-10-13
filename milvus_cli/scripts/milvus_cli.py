@@ -5,11 +5,12 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import PyOrm, Completer
-from utils import getPackageVersion, readCsvFile
-from utils import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
-from utils import ParameterException, ConnectException
-from utils import MetricTypes, IndexParams, SearchParams, IndexTypesMap, IndexTypes
+from utils import PyOrm, Completer, getPackageVersion
+from Fs import readCsvFile
+from Validation import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
+from Types import ParameterException, ConnectException
+from Types import MetricTypes, IndexTypesMap, IndexTypes
+
 
 pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 
@@ -506,7 +507,7 @@ def search(obj):
         The names of partitions to search(split by "," if multiple) ['_default'] []: _default
 
         timeout []: 
-    
+
     Example-3(collection has no index):
 
         Collection name (car, car2): car
@@ -548,7 +549,8 @@ def search(obj):
     else:
         metricType = ''
         params = []
-    roundDecimal = click.prompt('The specified number of decimal places of returned distance', default=-1, type=int)
+    roundDecimal = click.prompt(
+        'The specified number of decimal places of returned distance', default=-1, type=int)
     limit = click.prompt(
         'The max number of returned record, also known as topk', default=None, type=int)
     expr = click.prompt(
