@@ -52,7 +52,9 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 2.0.0-RC4 | 2.0.0rc4 | 0.1.4 |
 | 2.0.0-RC5 | 2.0.0rc5 | 0.1.5 |
 | 2.0.0-RC6 | 2.0.0rc6 | 0.1.6 |
+| 2.0.0-RC7 | 2.0.0rc7 | 0.1.7 |
 
+*\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous versions of Milvus 2.0.0 because of some changes made to storage format.*
 
 ## Installation
 
