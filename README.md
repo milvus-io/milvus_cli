@@ -663,27 +663,13 @@ Options:
 #### `version`
 
 ```
-milvus_cli > --help
-Usage: milvus_cli.py [OPTIONS] COMMAND [ARGS]...
+milvus_cli > version --help
+Usage: milvus_cli.py version [OPTIONS]
 
-  Milvus CLI
+  Get Milvus CLI version.
 
 Options:
   --help  Show this message and exit.
-
-Commands:
-  clear     Clear screen.
-  connect   Connect to Milvus.
-  create    Create collection, partition and index.
-  delete    Delete specified collection, partition and index.
-  describe  Describe collection or partition.
-  list      List collections, partitions and indexes.
-  load      Load specified collection.
-  query     Query with a set of criteria, and results in a list of...
-  release   Release specified collection.
-  search    Conducts a vector similarity search with an optional boolean...
-  show      Show connection, loading_progress and index_progress.
-  version   Get Milvus CLI version.
 ```
 
 <br><!-- Do not remove start of hero-bot --><br>

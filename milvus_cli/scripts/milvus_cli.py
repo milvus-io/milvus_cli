@@ -103,7 +103,7 @@ def loadingProgress(obj, collection, partition):
 
 @show.command('index_progress')
 @click.option('-c', '--collection', 'collection', help='The name of collection is loading', default='')
-@click.option('-i', '--index', 'index', help='[Optional] - Index name.', default='')
+@click.option('-i', '--index', 'index', help='[Optional] - Index name.', default='') #! TODO: To be removed
 @click.pass_obj
 def indexProgress(obj, collection, index):
     """Show # indexed entities vs. # total entities."""
