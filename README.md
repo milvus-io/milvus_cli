@@ -637,6 +637,8 @@ Options:
 milvus_cli > show index_progress --help
 Usage: milvus_cli.py show index_progress [OPTIONS]
 
+  Show # indexed entities vs. # total entities.
+
 Options:
   -c, --collection TEXT  The name of collection is loading
   -i, --index TEXT       [Optional] - Index name.
