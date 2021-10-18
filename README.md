@@ -671,6 +671,11 @@ Usage: milvus_cli.py version [OPTIONS]
 Options:
   --help  Show this message and exit.
 ```
+or
+```shell
+$ milvus_cli --version
+Milvus Cli v0.1.7
+```
 
 <br><!-- Do not remove start of hero-bot --><br>
 <img src="https://img.shields.io/badge/all--contributors-3-orange"><br>
