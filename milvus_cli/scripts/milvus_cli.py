@@ -34,9 +34,9 @@ def help():
 
 
 @cli.command(no_args_is_help=False)
-@click.option('-a', '--alias', 'alias', help="Milvus link alias name, default is `default`.", default='default', type=str)
-@click.option('-h', '--host', 'host', help="Host name, default is `127.0.0.1`.", default='127.0.0.1', type=str)
-@click.option('-p', '--port', 'port', help="Port, default is `19530`.", default=19530, type=int)
+@click.option('-a', '--alias', 'alias', help="[Optional] - Milvus link alias name, default is `default`.", default='default', type=str)
+@click.option('-h', '--host', 'host', help="[Optional] - Host name, default is `127.0.0.1`.", default='127.0.0.1', type=str)
+@click.option('-p', '--port', 'port', help="[Optional] - Port, default is `19530`.", default=19530, type=int)
 @click.pass_obj
 def connect(obj, alias, host, port):
     """
@@ -75,7 +75,7 @@ def show(obj):
 
 
 @show.command()
-@click.option('-a', '--all', 'showAll', help="Show all connections.", default=False, is_flag=True)
+@click.option('-a', '--all', 'showAll', help="[Optional, Flag] - Show all connections.", default=False, is_flag=True)
 @click.pass_obj
 def connection(obj, showAll):
     """Show current/all connection details"""
@@ -102,7 +102,7 @@ def loadingProgress(obj, collection, partition):
 
 
 @show.command('index_progress')
-@click.option('-c', '--collection', 'collection', help='The name of collection is loading', default='')
+@click.option('-c', '--collection', 'collection', help='The name of collection is loading')
 @click.option('-i', '--index', 'index', help='[Optional] - Index name.', default='') #! TODO: To be removed
 @click.pass_obj
 def indexProgress(obj, collection, index):
@@ -120,7 +120,7 @@ def indexProgress(obj, collection, index):
 
 
 @cli.command()
-@click.option('-c', '--collection', 'collection', help='The name of collection to load.', default='')
+@click.option('-c', '--collection', 'collection', help='The name of collection to load.')
 @click.pass_obj
 def load(obj, collection):
     """Load specified collection."""
@@ -159,8 +159,8 @@ def listDetails(obj):
 
 
 @listDetails.command()
-@click.option('--timeout', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None)
-@click.option('--show-loaded', 'showLoaded', help="[Optional] - Only show loaded collections.", default=False)
+@click.option('--timeout', '-t', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None)
+@click.option('--show-loaded', '-l', 'showLoaded', help="[Optional] - Only show loaded collections.", default=False)
 @click.pass_obj
 def collections(obj, timeout, showLoaded):
     """List all collections."""
@@ -172,7 +172,7 @@ def collections(obj, timeout, showLoaded):
 
 
 @listDetails.command()
-@click.option('-c', '--collection', 'collection', help='The name of collection.', default='')
+@click.option('-c', '--collection', 'collection', help='The name of collection.')
 @click.pass_obj
 def partitions(obj, collection):
     """List all partitions of the specified collection."""
@@ -186,7 +186,7 @@ def partitions(obj, collection):
 
 
 @listDetails.command()
-@click.option('-c', '--collection', 'collection', help='The name of collection.', default='')
+@click.option('-c', '--collection', 'collection', help='The name of collection.')
 @click.pass_obj
 def indexes(obj, collection):
     """List all indexes of the specified collection."""
@@ -207,7 +207,7 @@ def describeDetails(obj):
 
 
 @describeDetails.command('collection')
-@click.option('-c', '--collection', 'collection', help='The name of collection.', default='')
+@click.option('-c', '--collection', 'collection', help='The name of collection.')
 @click.pass_obj
 def describeCollection(obj, collection):
     """
@@ -225,8 +225,8 @@ def describeCollection(obj, collection):
 
 
 @describeDetails.command('partition')
-@click.option('-c', '--collection', 'collectionName', help='The name of collection.', default='')
-@click.option('-p', '--partition', 'partition', help='The name of partition.', default=None)
+@click.option('-c', '--collection', 'collectionName', help='The name of collection.')
+@click.option('-p', '--partition', 'partition', help='[Optional] - The name of partition, default is "_default".', default='_default')
 @click.pass_obj
 def describePartition(obj, collectionName, partition):
     """
@@ -253,15 +253,15 @@ def createDetails(obj):
 
 
 @createDetails.command('collection')
-@click.option('-c', '--collection-name', 'collectionName', help='Collection name to be created.', default='')
-@click.option('-p', '--schema-primary-field', 'primaryField', help='Primary field name.', default='')
-@click.option('-a', '--schema-auto-id', 'autoId', help='Enable auto id.', default=False, is_flag=True)
-@click.option('-d', '--schema-description', 'description', help='Description details.', default='')
-@click.option('-f', '--schema-field', 'fields', help='FieldSchema. Usage is "<Name>:<DataType>:<Dim(if vector) or Description>"', default=None, multiple=True)
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name to be created.')
+@click.option('-p', '--schema-primary-field', 'primaryField', help='Primary field name.')
+@click.option('-a', '--schema-auto-id', 'autoId', help='[Optional, Flag] - Enable auto id.', default=False, is_flag=True)
+@click.option('-d', '--schema-description', 'description', help='[Optional] - Description details.', default='')
+@click.option('-f', '--schema-field', 'fields', help='[Multiple] - FieldSchema. Usage is "<Name>:<DataType>:<Dim(if vector) or Description>"', default=None, multiple=True)
 @click.pass_obj
 def createCollection(obj, collectionName, primaryField, autoId, description, fields):
     """
-    Create partition.
+    Create collection.
 
     Example:
 
@@ -282,9 +282,9 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
 
 
 @createDetails.command('partition')
-@click.option('-c', '--collection', 'collectionName', help='Collection name.', default='')
-@click.option('-p', '--partition', 'partition', help='The name of partition.', default=None)
-@click.option('-d', '--description', 'description', help='Partition description.', default='')
+@click.option('-c', '--collection', 'collectionName', help='Collection name.')
+@click.option('-p', '--partition', 'partition', help='The name of partition.')
+@click.option('-d', '--description', 'description', help='[Optional] - Partition description.', default='')
 @click.pass_obj
 def createPartition(obj, collectionName, partition, description):
     """
@@ -364,8 +364,8 @@ def deleteObject(obj):
 
 
 @deleteObject.command('collection')
-@click.option('-c', '--collection', 'collectionName', help='The name of collection to be deleted.', default='')
-@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
+@click.option('-c', '--collection', 'collectionName', help='The name of collection to be deleted.')
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deleteCollection(obj, collectionName, timeout):
     """
@@ -391,9 +391,9 @@ def deleteCollection(obj, collectionName, timeout):
 
 
 @deleteObject.command('partition')
-@click.option('-c', '--collection', 'collectionName', help='Collection name', default=None)
-@click.option('-p', '--partition', 'partition', help='The name of partition.', default=None)
-@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
+@click.option('-c', '--collection', 'collectionName', help='Collection name')
+@click.option('-p', '--partition', 'partition', help='The name of partition.')
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deletePartition(obj, collectionName, partition, timeout):
     """
@@ -419,8 +419,8 @@ def deletePartition(obj, collectionName, partition, timeout):
 
 
 @deleteObject.command('index')
-@click.option('-c', '--collection', 'collectionName', help='Collection name', default=None)
-@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=int)
+@click.option('-c', '--collection', 'collectionName', help='Collection name')
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deleteIndex(obj, collectionName, timeout):
     """
@@ -626,9 +626,9 @@ def query(obj):
 
 
 @cli.command('import')
-@click.option('-c', '--collection', 'collectionName', help='The name of collection to be imported.', default=None)
-@click.option('-p', '--partition', 'partitionName', help='The partition name which the data will be inserted to, if partition name is not passed, then the data will be inserted to “_default” partition.', default=None)
-@click.option('-t', '--timeout', 'timeout', help='An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.option('-c', '--collection', 'collectionName', help='The name of collection to be imported.')
+@click.option('-p', '--partition', 'partitionName', help='[Optional] - The partition name which the data will be inserted to, if partition name is not passed, then the data will be inserted to “_default” partition.', default=None)
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.argument('path')
 @click.pass_obj
 def importData(obj, collectionName, partitionName, timeout, path):
@@ -637,7 +637,7 @@ def importData(obj, collectionName, partitionName, timeout, path):
 
     Example:
 
-        milvus_cli > import 'examples/import_csv/vectors.csv' -c car
+        milvus_cli > import -c car 'examples/import_csv/vectors.csv'
 
         Reading csv file...  [####################################]  100%
 

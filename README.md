@@ -104,9 +104,10 @@ Usage: milvus_cli.py connect [OPTIONS]
       milvus_cli > connect -h 127.0.0.1 -p 19530 -a default
 
 Options:
-  -a, --alias TEXT    Milvus link alias name, default is `default`.
-  -h, --host TEXT     Host name, default is `127.0.0.1`.
-  -p, --port INTEGER  Port, default is `19530`.
+  -a, --alias TEXT    [Optional] - Milvus link alias name, default is
+                      `default`.
+  -h, --host TEXT     [Optional] - Host name, default is `127.0.0.1`.
+  -p, --port INTEGER  [Optional] - Port, default is `19530`.
   --help              Show this message and exit.
 ```
 
@@ -133,19 +134,21 @@ Commands:
 milvus_cli > create collection --help
 Usage: milvus_cli.py create collection [OPTIONS]
 
-  Create partition.
+  Create collection.
 
   Example:
 
-    create collection -c car -f id:INT64:primary_field -f vector:FLOAT_VECTOR:128 -f color:INT64:color -f brand:INT64:brand -p id -a -d 'car_collection'
+    create collection -c car -f id:INT64:primary_field -f
+    vector:FLOAT_VECTOR:128 -f color:INT64:color -f brand:INT64:brand -p id -a
+    -d 'car_collection'
 
 Options:
-  -c, --collection-name TEXT                 Collection name to be created.
+  -c, --collection-name TEXT      Collection name to be created.
   -p, --schema-primary-field TEXT
                                   Primary field name.
-  -a, --schema-auto-id            Enable auto id.
-  -d, --schema-description TEXT   Description details.
-  -f, --schema-field TEXT         FieldSchema. Usage is
+  -a, --schema-auto-id            [Optional, Flag] - Enable auto id.
+  -d, --schema-description TEXT   [Optional] - Description details.
+  -f, --schema-field TEXT         [Multiple] - FieldSchema. Usage is
                                   "<Name>:<DataType>:<Dim(if vector) or
                                   Description>"
   --help                          Show this message and exit.
@@ -161,12 +164,13 @@ Usage: milvus_cli.py create partition [OPTIONS]
 
   Example:
 
-      milvus_cli > create partition -c car -p new_partition -d test_add_partition
+      milvus_cli > create partition -c car -p new_partition -d
+      test_add_partition
 
 Options:
   -c, --collection TEXT   Collection name.
   -p, --partition TEXT    The name of partition.
-  -d, --description TEXT  Partition description.
+  -d, --description TEXT  [Optional] - Partition description.
   --help                  Show this message and exit.
 ```
 
@@ -230,9 +234,10 @@ Usage: milvus_cli.py delete collection [OPTIONS]
 
 Options:
   -c, --collection TEXT  The name of collection to be deleted.
-  -t, --timeout INTEGER  An optional duration of time in seconds to allow for
-                         the RPC. If timeout is set to None, the client keeps
-                         waiting until the server responds or an error occurs.
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. If timeout is set to None, the
+                         client keeps waiting until the server responds or an
+                         error occurs.
   --help                 Show this message and exit.
 ```
 
@@ -251,9 +256,10 @@ Usage: milvus_cli.py delete partition [OPTIONS]
 Options:
   -c, --collection TEXT  Collection name
   -p, --partition TEXT   The name of partition.
-  -t, --timeout INTEGER  An optional duration of time in seconds to allow for
-                         the RPC. If timeout is set to None, the client keeps
-                         waiting until the server responds or an error occurs.
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. If timeout is set to None, the
+                         client keeps waiting until the server responds or an
+                         error occurs.
   --help                 Show this message and exit.
 ```
 
@@ -271,9 +277,10 @@ Usage: milvus_cli.py delete index [OPTIONS]
 
 Options:
   -c, --collection TEXT  Collection name
-  -t, --timeout INTEGER  An optional duration of time in seconds to allow for
-                         the RPC. If timeout is set to None, the client keeps
-                         waiting until the server responds or an error occurs.
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. If timeout is set to None, the
+                         client keeps waiting until the server responds or an
+                         error occurs.
   --help                 Show this message and exit.
 ```
 
@@ -324,7 +331,8 @@ Usage: milvus_cli.py describe partition [OPTIONS]
 
 Options:
   -c, --collection TEXT  The name of collection.
-  -p, --partition TEXT   The name of partition.
+  -p, --partition TEXT   [Optional] - The name of partition, default is
+                         "_default".
   --help                 Show this message and exit.
 ```
 
@@ -369,14 +377,14 @@ Commands:
 #### `import`
 
 ```
-milvus_cli > import --help
+milvus_cli > import  --help
 Usage: milvus_cli.py import [OPTIONS] PATH
 
-  Import data.
+  Import data from csv file with headers and insert into target collection.
 
   Example:
 
-      milvus_cli > import 'examples/import_csv/vectors.csv' -c car
+      milvus_cli > import -c car 'examples/import_csv/vectors.csv'
 
       Reading csv file...  [####################################]  100%
 
@@ -388,12 +396,13 @@ Usage: milvus_cli.py import [OPTIONS] PATH
 
 Options:
   -c, --collection TEXT  The name of collection to be imported.
-  -p, --partition TEXT   The partition name which the data will be inserted
-                         to, if partition name is not passed, then the data
-                         will be inserted to “_default” partition.
-  -t, --timeout FLOAT    An optional duration of time in seconds to allow for
-                         the RPC. If timeout is set to None, the client keeps
-                         waiting until the server responds or an error occurs.
+  -p, --partition TEXT   [Optional] - The partition name which the data will
+                         be inserted to, if partition name is not passed, then
+                         the data will be inserted to “_default” partition.
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. If timeout is set to None, the
+                         client keeps waiting until the server responds or an
+                         error occurs.
   --help                 Show this message and exit.
 ```
 
@@ -423,11 +432,12 @@ Usage: milvus_cli.py list collections [OPTIONS]
   List all collections.
 
 Options:
-  --timeout TEXT         [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. When timeout is set to None,
-                         client waits until server response or error occur.
-  --show-loaded BOOLEAN  [Optional] - Only show loaded collections.
-  --help                 Show this message and exit.
+  -t, --timeout TEXT         [Optional] - An optional duration of time in
+                             seconds to allow for the RPC. When timeout is set
+                             to None, client waits until server response or
+                             error occur.
+  -l, --show-loaded BOOLEAN  [Optional] - Only show loaded collections.
+  --help                     Show this message and exit.
 ```
 
 ##### `list indexes`
@@ -627,7 +637,7 @@ Usage: milvus_cli.py show connection [OPTIONS]
   Show current/all connection details
 
 Options:
-  -a, --all  Show all connections.
+  -a, --all  [Optional, Flag] - Show all connections.
   --help     Show this message and exit.
 ```
 
