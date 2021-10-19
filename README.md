@@ -21,6 +21,7 @@
       - [`describe`](#describe)
         - [`describe collection`](#describe-collection)
         - [`describe partition`](#describe-partition)
+        - [`describe index`](#describe-index)
       - [`exit`](#exit)
       - [`help`](#help)
       - [`import`](#import)
@@ -336,6 +337,22 @@ Options:
   --help                 Show this message and exit.
 ```
 
+##### `describe index`
+
+```
+milvus_cli > describe index --help
+Usage: milvus_cli.py describe index [OPTIONS]
+
+  Describe index.
+
+  Example:
+
+      milvus_cli > describe index -c car
+
+Options:
+  -c, --collection TEXT  The name of collection.
+  --help                 Show this message and exit.
+```
 #### `exit`
 
 ```

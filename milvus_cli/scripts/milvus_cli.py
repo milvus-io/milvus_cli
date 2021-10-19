@@ -222,7 +222,7 @@ def indexes(obj, collection):
 @cli.group('describe', no_args_is_help=False)
 @click.pass_obj
 def describeDetails(obj):
-    """Describe collection or partition."""
+    """Describe collection, partition and index."""
     pass
 
 
@@ -263,6 +263,26 @@ def describePartition(obj, collectionName, partition):
         click.echo(f"Error when getting collection by name!\n{str(e)}")
     else:
         click.echo(obj.getPartitionDetails(collection, partition))
+
+
+@describeDetails.command('index')
+@click.option('-c', '--collection', 'collectionName', help='The name of collection.')
+@click.pass_obj
+def describeIndex(obj, collectionName):
+    """
+    Describe index.
+
+    Example:
+
+        milvus_cli > describe index -c car
+    """
+    try:
+        obj.checkConnection()
+        collection = obj.getTargetCollection(collectionName)
+    except Exception as e:
+        click.echo(f"Error when getting collection by name!\n{str(e)}")
+    else:
+        click.echo(obj.getIndexDetails(collection))
 
 
 @cli.group('create', no_args_is_help=False)

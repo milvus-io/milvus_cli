@@ -224,7 +224,9 @@ class PyOrm(object):
         rows.append(['Corresponding Field', index.field_name])
         rows.append(['Index Type', index.params['index_type']])
         rows.append(['Metric Type', index.params['metric_type']])
-        rows.append(['Params', index.params['params']])
+        params = index.params['params']
+        paramsDetails = "\n- ".join(map(lambda k: f"{k[0]}: {k[1]}", params.items()))
+        rows.append(['Params', paramsDetails])
         return tabulate(rows, tablefmt='grid')
 
     def createCollection(self, collectionName, primaryField, autoId, description, fields):
@@ -326,7 +328,7 @@ class Completer(object):
         'connect': [],
         'create': ['collection', 'partition', 'index'],
         'delete': ['collection', 'partition', 'index'],
-        'describe': ['collection', 'partition'],
+        'describe': ['collection', 'partition', 'index'],
         'exit': [],
         'help': [],
         'import': [],
