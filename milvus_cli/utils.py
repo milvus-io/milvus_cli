@@ -109,6 +109,15 @@ class PyOrm(object):
             raise ParameterException('Collection error!\n')
         else:
             return target
+    
+    def getTargetPartition(self, collectionName, partitionName):
+        try:
+            targetCollection = self.getTargetCollection(collectionName)
+            target = targetCollection.partition(partitionName)
+        except Exception as e:
+            raise ParameterException('Partition error!\n')
+        else:
+            return target
 
     def loadCollection(self, collectionName):
         target = self.getTargetCollection(collectionName)
@@ -121,6 +130,19 @@ class PyOrm(object):
         target.release()
         result = self.showCollectionLoadingProgress(collectionName)
         return tabulate([[collectionName, result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=['Collection Name', 'Loaded', 'Total'], tablefmt='grid')
+
+    def loadPartition(self, collectionName, partitionName):
+        targetPartition = self.getTargetPartition(collectionName, partitionName)
+        targetPartition.load()
+        result = self.showCollectionLoadingProgress(collectionName, [partitionName])
+        return result
+    
+    def loadPartitions(self, collectionName, partitionNameList):
+        result = []
+        for name in partitionNameList:
+            tmp = self.loadPartition(collectionName, name)
+            result.append([name, tmp.get('num_loaded_entities'), tmp.get('num_total_entities')])
+        return tabulate(result, headers=['Partition Name', 'Loaded', 'Total'], tablefmt='grid')
 
     def listPartitions(self, collectionName):
         target = self.getTargetCollection(collectionName)

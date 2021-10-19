@@ -476,6 +476,7 @@ Usage: milvus_cli.py load [OPTIONS]
 
 Options:
   -c, --collection TEXT  The name of collection to load.
+  -p, --partition TEXT   [Optional, Multiple] - The name of partition to load.
   --help                 Show this message and exit.
 ```
 

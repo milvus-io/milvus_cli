@@ -121,17 +121,24 @@ def indexProgress(obj, collection, index):
 
 @cli.command()
 @click.option('-c', '--collection', 'collection', help='The name of collection to load.')
+@click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to load.', default=[], multiple=True)
 @click.pass_obj
-def load(obj, collection):
+def load(obj, collection, partition):
     """Load specified collection."""
     try:
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
-        result = obj.loadCollection(collection)
+        for partitionName in partition:
+            validateParamsByCustomFunc(
+                obj.getTargetPartition, 'Partition Name Error!', collection, partitionName)
+        if partition:
+            result = obj.loadPartitions(collection, partition)
+        else:
+            result = obj.loadCollection(collection)
     except Exception as e:
         click.echo(message=e, err=True)
     else:
-        click.echo("""Load Collection '{}' successfully""".format(collection))
+        click.echo("""Load Partitions '{}' successfully""".format(str(partition if partition else collection)))
         click.echo(result)
 
 
