@@ -124,7 +124,7 @@ def indexProgress(obj, collection, index):
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to load.', default=[], multiple=True)
 @click.pass_obj
 def load(obj, collection, partition):
-    """Load specified collection."""
+    """Load specified collection and partitions."""
     try:
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
@@ -138,23 +138,36 @@ def load(obj, collection, partition):
     except Exception as e:
         click.echo(message=e, err=True)
     else:
-        click.echo("""Load Partitions '{}' successfully""".format(str(partition if partition else collection)))
+        if partition:
+            click.echo(f"""Load {collection}'s partitions {partition} successfully""")
+        else:
+            click.echo(f"""Load Collection {collection} successfully""")
         click.echo(result)
 
 
 @cli.command()
 @click.option('-c', '--collection', 'collection', help='The name of collection to be released.')
+@click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to released.', default=[], multiple=True)
 @click.pass_obj
-def release(obj, collection):
-    """Release specified collection."""
+def release(obj, collection, partition):
+    """Release specified collection and partitions."""
     try:
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
-        result = obj.releaseCollection(collection)
+        for partitionName in partition:
+            validateParamsByCustomFunc(
+                obj.getTargetPartition, 'Partition Name Error!', collection, partitionName)
+        if partition:
+            result = obj.releasePartitions(collection, partition)
+        else:
+            result = obj.releaseCollection(collection)
     except Exception as e:
         click.echo(message=e, err=True)
     else:
-        click.echo("""Release Collection '{}' successfully""".format(collection))
+        if partition:
+            click.echo(f"""Release {collection}'s partitions {partition} successfully""")
+        else:
+            click.echo(f"""Release Collection {collection} successfully""")
         click.echo(result)
 
 

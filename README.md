@@ -511,10 +511,12 @@ Options:
 milvus_cli > release --help
 Usage: milvus_cli.py release [OPTIONS]
 
-  Release specified collection.
+  Release specified collection and partitions.
 
 Options:
   -c, --collection TEXT  The name of collection to be released.
+  -p, --partition TEXT   [Optional, Multiple] - The name of partition to
+                         released.
   --help                 Show this message and exit.
 ```
 

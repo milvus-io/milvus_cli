@@ -131,6 +131,19 @@ class PyOrm(object):
         result = self.showCollectionLoadingProgress(collectionName)
         return tabulate([[collectionName, result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=['Collection Name', 'Loaded', 'Total'], tablefmt='grid')
 
+    def releasePartition(self, collectionName, partitionName):
+        targetPartition = self.getTargetPartition(collectionName, partitionName)
+        targetPartition.release()
+        result = self.showCollectionLoadingProgress(collectionName, [partitionName])
+        return result
+
+    def releasePartitions(self, collectionName, partitionNameList):
+        result = []
+        for name in partitionNameList:
+            tmp = self.releasePartition(collectionName, name)
+            result.append([name, tmp.get('num_loaded_entities'), tmp.get('num_total_entities')])
+        return tabulate(result, headers=['Partition Name', 'Loaded', 'Total'], tablefmt='grid')
+    
     def loadPartition(self, collectionName, partitionName):
         targetPartition = self.getTargetPartition(collectionName, partitionName)
         targetPartition.load()
