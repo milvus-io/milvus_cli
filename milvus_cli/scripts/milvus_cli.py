@@ -179,7 +179,7 @@ def listDetails(obj):
 
 
 @listDetails.command()
-@click.option('--timeout', '-t', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None)
+@click.option('--timeout', '-t', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None, type=float)
 @click.option('--show-loaded', '-l', 'showLoaded', help="[Optional] - Only show loaded collections.", default=False)
 @click.pass_obj
 def collections(obj, timeout, showLoaded):

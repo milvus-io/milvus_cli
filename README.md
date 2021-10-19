@@ -449,7 +449,7 @@ Usage: milvus_cli.py list collections [OPTIONS]
   List all collections.
 
 Options:
-  -t, --timeout TEXT         [Optional] - An optional duration of time in
+  -t, --timeout FLOAT        [Optional] - An optional duration of time in
                              seconds to allow for the RPC. When timeout is set
                              to None, client waits until server response or
                              error occur.
