@@ -236,7 +236,7 @@ Usage: milvus_cli.py delete collection [OPTIONS]
 Options:
   -c, --collection TEXT  The name of collection to be deleted.
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.
@@ -258,7 +258,7 @@ Options:
   -c, --collection TEXT  Collection name
   -p, --partition TEXT   The name of partition.
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.
@@ -279,7 +279,7 @@ Usage: milvus_cli.py delete index [OPTIONS]
 Options:
   -c, --collection TEXT  Collection name
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.
@@ -417,7 +417,7 @@ Options:
                          be inserted to, if partition name is not passed, then
                          the data will be inserted to “_default” partition.
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.

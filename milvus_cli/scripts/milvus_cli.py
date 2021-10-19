@@ -179,7 +179,7 @@ def listDetails(obj):
 
 
 @listDetails.command()
-@click.option('--timeout', '-t', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is set to None, client waits until server response or error occur.", default=None, type=float)
+@click.option('--timeout', '-t', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.", default=None, type=float)
 @click.option('--show-loaded', '-l', 'showLoaded', help="[Optional] - Only show loaded collections.", default=False)
 @click.pass_obj
 def collections(obj, timeout, showLoaded):
@@ -405,7 +405,7 @@ def deleteObject(obj):
 
 @deleteObject.command('collection')
 @click.option('-c', '--collection', 'collectionName', help='The name of collection to be deleted.')
-@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deleteCollection(obj, collectionName, timeout):
     """
@@ -433,7 +433,7 @@ def deleteCollection(obj, collectionName, timeout):
 @deleteObject.command('partition')
 @click.option('-c', '--collection', 'collectionName', help='Collection name')
 @click.option('-p', '--partition', 'partition', help='The name of partition.')
-@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deletePartition(obj, collectionName, partition, timeout):
     """
@@ -460,7 +460,7 @@ def deletePartition(obj, collectionName, partition, timeout):
 
 @deleteObject.command('index')
 @click.option('-c', '--collection', 'collectionName', help='Collection name')
-@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deleteIndex(obj, collectionName, timeout):
     """
@@ -668,7 +668,7 @@ def query(obj):
 @cli.command('import')
 @click.option('-c', '--collection', 'collectionName', help='The name of collection to be imported.')
 @click.option('-p', '--partition', 'partitionName', help='[Optional] - The partition name which the data will be inserted to, if partition name is not passed, then the data will be inserted to “_default” partition.', default=None)
-@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is set to None, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.argument('path')
 @click.pass_obj
 def importData(obj, collectionName, partitionName, timeout, path):
