@@ -317,6 +317,11 @@ class PyOrm(object):
         collection.insert(data, partition_name=partitionName, timeout=timeout)
         entitiesNum = collection.num_entities
         return entitiesNum
+    
+    def calcDistance(self, vectors_left, vectors_right, params=None, timeout=None):
+        from pymilvus import utility
+        result = utility.calc_distance(vectors_left, vectors_right, params, timeout, using=self.alias)
+        return result
 
 
 class Completer(object):

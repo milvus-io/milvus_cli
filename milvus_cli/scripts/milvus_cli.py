@@ -7,7 +7,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 from utils import PyOrm, Completer, getPackageVersion
 from Fs import readCsvFile
-from Validation import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams
+from Validation import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams, validateQueryParams
 from Types import ParameterException, ConnectException
 from Types import MetricTypes, IndexTypesMap, IndexTypes
 
@@ -699,6 +699,66 @@ def importData(obj, collectionName, partitionName, timeout, path):
         click.echo("Error!\n{}".format(str(e)))
     else:
         click.echo(f"Insert successfully.\nTotal entities: {entitiesNum}")
+
+
+@cli.command('calc')
+@click.pass_obj
+def calcDistance(obj):
+    """Calculate distance between two vector arrays."""
+    leftVectorMeta = {}
+    if click.confirm('Import left operator vectors from existing collection?'):
+        left_ids = click.prompt("The vectors' ids on the left of operator")
+        left_collection = click.prompt("The vectors' collection name on the left of operator")
+        left_partition = click.prompt("The vectors' partition name on the left of operator")
+        left_field = click.prompt("The vectors' field name on the left of operator")
+        leftVectorMeta['vec_type'] = 'import'
+        leftVectorMeta['ids'] = left_ids
+        leftVectorMeta['collection'] = left_collection
+        leftVectorMeta['partition'] = left_partition
+        leftVectorMeta['field'] = left_field
+    else:
+        # TODO Add bin_vectors support
+        left_type = click.prompt("The vector's type", type=click.Choice(['float_vectors']))
+        left_vectors = click.prompt("Left vectors")
+        leftVectorMeta['vec_type'] = 'raw'
+        leftVectorMeta['type'] = left_type
+        leftVectorMeta['vectors'] = left_vectors
+    rightVectorMeta = {}
+    if click.confirm('Import right operator vectors from existing collection?'):
+        right_ids = click.prompt("The vectors' ids on the right of operator")
+        right_collection = click.prompt("The vectors' collection name on the right of operator")
+        right_partition = click.prompt("The vectors' partition name on the right of operator")
+        right_field = click.prompt("The vectors' field name on the right of operator")
+        rightVectorMeta['vec_type'] = 'import'
+        rightVectorMeta['ids'] = right_ids
+        rightVectorMeta['collection'] = right_collection
+        rightVectorMeta['partition'] = right_partition
+        rightVectorMeta['field'] = right_field
+    else:
+        # TODO Add bin_vectors support
+        right_type = click.prompt("The vector's type", type=click.Choice(['float_vectors']))
+        right_vectors = click.prompt("Right vectors")
+        rightVectorMeta['vec_type'] = 'raw'
+        rightVectorMeta['type'] = right_type
+        rightVectorMeta['vectors'] = right_vectors
+    metric_type = click.prompt('Supported metric type. Default is "L2"', default="L2", type=click.Choice(MetricTypes))
+    sqrt = None
+    if metric_type in ["L2"]:
+        sqrt = click.prompt('sqrt', type=bool, default=False)
+    dim = None
+    if metric_type in ["HAMMING", "TANIMOTO"]:
+        dim = click.prompt('Set this value if dimension is not a multiple of 8, otherwise the dimension will be calculted by list length', type=int, default=None)
+    timeout = click.prompt('Timeout(optional)', default='')
+    try:
+        calcParams = validateQueryParams(
+            leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout)
+        result = obj.calcDistance(calcParams['vectors_left'], calcParams['vectors_right'], calcParams['params'], calcParams['timeout'])
+    except ParameterException as pe:
+        click.echo("Error!\n{}".format(str(pe)))
+    except ConnectException as ce:
+        click.echo("Error!\n{}".format(str(ce)))
+    else:
+        click.echo(result)
 
 
 @cli.command('exit')

@@ -8,6 +8,7 @@
     - [Install from release/source code](#install-from-releasesource-code)
   - [Usage](#usage)
     - [commands](#commands)
+      - [`calc`](#calc)
       - [`clear`](#clear)
       - [`connect`](#connect)
       - [`create`](#create)
@@ -79,6 +80,18 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 Run `milvus_cli`
 
 ### commands
+
+#### `calc`
+
+```
+milvus_cli > calc --help
+Usage: milvus_cli.py calc [OPTIONS]
+
+  Calculate distance between two vector arrays.
+
+Options:
+  --help  Show this message and exit.
+```
 
 #### `clear`
 
@@ -374,20 +387,22 @@ Usage:  [OPTIONS] COMMAND [ARGS]...
   Milvus CLI
 
 Commands:
+  calc      Calculate distance between two vector arrays.
   clear     Clear screen.
   connect   Connect to Milvus.
   create    Create collection, partition and index.
   delete    Delete specified collection, partition and index.
-  describe  Describe collection or partition.
+  describe  Describe collection, partition and index.
   exit      Exit the CLI.
   help      Show help messages.
-  import    Import data.
+  import    Import data from csv file with headers and insert into target...
   list      List collections, partitions and indexes.
-  load      Load specified collection.
+  load      Load specified collection and partitions.
   query     Query with a set of criteria, and results in a list of...
-  release   Release specified collection.
+  release   Release specified collection and partitions.
   search    Conducts a vector similarity search with an optional boolean...
   show      Show connection, loading_progress and index_progress.
+  test      test the CLI.
   version   Get Milvus CLI version.
 ```
 
