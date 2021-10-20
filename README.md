@@ -8,6 +8,7 @@
     - [Install from release/source code](#install-from-releasesource-code)
   - [Usage](#usage)
     - [commands](#commands)
+      - [`calc`](#calc)
       - [`clear`](#clear)
       - [`connect`](#connect)
       - [`create`](#create)
@@ -18,9 +19,11 @@
         - [`delete collection`](#delete-collection)
         - [`delete partition`](#delete-partition)
         - [`delete index`](#delete-index)
+        - [`delete entities`](#delete-entities)
       - [`describe`](#describe)
         - [`describe collection`](#describe-collection)
         - [`describe partition`](#describe-partition)
+        - [`describe index`](#describe-index)
       - [`exit`](#exit)
       - [`help`](#help)
       - [`import`](#import)
@@ -78,6 +81,18 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 Run `milvus_cli`
 
 ### commands
+
+#### `calc`
+
+```
+milvus_cli > calc --help
+Usage: milvus_cli.py calc [OPTIONS]
+
+  Calculate distance between two vector arrays.
+
+Options:
+  --help  Show this message and exit.
+```
 
 #### `clear`
 
@@ -235,7 +250,7 @@ Usage: milvus_cli.py delete collection [OPTIONS]
 Options:
   -c, --collection TEXT  The name of collection to be deleted.
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.
@@ -257,7 +272,7 @@ Options:
   -c, --collection TEXT  Collection name
   -p, --partition TEXT   The name of partition.
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.
@@ -278,7 +293,39 @@ Usage: milvus_cli.py delete index [OPTIONS]
 Options:
   -c, --collection TEXT  Collection name
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
+                         client keeps waiting until the server responds or an
+                         error occurs.
+  --help                 Show this message and exit.
+```
+
+##### `delete entities`
+**Not enable yet.**
+```
+milvus_cli > delete entities --help
+Usage: milvus_cli.py delete entities [OPTIONS]
+
+  Delete entities with an expression condition. And return results to show
+  which primary key is deleted successfully.
+
+  Example:
+
+      milvus_cli > delete entities -c car
+
+      The expression to specify entities to be deleted, such as "film_id in [
+      0, 1 ]": film_id in [ 0, 1 ]
+
+      You are trying to delete the entities of collection. This action cannot
+      be undone!
+
+      Do you want to continue? [y/N]: y
+
+Options:
+  -c, --collection TEXT  Collection name.
+  -p, --partition TEXT   [Optional] - Name of partitions that contain
+                         entities.
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.
@@ -336,6 +383,22 @@ Options:
   --help                 Show this message and exit.
 ```
 
+##### `describe index`
+
+```
+milvus_cli > describe index --help
+Usage: milvus_cli.py describe index [OPTIONS]
+
+  Describe index.
+
+  Example:
+
+      milvus_cli > describe index -c car
+
+Options:
+  -c, --collection TEXT  The name of collection.
+  --help                 Show this message and exit.
+```
 #### `exit`
 
 ```
@@ -357,20 +420,22 @@ Usage:  [OPTIONS] COMMAND [ARGS]...
   Milvus CLI
 
 Commands:
+  calc      Calculate distance between two vector arrays.
   clear     Clear screen.
   connect   Connect to Milvus.
   create    Create collection, partition and index.
   delete    Delete specified collection, partition and index.
-  describe  Describe collection or partition.
+  describe  Describe collection, partition and index.
   exit      Exit the CLI.
   help      Show help messages.
-  import    Import data.
+  import    Import data from csv file with headers and insert into target...
   list      List collections, partitions and indexes.
-  load      Load specified collection.
+  load      Load specified collection and partitions.
   query     Query with a set of criteria, and results in a list of...
-  release   Release specified collection.
+  release   Release specified collection and partitions.
   search    Conducts a vector similarity search with an optional boolean...
   show      Show connection, loading_progress and index_progress.
+  test      test the CLI.
   version   Get Milvus CLI version.
 ```
 
@@ -400,7 +465,7 @@ Options:
                          be inserted to, if partition name is not passed, then
                          the data will be inserted to “_default” partition.
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is set to None, the
+                         to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
                          error occurs.
   --help                 Show this message and exit.
@@ -432,7 +497,7 @@ Usage: milvus_cli.py list collections [OPTIONS]
   List all collections.
 
 Options:
-  -t, --timeout TEXT         [Optional] - An optional duration of time in
+  -t, --timeout FLOAT        [Optional] - An optional duration of time in
                              seconds to allow for the RPC. When timeout is set
                              to None, client waits until server response or
                              error occur.
@@ -476,6 +541,7 @@ Usage: milvus_cli.py load [OPTIONS]
 
 Options:
   -c, --collection TEXT  The name of collection to load.
+  -p, --partition TEXT   [Optional, Multiple] - The name of partition to load.
   --help                 Show this message and exit.
 ```
 
@@ -510,10 +576,12 @@ Options:
 milvus_cli > release --help
 Usage: milvus_cli.py release [OPTIONS]
 
-  Release specified collection.
+  Release specified collection and partitions.
 
 Options:
   -c, --collection TEXT  The name of collection to be released.
+  -p, --partition TEXT   [Optional, Multiple] - The name of partition to
+                         released.
   --help                 Show this message and exit.
 ```
 

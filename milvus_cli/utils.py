@@ -109,6 +109,15 @@ class PyOrm(object):
             raise ParameterException('Collection error!\n')
         else:
             return target
+    
+    def getTargetPartition(self, collectionName, partitionName):
+        try:
+            targetCollection = self.getTargetCollection(collectionName)
+            target = targetCollection.partition(partitionName)
+        except Exception as e:
+            raise ParameterException('Partition error!\n')
+        else:
+            return target
 
     def loadCollection(self, collectionName):
         target = self.getTargetCollection(collectionName)
@@ -121,6 +130,32 @@ class PyOrm(object):
         target.release()
         result = self.showCollectionLoadingProgress(collectionName)
         return tabulate([[collectionName, result.get('num_loaded_entities'), result.get('num_total_entities')]], headers=['Collection Name', 'Loaded', 'Total'], tablefmt='grid')
+
+    def releasePartition(self, collectionName, partitionName):
+        targetPartition = self.getTargetPartition(collectionName, partitionName)
+        targetPartition.release()
+        result = self.showCollectionLoadingProgress(collectionName, [partitionName])
+        return result
+
+    def releasePartitions(self, collectionName, partitionNameList):
+        result = []
+        for name in partitionNameList:
+            tmp = self.releasePartition(collectionName, name)
+            result.append([name, tmp.get('num_loaded_entities'), tmp.get('num_total_entities')])
+        return tabulate(result, headers=['Partition Name', 'Loaded', 'Total'], tablefmt='grid')
+    
+    def loadPartition(self, collectionName, partitionName):
+        targetPartition = self.getTargetPartition(collectionName, partitionName)
+        targetPartition.load()
+        result = self.showCollectionLoadingProgress(collectionName, [partitionName])
+        return result
+    
+    def loadPartitions(self, collectionName, partitionNameList):
+        result = []
+        for name in partitionNameList:
+            tmp = self.loadPartition(collectionName, name)
+            result.append([name, tmp.get('num_loaded_entities'), tmp.get('num_total_entities')])
+        return tabulate(result, headers=['Partition Name', 'Loaded', 'Total'], tablefmt='grid')
 
     def listPartitions(self, collectionName):
         target = self.getTargetCollection(collectionName)
@@ -189,7 +224,9 @@ class PyOrm(object):
         rows.append(['Corresponding Field', index.field_name])
         rows.append(['Index Type', index.params['index_type']])
         rows.append(['Metric Type', index.params['metric_type']])
-        rows.append(['Params', index.params['params']])
+        params = index.params['params']
+        paramsDetails = "\n- ".join(map(lambda k: f"{k[0]}: {k[1]}", params.items()))
+        rows.append(['Params', paramsDetails])
         return tabulate(rows, tablefmt='grid')
 
     def createCollection(self, collectionName, primaryField, autoId, description, fields):
@@ -280,6 +317,16 @@ class PyOrm(object):
         collection.insert(data, partition_name=partitionName, timeout=timeout)
         entitiesNum = collection.num_entities
         return entitiesNum
+    
+    def calcDistance(self, vectors_left, vectors_right, params=None, timeout=None):
+        from pymilvus import utility
+        result = utility.calc_distance(vectors_left, vectors_right, params, timeout, using=self.alias)
+        return result
+    
+    def deleteEntities(self, expr, collectionName, partition_name=None, timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.delete(expr, partition_name=partition_name, timeout=timeout)
+        return result
 
 
 class Completer(object):
@@ -287,11 +334,12 @@ class Completer(object):
     #         'list', 'load', 'query', 'release', 'search', 'show', 'version' ]
     RE_SPACE = re.compile('.*\s+$', re.M)
     CMDS_DICT = {
+        'calc': [],
         'clear': [],
         'connect': [],
         'create': ['collection', 'partition', 'index'],
         'delete': ['collection', 'partition', 'index'],
-        'describe': ['collection', 'partition'],
+        'describe': ['collection', 'partition', 'index'],
         'exit': [],
         'help': [],
         'import': [],

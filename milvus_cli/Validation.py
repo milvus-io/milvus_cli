@@ -167,3 +167,69 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
         result['partition_names'] = nameList
     result['timeout'] = float(timeout) if timeout else None
     return result
+
+
+def validateQueryParams(leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout):
+    result = { 'params': {} }
+    vectors_left = validateVectorMeta(leftVectorMeta)
+    result['vectors_left'] = vectors_left
+    vectors_right = validateVectorMeta(rightVectorMeta)
+    result['vectors_right'] = vectors_right
+    params=result['params']
+    params['metric_type'] = metric_type
+    if metric_type not in MetricTypes:
+        raise ParameterException(
+            'metric_type should be one of {}'.format(str(MetricTypes)))
+    if metric_type == 'L2':
+        params['sqrt'] = sqrt
+    elif metric_type in ['HAMMING', 'TANIMOTO']:
+        params['dim'] = dim
+    if timeout:
+        result['timeout'] = float(timeout)
+    else:
+        result['timeout'] = None
+    return result
+
+
+def validateVectorMeta(vectorMeta):
+    import json
+    vec_type = vectorMeta['vec_type']
+    result = {}
+    if vec_type == 'import':
+        ids_str = vectorMeta['ids']
+        try:
+            ids = json.loads(
+                ids_str.replace('\'', '').replace('\"', ''))
+        except Exception as e:
+            raise ParameterException(
+                'Format(list[int]) "ids" error! {}'.format(str(e)))
+        collection_str = vectorMeta['collection']
+        partition_str = vectorMeta['partition']
+        field_str = vectorMeta['field']
+        if not collection_str or not partition_str or not field_str:
+            raise ParameterException(
+                f"Collection/Partition/Field should not be empty!")
+        result['ids'] = ids
+        result['collection'] = collection_str
+        result['partition'] = partition_str
+        result['field'] = field_str
+    if vec_type == 'raw':
+        vectors_str = vectorMeta['vectors']
+        if vectorMeta['type'] == 'float_vectors':
+            try:
+                vectors = json.loads(
+                    vectors_str.replace('\'', '').replace('\"', ''))
+            except Exception as e:
+                raise ParameterException(
+                    'Format(list[float]) "ids" error! {}'.format(str(e)))
+            else:
+                result[vectorMeta['type']] = vectors
+        elif vectorMeta['type'] == 'bin_vectors':
+            # """[b'\x94', b'N', b'\xca']"""
+            noWhiteSpace = vectors_str.strip()
+            noSquareBrackets = noWhiteSpace[1:-1]
+            # "b'\x94', b'N', b'Ê'"
+            strList = noSquareBrackets.split(', ')
+            binMap = map(lambda x:x[2:-1].encode('unicode_escape'), strList)
+            result[vectorMeta['type']] = list(binMap)
+    return result
