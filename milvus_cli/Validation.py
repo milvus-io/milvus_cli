@@ -215,12 +215,21 @@ def validateVectorMeta(vectorMeta):
         result['field'] = field_str
     if vec_type == 'raw':
         vectors_str = vectorMeta['vectors']
-        try:
-            vectors = json.loads(
-                vectors_str.replace('\'', '').replace('\"', ''))
-        except Exception as e:
-            raise ParameterException(
-                'Format(list[float]) "ids" error! {}'.format(str(e)))
-        else:
-            result[vectorMeta['type']] = vectors
+        if vectorMeta['type'] == 'float_vectors':
+            try:
+                vectors = json.loads(
+                    vectors_str.replace('\'', '').replace('\"', ''))
+            except Exception as e:
+                raise ParameterException(
+                    'Format(list[float]) "ids" error! {}'.format(str(e)))
+            else:
+                result[vectorMeta['type']] = vectors
+        elif vectorMeta['type'] == 'bin_vectors':
+            # """[b'\x94', b'N', b'\xca']"""
+            noWhiteSpace = vectors_str.strip()
+            noSquareBrackets = noWhiteSpace[1:-1]
+            # "b'\x94', b'N', b'Ê'"
+            strList = noSquareBrackets.split(', ')
+            binMap = map(lambda x:x[2:-1].encode('unicode_escape'), strList)
+            result[vectorMeta['type']] = list(binMap)
     return result

@@ -717,8 +717,7 @@ def calcDistance(obj):
         leftVectorMeta['partition'] = left_partition
         leftVectorMeta['field'] = left_field
     else:
-        # TODO Add bin_vectors support
-        left_type = click.prompt("The vector's type", type=click.Choice(['float_vectors']))
+        left_type = click.prompt("The vector's type", type=click.Choice(['float_vectors', 'bin_vectors']))
         left_vectors = click.prompt("Left vectors")
         leftVectorMeta['vec_type'] = 'raw'
         leftVectorMeta['type'] = left_type
@@ -735,8 +734,7 @@ def calcDistance(obj):
         rightVectorMeta['partition'] = right_partition
         rightVectorMeta['field'] = right_field
     else:
-        # TODO Add bin_vectors support
-        right_type = click.prompt("The vector's type", type=click.Choice(['float_vectors']))
+        right_type = click.prompt("The vector's type", type=click.Choice(['float_vectors', 'bin_vectors']))
         right_vectors = click.prompt("Right vectors")
         rightVectorMeta['vec_type'] = 'raw'
         rightVectorMeta['type'] = right_type
