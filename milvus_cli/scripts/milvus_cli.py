@@ -485,6 +485,43 @@ def deleteIndex(obj, collectionName, timeout):
             "Drop index failed!")
 
 
+@deleteObject.command('entities')
+@click.option('-c', '--collection', 'collectionName', help='Collection name.')
+@click.option('-p', '--partition', 'partitionName', help='[Optional] - Name of partitions that contain entities.', default='')
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.pass_obj
+def deleteEntities(obj, collectionName, partitionName, timeout):
+    """
+    Delete entities with an expression condition. And return results to show which primary key is deleted successfully.
+
+    Example:
+
+        milvus_cli > delete entities -c car
+
+        The expression to specify entities to be deleted, such as "film_id in [ 0, 1 ]": film_id in [ 0, 1 ]
+
+        You are trying to delete the entities of collection. This action cannot be undone!
+
+        Do you want to continue? [y/N]: y
+    """
+    expr = click.prompt('''The expression to specify entities to be deleted, such as "film_id in [ 0, 1 ]"''')
+    click.echo(
+        "You are trying to delete the entities of collection. This action cannot be undone!\n")
+    if not click.confirm('Do you want to continue?'):
+        return
+    try:
+        obj.checkConnection()
+        obj.getTargetCollection(collectionName)
+    except Exception as e:
+        click.echo(f"Error occurred when get collection by name!\n{str(e)}")
+    else:
+        partitionValue = partitionName if partitionName else None
+        timeoutValue = timeout if timeout else None
+        result = obj.deleteEntities(expr, collectionName, partitionValue, timeoutValue)
+        click.echo("Drop index successfully!") if not result else click.echo(
+            "Drop index failed!")
+
+
 @cli.command()
 @click.pass_obj
 def search(obj):

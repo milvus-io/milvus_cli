@@ -322,6 +322,11 @@ class PyOrm(object):
         from pymilvus import utility
         result = utility.calc_distance(vectors_left, vectors_right, params, timeout, using=self.alias)
         return result
+    
+    def deleteEntities(self, expr, collectionName, partition_name=None, timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.delete(expr, partition_name=partition_name, timeout=timeout)
+        return result
 
 
 class Completer(object):

@@ -19,6 +19,7 @@
         - [`delete collection`](#delete-collection)
         - [`delete partition`](#delete-partition)
         - [`delete index`](#delete-index)
+        - [`delete entities`](#delete-entities)
       - [`describe`](#describe)
         - [`describe collection`](#describe-collection)
         - [`describe partition`](#describe-partition)
@@ -291,6 +292,38 @@ Usage: milvus_cli.py delete index [OPTIONS]
 
 Options:
   -c, --collection TEXT  Collection name
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. If timeout is not set, the
+                         client keeps waiting until the server responds or an
+                         error occurs.
+  --help                 Show this message and exit.
+```
+
+##### `delete entities`
+**Not enable yet.**
+```
+milvus_cli > delete entities --help
+Usage: milvus_cli.py delete entities [OPTIONS]
+
+  Delete entities with an expression condition. And return results to show
+  which primary key is deleted successfully.
+
+  Example:
+
+      milvus_cli > delete entities -c car
+
+      The expression to specify entities to be deleted, such as "film_id in [
+      0, 1 ]": film_id in [ 0, 1 ]
+
+      You are trying to delete the entities of collection. This action cannot
+      be undone!
+
+      Do you want to continue? [y/N]: y
+
+Options:
+  -c, --collection TEXT  Collection name.
+  -p, --partition TEXT   [Optional] - Name of partitions that contain
+                         entities.
   -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
                          to allow for the RPC. If timeout is not set, the
                          client keeps waiting until the server responds or an
