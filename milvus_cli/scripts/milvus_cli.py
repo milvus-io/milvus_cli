@@ -124,7 +124,7 @@ def indexProgress(obj, collection, index):
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to load.', default=[], multiple=True)
 @click.pass_obj
 def load(obj, collection, partition):
-    """Load specified collection and partitions."""
+    """Load specified collection/partitions from disk to memory."""
     try:
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)
@@ -150,7 +150,7 @@ def load(obj, collection, partition):
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to released.', default=[], multiple=True)
 @click.pass_obj
 def release(obj, collection, partition):
-    """Release specified collection and partitions."""
+    """Release specified collection/partitions from memory."""
     try:
         validateParamsByCustomFunc(
             obj.getTargetCollection, 'Collection Name Error!', collection)

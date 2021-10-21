@@ -615,7 +615,7 @@ Options:
 milvus_cli > load --help
 Usage: milvus_cli.py load [OPTIONS]
 
-  Load specified collection.
+  Load specified collection/partitions from disk to memory.
 
 Options:
   -c, --collection TEXT  The name of collection to load.
@@ -654,7 +654,7 @@ Options:
 milvus_cli > release --help
 Usage: milvus_cli.py release [OPTIONS]
 
-  Release specified collection and partitions.
+  Release specified collection/partitions from memory.
 
 Options:
   -c, --collection TEXT  The name of collection to be released.
