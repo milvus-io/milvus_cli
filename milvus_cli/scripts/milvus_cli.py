@@ -528,13 +528,13 @@ def search(obj):
     """
     Conducts a vector similarity search with an optional boolean expression as filter.
 
-    Example-1(import a csv file):
+    Example-1(import a CSV file):
 
         Collection name (car, test_collection): car
 
-        The vectors of search data(the length of data is number of query (nq), 
+        The vectors of search data (the length of data is number of query (nq), 
         the dim of every vector in data must be equal to vector field’s of 
-        collection. You can also import a csv file with out headers): examples/import_csv/search_vectors.csv
+        collection. You can also import a CSV file without headers): examples/import_csv/search_vectors.csv
 
         The vector field used to search of collection (vector): vector
 
@@ -546,16 +546,16 @@ def search(obj):
 
         The boolean expression used to filter attribute []: id > 0
 
-        The names of partitions to search(split by "," if multiple) ['_default'] []: _default
+        The names of partitions to search (split by "," if multiple) ['_default'] []: _default
 
     Example-2(collection has index):
 
         Collection name (car, test_collection): car
 
         \b
-        The vectors of search data(the length of data is number of query (nq), 
+        The vectors of search data (the length of data is number of query (nq), 
         the dim of every vector in data must be equal to vector field’s of 
-        collection. You can also import a csv file with out headers):
+        collection. You can also import a CSV file without headers):
             [[0.71, 0.76, 0.17, 0.13, 0.42, 0.07, 0.15, 0.67, 0.58, 0.02, 0.39, 
             0.47, 0.58, 0.88, 0.73, 0.31, 0.23, 0.57, 0.33, 0.2, 0.03, 0.43, 
             0.78, 0.49, 0.17, 0.56, 0.76, 0.54, 0.45, 0.46, 0.05, 0.1, 0.43, 
@@ -581,7 +581,7 @@ def search(obj):
 
         The boolean expression used to filter attribute []: id > 0
 
-        The names of partitions to search(split by "," if multiple) ['_default'] []: _default
+        The names of partitions to search (split by "," if multiple) ['_default'] []: _default
 
         timeout []: 
 
@@ -589,9 +589,9 @@ def search(obj):
 
         Collection name (car, car2): car
 
-        The vectors of search data(the length of data is number of query (nq), 
+        The vectors of search data( the length of data is number of query (nq), 
         the dim of every vector in data must be equal to vector field’s of 
-        collection. You can also import a csv file with out headers): examples/import_csv/search_vectors.csv
+        collection. You can also import a CSV file without headers): examples/import_csv/search_vectors.csv
 
         The vector field used to search of collection (vector): vector
 
@@ -601,14 +601,14 @@ def search(obj):
 
         The boolean expression used to filter attribute []: 
 
-        The names of partitions to search(split by "," if multiple) ['_default'] []: 
+        The names of partitions to search (split by "," if multiple) ['_default'] []: 
 
         Timeout []: 
     """
     collectionName = click.prompt(
         'Collection name', type=click.Choice(obj._list_collection_names()))
     data = click.prompt(
-        'The vectors of search data(the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection. You can also import a csv file with out headers)')
+        'The vectors of search data (the length of data is number of query (nq), the dim of every vector in data must be equal to vector field’s of collection. You can also import a CSV file without headers)')
     annsField = click.prompt(
         'The vector field used to search of collection', type=click.Choice(obj._list_field_names(collectionName, showVectorOnly=True)))
     indexDetails = obj._list_index(collectionName)
@@ -633,13 +633,13 @@ def search(obj):
     expr = click.prompt(
         'The boolean expression used to filter attribute', default='')
     partitionNames = click.prompt(
-        f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
+        f'The names of partitions to search (split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
     timeout = click.prompt('Timeout', default='')
     export, exportPath = False, ''
-    # if click.confirm('Would you like to export results as a csv File?'):
+    # if click.confirm('Would you like to export results as a CSV file?'):
     #     export = True
     #     exportPath = click.prompt('Directory path to csv file')
-    # export = click.prompt('Would you like to export results as a csv File?', default='n', type=click.Choice(['Y', 'n']))
+    # export = click.prompt('Would you like to export results as a CSV file?', default='n', type=click.Choice(['Y', 'n']))
     # if export:
     #     exportPath = click.prompt('Directory path to csv file')
     try:
@@ -686,7 +686,7 @@ def query(obj):
         'Collection name', type=click.Choice(obj._list_collection_names()))
     expr = click.prompt('The query expression(field_name in [x,y])')
     partitionNames = click.prompt(
-        f'The names of partitions to search(split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
+        f'The names of partitions to search (split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
     outputFields = click.prompt(
         f'Fields to return(split by "," if multiple) {obj._list_field_names(collectionName)}', default='')
     timeout = click.prompt('timeout', default='')

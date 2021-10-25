@@ -672,13 +672,13 @@ Usage: milvus_cli.py search [OPTIONS]
   Conducts a vector similarity search with an optional boolean expression as
   filter.
 
-  Example-1(import a csv file):
+  Example-1(import a CSV file):
 
       Collection name (car, test_collection): car
 
-      The vectors of search data(the length of data is number of query (nq),
+      The vectors of search data (the length of data is number of query (nq),
       the dim of every vector in data must be equal to vector field’s of
-      collection. You can also import a csv file with out headers):
+      collection. You can also import a CSV file without headers):
       examples/import_csv/search_vectors.csv
 
       The vector field used to search of collection (vector): vector
@@ -691,16 +691,16 @@ Usage: milvus_cli.py search [OPTIONS]
 
       The boolean expression used to filter attribute []: id > 0
 
-      The names of partitions to search(split by "," if multiple) ['_default']
+      The names of partitions to search (split by "," if multiple) ['_default']
       []: _default
 
   Example-2(collection has index):
 
       Collection name (car, test_collection): car
 
-      The vectors of search data(the length of data is number of query (nq), 
+      The vectors of search data (the length of data is number of query (nq), 
       the dim of every vector in data must be equal to vector field’s of 
-      collection. You can also import a csv file with out headers):
+      collection. You can also import a CSV file without headers):
           [[0.71, 0.76, 0.17, 0.13, 0.42, 0.07, 0.15, 0.67, 0.58, 0.02, 0.39, 
           0.47, 0.58, 0.88, 0.73, 0.31, 0.23, 0.57, 0.33, 0.2, 0.03, 0.43, 
           0.78, 0.49, 0.17, 0.56, 0.76, 0.54, 0.45, 0.46, 0.05, 0.1, 0.43, 
@@ -726,7 +726,7 @@ Usage: milvus_cli.py search [OPTIONS]
 
       The boolean expression used to filter attribute []: id > 0
 
-      The names of partitions to search(split by "," if multiple) ['_default']
+      The names of partitions to search (split by "," if multiple) ['_default']
       []: _default
 
       timeout []:
@@ -737,7 +737,7 @@ Usage: milvus_cli.py search [OPTIONS]
 
       The vectors of search data(the length of data is number of query (nq),
       the dim of every vector in data must be equal to vector field’s of
-      collection. You can also import a csv file with out headers):
+      collection. You can also import a CSV file without headers):
       examples/import_csv/search_vectors.csv
 
       The vector field used to search of collection (vector): vector
@@ -748,7 +748,7 @@ Usage: milvus_cli.py search [OPTIONS]
 
       The boolean expression used to filter attribute []:
 
-      The names of partitions to search(split by "," if multiple) ['_default']
+      The names of partitions to search (split by "," if multiple) ['_default']
       []:
 
       Timeout []:
