@@ -119,6 +119,15 @@ def indexProgress(obj, collection, index):
             'indexed_rows', 'total_rows'], tablefmt='pretty'))
 
 
+@show.command('query_segment')
+@click.option('-c', '--collection', 'collection', help='A string representing the collection to get segments info.')
+@click.option('-t', '--timeout', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.", default=None, type=float)
+@click.pass_obj
+def querySegmentInfo(obj, collection, timeout):
+    """Notifies Proxy to return segments information from query nodes."""
+    click.echo(obj.getQuerySegmentInfo(collection, timeout, prettierFormat=True))
+
+
 @cli.command()
 @click.option('-c', '--collection', 'collection', help='The name of collection to load.')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to load.', default=[], multiple=True)
@@ -902,14 +911,14 @@ def runCliPrompt():
                 # trap argparse error message
                 # print('error', SystemExit)
                 continue
-            except ParameterException as pe:
-                click.echo(message=f"{str(pe)}", err=True)
-            except ConnectException as ce:
-                click.echo(
-                    message="Connect to milvus Error!\nPlease check your connection.", err=True)
-            except Exception as e:
-                click.echo(
-                    message=f"Error occurred!\n{str(e)}", err=True)
+            # except ParameterException as pe:
+            #     click.echo(message=f"{str(pe)}", err=True)
+            # except ConnectException as ce:
+            #     click.echo(
+            #         message="Connect to milvus Error!\nPlease check your connection.", err=True)
+            # except Exception as e:
+            #     click.echo(
+            #         message=f"Error occurred!\n{str(e)}", err=True)
     except (KeyboardInterrupt, EOFError):
         print()
         sys.exit(0)

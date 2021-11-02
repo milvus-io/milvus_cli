@@ -39,6 +39,7 @@
         - [`show connection`](#show-connection)
         - [`show index_progress`](#show-index_progress)
         - [`show loading_progress`](#show-loading_progress)
+        - [`show query_segment`](#show-query_segment)
       - [`version`](#version)
 
 ## Overview
@@ -56,6 +57,7 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 2.0.0-RC5 | 2.0.0rc5 | 0.1.5 |
 | 2.0.0-RC6 | 2.0.0rc6 | 0.1.6 |
 | 2.0.0-RC7 | 2.0.0rc7 | 0.1.7 |
+<!-- | 2.0.0-RC8 | 2.0.0rc8 | 0.1.8 | -->
 
 *\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous versions of Milvus 2.0.0 because of some changes made to storage format.*
 
@@ -813,6 +815,23 @@ Options:
   -c, --collection TEXT  The name of collection is loading
   -p, --partition TEXT   [Optional, Multiple] - The names of partitions are
                          loading
+  --help                 Show this message and exit.
+```
+
+##### `show query_segment`
+
+```
+milvus_cli > show query_segment --help
+Usage: milvus_cli show query_segment [OPTIONS]
+
+  Notifies Proxy to return segments information from query nodes.
+
+Options:
+  -c, --collection TEXT  A string representing the collection to get segments
+                         info.
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. When timeout is not set, client
+                         waits until server response or error occur.
   --help                 Show this message and exit.
 ```
 

@@ -327,7 +327,16 @@ class PyOrm(object):
         collection = self.getTargetCollection(collectionName)
         result = collection.delete(expr, partition_name=partition_name, timeout=timeout)
         return result
-
+    
+    def getQuerySegmentInfo(self, collectionName, timeout=None, prettierFormat=False):
+        from pymilvus import utility
+        result = utility.get_query_segment_info(collectionName, timeout=timeout, using=self.alias)
+        if not prettierFormat or not result:
+            return result
+        firstChild = result[0]
+        headers = ["segmentID", "collectionID", "partitionID", "mem_size", "num_rows"]
+        return tabulate([[getattr(_, i) for i in headers] for _ in result], headers=headers, tablefmt='grid', showindex=True)
+    
 
 class Completer(object):
     # COMMANDS = ['clear', 'connect', 'create', 'delete', 'describe', 'exit',
@@ -348,7 +357,7 @@ class Completer(object):
         'query': [],
         'release': [],
         'search': [],
-        'show': ['connection', 'index_progress', 'loading_progress'],
+        'show': ['connection', 'index_progress', 'loading_progress', 'query_segment'],
         'version': [],
     }
 
