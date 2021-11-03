@@ -12,10 +12,12 @@
       - [`clear`](#clear)
       - [`connect`](#connect)
       - [`create`](#create)
+        - [`create alias`](#create-alias)
         - [`create collection`](#create-collection)
         - [`create partition`](#create-partition)
         - [`create index`](#create-index)
       - [`delete`](#delete)
+        - [`delete alias`](#delete-alias)
         - [`delete collection`](#delete-collection)
         - [`delete partition`](#delete-partition)
         - [`delete index`](#delete-index)
@@ -224,6 +226,36 @@ Commands:
   partition   Create partition.
 ```
 
+##### `create alias`
+
+```
+milvus_cli > create alias --help
+Usage: milvus_cli create alias [OPTIONS]
+
+  Specify alias for a collection. Alias cannot be duplicated, you can't assign
+  same alias to different collections. But you can specify multiple aliases
+  for a collection, for example:
+
+  create alias -c car -a carAlias1 -a carAlias2
+
+  You can also change alias of a collection to another collection. If the
+  alias doesn't exist, it will return error. Use "-A" option to change alias
+  owner collection, for example:
+
+  create alias -c car2 -A -a carAlias1 -a carAlias2
+
+Options:
+  -c, --collection-name TEXT  Collection name to specify alias.
+  -a, --alias-name TEXT       [Multiple] - The alias of the collection.
+  -A, --alter                 [Optional, Flag] - Change an existing alias to
+                              current collection.
+  -t, --timeout FLOAT         [Optional] - An optional duration of time in
+                              seconds to allow for the RPC. If timeout is not
+                              set, the client keeps waiting until the server
+                              responds or an error occurs.
+  --help                      Show this message and exit.
+```
+
 ##### `create collection`
 
 ```
@@ -314,6 +346,24 @@ Commands:
   collection  Drops the collection together with its index files.
   index       Drop index and its corresponding index files.
   partition   Drop the partition and its corresponding index files.
+```
+
+##### `delete alias`
+
+```
+milvus_cli > delete alias --help
+Usage: milvus_cli.py delete alias [OPTIONS]
+
+  Delete an alias.
+
+Options:
+  -c, --collection-name TEXT  Collection name to be specified alias.
+  -a, --alias-name TEXT       The alias of the collection.
+  -t, --timeout FLOAT         [Optional] - An optional duration of time in
+                              seconds to allow for the RPC. If timeout is not
+                              set, the client keeps waiting until the server
+                              responds or an error occurs.
+  --help                      Show this message and exit.
 ```
 
 ##### `delete collection`

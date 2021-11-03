@@ -335,7 +335,38 @@ class PyOrm(object):
             return result
         firstChild = result[0]
         headers = ["segmentID", "collectionID", "partitionID", "mem_size", "num_rows"]
-        return tabulate([[getattr(_, i) for i in headers] for _ in result], headers=headers, tablefmt='grid', showindex=True)
+        return tabulate([[getattr(_, i) for i in headers] for _ in result], headers=headers, showindex=True)
+
+    def createCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.create_alias(collectionAliasName, timeout=timeout)
+        return result
+    
+    def dropCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.drop_alias(collectionAliasName, timeout=timeout)
+        return result
+    
+    def alterCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.alter_alias(collectionAliasName, timeout=timeout)
+        return result
+    
+    def createCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = []
+        for aliasItem in aliasList:
+            aliasResult = collection.create_alias(aliasItem, timeout=timeout)
+            result.append(aliasResult)
+        return result
+    
+    def alterCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = []
+        for aliasItem in aliasList:
+            aliasResult = collection.alter_alias(aliasItem, timeout=timeout)
+            result.append(aliasResult)
+        return result
     
 
 class Completer(object):
@@ -346,8 +377,8 @@ class Completer(object):
         'calc': [],
         'clear': [],
         'connect': [],
-        'create': ['collection', 'partition', 'index'],
-        'delete': ['collection', 'partition', 'index'],
+        'create': ['alias', 'collection', 'partition', 'index'],
+        'delete': ['alias', 'collection', 'partition', 'index'],
         'describe': ['collection', 'partition', 'index'],
         'exit': [],
         'help': [],
