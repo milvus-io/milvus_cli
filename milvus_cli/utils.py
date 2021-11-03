@@ -327,7 +327,47 @@ class PyOrm(object):
         collection = self.getTargetCollection(collectionName)
         result = collection.delete(expr, partition_name=partition_name, timeout=timeout)
         return result
+    
+    def getQuerySegmentInfo(self, collectionName, timeout=None, prettierFormat=False):
+        from pymilvus import utility
+        result = utility.get_query_segment_info(collectionName, timeout=timeout, using=self.alias)
+        if not prettierFormat or not result:
+            return result
+        firstChild = result[0]
+        headers = ["segmentID", "collectionID", "partitionID", "mem_size", "num_rows"]
+        return tabulate([[getattr(_, i) for i in headers] for _ in result], headers=headers, showindex=True)
 
+    def createCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.create_alias(collectionAliasName, timeout=timeout)
+        return result
+    
+    def dropCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.drop_alias(collectionAliasName, timeout=timeout)
+        return result
+    
+    def alterCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = collection.alter_alias(collectionAliasName, timeout=timeout)
+        return result
+    
+    def createCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = []
+        for aliasItem in aliasList:
+            aliasResult = collection.create_alias(aliasItem, timeout=timeout)
+            result.append(aliasResult)
+        return result
+    
+    def alterCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        result = []
+        for aliasItem in aliasList:
+            aliasResult = collection.alter_alias(aliasItem, timeout=timeout)
+            result.append(aliasResult)
+        return result
+    
 
 class Completer(object):
     # COMMANDS = ['clear', 'connect', 'create', 'delete', 'describe', 'exit',
@@ -337,8 +377,8 @@ class Completer(object):
         'calc': [],
         'clear': [],
         'connect': [],
-        'create': ['collection', 'partition', 'index'],
-        'delete': ['collection', 'partition', 'index'],
+        'create': ['alias', 'collection', 'partition', 'index'],
+        'delete': ['alias', 'collection', 'partition', 'index'],
         'describe': ['collection', 'partition', 'index'],
         'exit': [],
         'help': [],
@@ -348,7 +388,7 @@ class Completer(object):
         'query': [],
         'release': [],
         'search': [],
-        'show': ['connection', 'index_progress', 'loading_progress'],
+        'show': ['connection', 'index_progress', 'loading_progress', 'query_segment'],
         'version': [],
     }
 

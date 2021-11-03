@@ -12,10 +12,12 @@
       - [`clear`](#clear)
       - [`connect`](#connect)
       - [`create`](#create)
+        - [`create alias`](#create-alias)
         - [`create collection`](#create-collection)
         - [`create partition`](#create-partition)
         - [`create index`](#create-index)
       - [`delete`](#delete)
+        - [`delete alias`](#delete-alias)
         - [`delete collection`](#delete-collection)
         - [`delete partition`](#delete-partition)
         - [`delete index`](#delete-index)
@@ -39,6 +41,7 @@
         - [`show connection`](#show-connection)
         - [`show index_progress`](#show-index_progress)
         - [`show loading_progress`](#show-loading_progress)
+        - [`show query_segment`](#show-query_segment)
       - [`version`](#version)
 
 ## Overview
@@ -56,6 +59,7 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 | 2.0.0-RC5 | 2.0.0rc5 | 0.1.5 |
 | 2.0.0-RC6 | 2.0.0rc6 | 0.1.6 |
 | 2.0.0-RC7 | 2.0.0rc7 | 0.1.7 |
+<!-- | 2.0.0-RC8 | 2.0.0rc8 | 0.1.8 | -->
 
 *\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous versions of Milvus 2.0.0 because of some changes made to storage format.*
 
@@ -222,6 +226,36 @@ Commands:
   partition   Create partition.
 ```
 
+##### `create alias`
+
+```
+milvus_cli > create alias --help
+Usage: milvus_cli create alias [OPTIONS]
+
+  Specify alias for a collection. Alias cannot be duplicated, you can't assign
+  same alias to different collections. But you can specify multiple aliases
+  for a collection, for example:
+
+  create alias -c car -a carAlias1 -a carAlias2
+
+  You can also change alias of a collection to another collection. If the
+  alias doesn't exist, it will return error. Use "-A" option to change alias
+  owner collection, for example:
+
+  create alias -c car2 -A -a carAlias1 -a carAlias2
+
+Options:
+  -c, --collection-name TEXT  Collection name to specify alias.
+  -a, --alias-name TEXT       [Multiple] - The alias of the collection.
+  -A, --alter                 [Optional, Flag] - Change an existing alias to
+                              current collection.
+  -t, --timeout FLOAT         [Optional] - An optional duration of time in
+                              seconds to allow for the RPC. If timeout is not
+                              set, the client keeps waiting until the server
+                              responds or an error occurs.
+  --help                      Show this message and exit.
+```
+
 ##### `create collection`
 
 ```
@@ -312,6 +346,24 @@ Commands:
   collection  Drops the collection together with its index files.
   index       Drop index and its corresponding index files.
   partition   Drop the partition and its corresponding index files.
+```
+
+##### `delete alias`
+
+```
+milvus_cli > delete alias --help
+Usage: milvus_cli.py delete alias [OPTIONS]
+
+  Delete an alias.
+
+Options:
+  -c, --collection-name TEXT  Collection name to be specified alias.
+  -a, --alias-name TEXT       The alias of the collection.
+  -t, --timeout FLOAT         [Optional] - An optional duration of time in
+                              seconds to allow for the RPC. If timeout is not
+                              set, the client keeps waiting until the server
+                              responds or an error occurs.
+  --help                      Show this message and exit.
 ```
 
 ##### `delete collection`
@@ -813,6 +865,23 @@ Options:
   -c, --collection TEXT  The name of collection is loading
   -p, --partition TEXT   [Optional, Multiple] - The names of partitions are
                          loading
+  --help                 Show this message and exit.
+```
+
+##### `show query_segment`
+
+```
+milvus_cli > show query_segment --help
+Usage: milvus_cli show query_segment [OPTIONS]
+
+  Notifies Proxy to return segments information from query nodes.
+
+Options:
+  -c, --collection TEXT  A string representing the collection to get segments
+                         info.
+  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
+                         to allow for the RPC. When timeout is not set, client
+                         waits until server response or error occur.
   --help                 Show this message and exit.
 ```
 

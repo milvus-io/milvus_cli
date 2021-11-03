@@ -119,6 +119,15 @@ def indexProgress(obj, collection, index):
             'indexed_rows', 'total_rows'], tablefmt='pretty'))
 
 
+@show.command('query_segment')
+@click.option('-c', '--collection', 'collection', help='A string representing the collection to get segments info.')
+@click.option('-t', '--timeout', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.", default=None, type=float)
+@click.pass_obj
+def querySegmentInfo(obj, collection, timeout):
+    """Notifies Proxy to return segments information from query nodes."""
+    click.echo(obj.getQuerySegmentInfo(collection, timeout, prettierFormat=True))
+
+
 @cli.command()
 @click.option('-c', '--collection', 'collection', help='The name of collection to load.')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to load.', default=[], multiple=True)
@@ -292,8 +301,41 @@ def createDetails(obj):
     pass
 
 
+@createDetails.command('alias')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name to be specified alias.', type=str)
+@click.option('-a', '--alias-name', 'aliasNames', help='[Multiple] - The alias of the collection.', type=str, multiple=True)
+@click.option('-A', '--alter', 'alter', help='[Optional, Flag] - Change an existing alias to current collection.', default=False, is_flag=True)
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.pass_obj
+def createAlias(obj, collectionName, aliasNames, alter, timeout):
+    """
+    Specify alias for a collection.
+    Alias cannot be duplicated, you can't assign same alias to different collections.
+    But you can specify multiple aliases for a collection, for example:
+
+    create alias -c car -a carAlias1 -a carAlias2
+
+    You can also change alias of a collection to another collection.
+    If the alias doesn't exist, it will return error.
+    Use "-A" option to change alias owner collection, for example:
+
+    create alias -c car2 -A -a carAlias1 -a carAlias2
+    """
+    try:
+        obj.checkConnection()
+        if alter:
+            result = obj.alterCollectionAliasList(collectionName, aliasNames, timeout)
+        else:
+            result = obj.createCollectionAliasList(collectionName, aliasNames, timeout)
+    except ConnectException as ce:
+        click.echo("Error!\n{}".format(str(ce)))
+    else:
+        if len(result) == len(aliasNames):
+            click.echo(f"""{len(result)} alias {"altered" if alter else "created"} successfully.""")
+
+
 @createDetails.command('collection')
-@click.option('-c', '--collection-name', 'collectionName', help='Collection name to be created.')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name to specify alias.', type=str)
 @click.option('-p', '--schema-primary-field', 'primaryField', help='Primary field name.')
 @click.option('-a', '--schema-auto-id', 'autoId', help='[Optional, Flag] - Enable auto id.', default=False, is_flag=True)
 @click.option('-d', '--schema-description', 'description', help='[Optional] - Description details.', default='')
@@ -401,6 +443,28 @@ def createIndex(obj):
 def deleteObject(obj):
     """Delete specified collection, partition and index."""
     pass
+
+
+@deleteObject.command('alias')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name to be specified alias.', type=str)
+@click.option('-a', '--alias-name', 'aliasName', help='The alias of the collection.', type=str)
+@click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
+@click.pass_obj
+def deleteAlias(obj, collectionName, aliasName, timeout):
+    """
+    Delete an alias.
+    """
+    click.echo(
+        "Warning!\nYou are trying to delete an alias. This action cannot be undone!\n")
+    if not click.confirm('Do you want to continue?'):
+        return
+    try:
+        obj.checkConnection()
+        obj.dropCollectionAlias(collectionName, aliasName, timeout)
+    except ConnectException as ce:
+        click.echo("Error!\n{}".format(str(ce)))
+    else:
+        click.echo(f"Drop alias '{aliasName}' successfully.")
 
 
 @deleteObject.command('collection')
@@ -902,14 +966,14 @@ def runCliPrompt():
                 # trap argparse error message
                 # print('error', SystemExit)
                 continue
-            except ParameterException as pe:
-                click.echo(message=f"{str(pe)}", err=True)
-            except ConnectException as ce:
-                click.echo(
-                    message="Connect to milvus Error!\nPlease check your connection.", err=True)
-            except Exception as e:
-                click.echo(
-                    message=f"Error occurred!\n{str(e)}", err=True)
+            # except ParameterException as pe:
+            #     click.echo(message=f"{str(pe)}", err=True)
+            # except ConnectException as ce:
+            #     click.echo(
+            #         message="Connect to milvus Error!\nPlease check your connection.", err=True)
+            # except Exception as e:
+            #     click.echo(
+            #         message=f"Error occurred!\n{str(e)}", err=True)
     except (KeyboardInterrupt, EOFError):
         print()
         sys.exit(0)
