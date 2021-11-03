@@ -314,9 +314,19 @@ class PyOrm(object):
 
     def insert(self, collectionName, data, partitionName=None, timeout=None):
         collection = self.getTargetCollection(collectionName)
-        collection.insert(data, partition_name=partitionName, timeout=timeout)
+        result = collection.insert(data, partition_name=partitionName, timeout=timeout)
         entitiesNum = collection.num_entities
-        return entitiesNum
+        return [result, entitiesNum]
+    
+    def importData(self, collectionName, data, partitionName=None, timeout=None):
+        [result, entitiesNum] = self.insert(collectionName, data, partitionName, timeout)
+        insert_count = result.insert_count
+        timestamp = result.timestamp
+        prettierResult = []
+        prettierResult.append(["Total insert entities: ", insert_count])
+        prettierResult.append(["Total collection entities: ", entitiesNum])
+        prettierResult.append(["Milvus timestamp: ", timestamp])
+        return tabulate(prettierResult)
     
     def calcDistance(self, vectors_left, vectors_right, params=None, timeout=None):
         from pymilvus import utility

@@ -795,11 +795,12 @@ def importData(obj, collectionName, partitionName, timeout, path):
         result = readCsvFile(path.replace('"', '').replace("'", ""))
         data = result['data']
         click.secho('Inserting ...', blink=True, bold=True)
-        entitiesNum = obj.insert(collectionName, data, partitionName, timeout)
+        result = obj.importData(collectionName, data, partitionName, timeout)
     except Exception as e:
         click.echo("Error!\n{}".format(str(e)))
     else:
-        click.echo(f"Insert successfully.\nTotal entities: {entitiesNum}")
+        click.echo(f"\nInsert successfully.\n")
+        click.echo(result)
 
 
 @cli.command('calc')
