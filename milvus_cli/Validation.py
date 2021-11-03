@@ -73,7 +73,10 @@ def validateIndexParameter(indexType, metricType, params):
         raise ParameterException('Index params are duplicated.')
 
 
-def validateSearchParams(data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal, hasIndex=True):
+def validateSearchParams(data, annsField, metricType, params,
+                         limit, expr, partitionNames, timeout,
+                         roundDecimal, hasIndex=True,
+                         guarantee_timestamp=None, travel_timestamp=None):
     import json
     result = {}
     # Validate data
@@ -144,6 +147,19 @@ def validateSearchParams(data, annsField, metricType, params, limit, expr, parti
         result['timeout'] = float(timeout)
     if roundDecimal:
         result['round_decimal'] = int(roundDecimal)
+    #  Validate guarantee_timestamp and travel_timestamp
+    if guarantee_timestamp:
+        try:
+            result['guarantee_timestamp'] = int(guarantee_timestamp)
+        except Exception as e:
+            raise ParameterException(
+                'Format(int) "guarantee_timestamp" error! {}'.format(str(e)))
+    if travel_timestamp:
+        try:
+            result['travel_timestamp'] = int(travel_timestamp)
+        except Exception as e:
+            raise ParameterException(
+                'Format(int) "travel_timestamp" error! {}'.format(str(e)))
     return result
 
 
@@ -170,12 +186,12 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
 
 
 def validateQueryParams(leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout):
-    result = { 'params': {} }
+    result = {'params': {}}
     vectors_left = validateVectorMeta(leftVectorMeta)
     result['vectors_left'] = vectors_left
     vectors_right = validateVectorMeta(rightVectorMeta)
     result['vectors_right'] = vectors_right
-    params=result['params']
+    params = result['params']
     params['metric_type'] = metric_type
     if metric_type not in MetricTypes:
         raise ParameterException(
@@ -230,6 +246,6 @@ def validateVectorMeta(vectorMeta):
             noSquareBrackets = noWhiteSpace[1:-1]
             # "b'\x94', b'N', b'Ê'"
             strList = noSquareBrackets.split(', ')
-            binMap = map(lambda x:x[2:-1].encode('unicode_escape'), strList)
+            binMap = map(lambda x: x[2:-1].encode('unicode_escape'), strList)
             result[vectorMeta['type']] = list(binMap)
     return result
