@@ -754,6 +754,12 @@ Usage: milvus_cli.py search [OPTIONS]
       The names of partitions to search (split by "," if multiple) ['_default']
       []: _default
 
+      timeout []:
+
+      Guarantee Timestamp(It instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date) [0]: 
+
+      Travel Timestamp(Specify a timestamp in a search to get results based on a data view) [0]:
+
   Example-2(collection has index):
 
       Collection name (car, test_collection): car
@@ -791,6 +797,10 @@ Usage: milvus_cli.py search [OPTIONS]
 
       timeout []:
 
+      Guarantee Timestamp(It instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date) [0]: 
+
+      Travel Timestamp(Specify a timestamp in a search to get results based on a data view) [0]:
+
   Example-3(collection has no index):
 
       Collection name (car, car2): car
@@ -812,6 +822,10 @@ Usage: milvus_cli.py search [OPTIONS]
       []:
 
       Timeout []:
+
+      Guarantee Timestamp(It instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date) [0]: 
+
+      Travel Timestamp(Specify a timestamp in a search to get results based on a data view) [0]:
 
 Options:
   --help  Show this message and exit.

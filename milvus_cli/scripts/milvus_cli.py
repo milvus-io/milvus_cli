@@ -84,7 +84,7 @@ def connection(obj, showAll):
 
 
 @show.command('loading_progress')
-@click.option('-c', '--collection', 'collection', help='The name of collection is loading')
+@click.option('-c', '--collection-name', 'collection', help='The name of collection is loading')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The names of partitions are loading', default=None, multiple=True)
 @click.pass_obj
 def loadingProgress(obj, collection, partition):
@@ -102,8 +102,9 @@ def loadingProgress(obj, collection, partition):
 
 
 @show.command('index_progress')
-@click.option('-c', '--collection', 'collection', help='The name of collection is loading')
-@click.option('-i', '--index', 'index', help='[Optional] - Index name.', default='') #! TODO: To be removed
+@click.option('-c', '--collection-name', 'collection', help='The name of collection is loading')
+# ! TODO: To be removed
+@click.option('-i', '--index', 'index', help='[Optional] - Index name.', default='')
 @click.pass_obj
 def indexProgress(obj, collection, index):
     """Show # indexed entities vs. # total entities."""
@@ -120,16 +121,17 @@ def indexProgress(obj, collection, index):
 
 
 @show.command('query_segment')
-@click.option('-c', '--collection', 'collection', help='A string representing the collection to get segments info.')
+@click.option('-c', '--collection-name', 'collection', help='A string representing the collection to get segments info.')
 @click.option('-t', '--timeout', 'timeout', help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.", default=None, type=float)
 @click.pass_obj
 def querySegmentInfo(obj, collection, timeout):
-    """Notifies Proxy to return segments information from query nodes."""
-    click.echo(obj.getQuerySegmentInfo(collection, timeout, prettierFormat=True))
+    """Return segments information from query nodes."""
+    click.echo(obj.getQuerySegmentInfo(
+        collection, timeout, prettierFormat=True))
 
 
 @cli.command()
-@click.option('-c', '--collection', 'collection', help='The name of collection to load.')
+@click.option('-c', '--collection-name', 'collection', help='The name of collection to load.')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to load.', default=[], multiple=True)
 @click.pass_obj
 def load(obj, collection, partition):
@@ -148,14 +150,15 @@ def load(obj, collection, partition):
         click.echo(message=e, err=True)
     else:
         if partition:
-            click.echo(f"""Load {collection}'s partitions {partition} successfully""")
+            click.echo(
+                f"""Load {collection}'s partitions {partition} successfully""")
         else:
             click.echo(f"""Load Collection {collection} successfully""")
         click.echo(result)
 
 
 @cli.command()
-@click.option('-c', '--collection', 'collection', help='The name of collection to be released.')
+@click.option('-c', '--collection-name', 'collection', help='The name of collection to be released.')
 @click.option('-p', '--partition', 'partition', help='[Optional, Multiple] - The name of partition to released.', default=[], multiple=True)
 @click.pass_obj
 def release(obj, collection, partition):
@@ -174,7 +177,8 @@ def release(obj, collection, partition):
         click.echo(message=e, err=True)
     else:
         if partition:
-            click.echo(f"""Release {collection}'s partitions {partition} successfully""")
+            click.echo(
+                f"""Release {collection}'s partitions {partition} successfully""")
         else:
             click.echo(f"""Release Collection {collection} successfully""")
         click.echo(result)
@@ -201,7 +205,7 @@ def collections(obj, timeout, showLoaded):
 
 
 @listDetails.command()
-@click.option('-c', '--collection', 'collection', help='The name of collection.')
+@click.option('-c', '--collection-name', 'collection', help='The name of collection.')
 @click.pass_obj
 def partitions(obj, collection):
     """List all partitions of the specified collection."""
@@ -215,7 +219,7 @@ def partitions(obj, collection):
 
 
 @listDetails.command()
-@click.option('-c', '--collection', 'collection', help='The name of collection.')
+@click.option('-c', '--collection-name', 'collection', help='The name of collection.')
 @click.pass_obj
 def indexes(obj, collection):
     """List all indexes of the specified collection."""
@@ -236,7 +240,7 @@ def describeDetails(obj):
 
 
 @describeDetails.command('collection')
-@click.option('-c', '--collection', 'collection', help='The name of collection.')
+@click.option('-c', '--collection-name', 'collection', help='The name of collection.')
 @click.pass_obj
 def describeCollection(obj, collection):
     """
@@ -254,7 +258,7 @@ def describeCollection(obj, collection):
 
 
 @describeDetails.command('partition')
-@click.option('-c', '--collection', 'collectionName', help='The name of collection.')
+@click.option('-c', '--collection-name', 'collectionName', help='The name of collection.')
 @click.option('-p', '--partition', 'partition', help='[Optional] - The name of partition, default is "_default".', default='_default')
 @click.pass_obj
 def describePartition(obj, collectionName, partition):
@@ -275,7 +279,7 @@ def describePartition(obj, collectionName, partition):
 
 
 @describeDetails.command('index')
-@click.option('-c', '--collection', 'collectionName', help='The name of collection.')
+@click.option('-c', '--collection-name', 'collectionName', help='The name of collection.')
 @click.pass_obj
 def describeIndex(obj, collectionName):
     """
@@ -324,14 +328,17 @@ def createAlias(obj, collectionName, aliasNames, alter, timeout):
     try:
         obj.checkConnection()
         if alter:
-            result = obj.alterCollectionAliasList(collectionName, aliasNames, timeout)
+            result = obj.alterCollectionAliasList(
+                collectionName, aliasNames, timeout)
         else:
-            result = obj.createCollectionAliasList(collectionName, aliasNames, timeout)
+            result = obj.createCollectionAliasList(
+                collectionName, aliasNames, timeout)
     except ConnectException as ce:
         click.echo("Error!\n{}".format(str(ce)))
     else:
         if len(result) == len(aliasNames):
-            click.echo(f"""{len(result)} alias {"altered" if alter else "created"} successfully.""")
+            click.echo(
+                f"""{len(result)} alias {"altered" if alter else "created"} successfully.""")
 
 
 @createDetails.command('collection')
@@ -364,7 +371,7 @@ def createCollection(obj, collectionName, primaryField, autoId, description, fie
 
 
 @createDetails.command('partition')
-@click.option('-c', '--collection', 'collectionName', help='Collection name.')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name.')
 @click.option('-p', '--partition', 'partition', help='The name of partition.')
 @click.option('-d', '--description', 'description', help='[Optional] - Partition description.', default='')
 @click.pass_obj
@@ -468,7 +475,7 @@ def deleteAlias(obj, collectionName, aliasName, timeout):
 
 
 @deleteObject.command('collection')
-@click.option('-c', '--collection', 'collectionName', help='The name of collection to be deleted.')
+@click.option('-c', '--collection-name', 'collectionName', help='The name of collection to be deleted.')
 @click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deleteCollection(obj, collectionName, timeout):
@@ -495,7 +502,7 @@ def deleteCollection(obj, collectionName, timeout):
 
 
 @deleteObject.command('partition')
-@click.option('-c', '--collection', 'collectionName', help='Collection name')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name')
 @click.option('-p', '--partition', 'partition', help='The name of partition.')
 @click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
@@ -523,7 +530,7 @@ def deletePartition(obj, collectionName, partition, timeout):
 
 
 @deleteObject.command('index')
-@click.option('-c', '--collection', 'collectionName', help='Collection name')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name')
 @click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
 def deleteIndex(obj, collectionName, timeout):
@@ -550,7 +557,7 @@ def deleteIndex(obj, collectionName, timeout):
 
 
 @deleteObject.command('entities')
-@click.option('-c', '--collection', 'collectionName', help='Collection name.')
+@click.option('-c', '--collection-name', 'collectionName', help='Collection name.')
 @click.option('-p', '--partition', 'partitionName', help='[Optional] - Name of partitions that contain entities.', default='')
 @click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.pass_obj
@@ -568,7 +575,8 @@ def deleteEntities(obj, collectionName, partitionName, timeout):
 
         Do you want to continue? [y/N]: y
     """
-    expr = click.prompt('''The expression to specify entities to be deleted, such as "film_id in [ 0, 1 ]"''')
+    expr = click.prompt(
+        '''The expression to specify entities to be deleted, such as "film_id in [ 0, 1 ]"''')
     click.echo(
         "You are trying to delete the entities of collection. This action cannot be undone!\n")
     if not click.confirm('Do you want to continue?'):
@@ -581,7 +589,8 @@ def deleteEntities(obj, collectionName, partitionName, timeout):
     else:
         partitionValue = partitionName if partitionName else None
         timeoutValue = timeout if timeout else None
-        result = obj.deleteEntities(expr, collectionName, partitionValue, timeoutValue)
+        result = obj.deleteEntities(
+            expr, collectionName, partitionValue, timeoutValue)
         click.echo("Drop index successfully!") if not result else click.echo(
             "Drop index failed!")
 
@@ -699,6 +708,10 @@ def search(obj):
     partitionNames = click.prompt(
         f'The names of partitions to search (split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
     timeout = click.prompt('Timeout', default='')
+    guarantee_timestamp = click.prompt(
+        'Guarantee Timestamp(It instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date)', default=0, type=int)
+    travel_timestamp = click.prompt(
+        'Travel Timestamp(Specify a timestamp in a search to get results based on a data view)', default=0, type=int)
     export, exportPath = False, ''
     # if click.confirm('Would you like to export results as a CSV file?'):
     #     export = True
@@ -708,7 +721,10 @@ def search(obj):
     #     exportPath = click.prompt('Directory path to csv file')
     try:
         searchParameters = validateSearchParams(
-            data, annsField, metricType, params, limit, expr, partitionNames, timeout, roundDecimal, hasIndex=hasIndex)
+            data, annsField, metricType, params, limit,
+            expr, partitionNames, timeout, roundDecimal,
+            hasIndex=hasIndex, guarantee_timestamp=guarantee_timestamp,
+            travel_timestamp=travel_timestamp)
         obj.checkConnection()
     except ParameterException as pe:
         click.echo("Error!\n{}".format(str(pe)))
@@ -767,7 +783,7 @@ def query(obj):
 
 
 @cli.command('import')
-@click.option('-c', '--collection', 'collectionName', help='The name of collection to be imported.')
+@click.option('-c', '--collection-name', 'collectionName', help='The name of collection to be imported.')
 @click.option('-p', '--partition', 'partitionName', help='[Optional] - The partition name which the data will be inserted to, if partition name is not passed, then the data will be inserted to “_default” partition.', default=None)
 @click.option('-t', '--timeout', 'timeout', help='[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.', default=None, type=float)
 @click.argument('path')
@@ -884,16 +900,20 @@ def calcDistance(obj):
     leftVectorMeta = {}
     if click.confirm('Import left operator vectors from existing collection?'):
         left_ids = click.prompt("The vectors' ids on the left of operator")
-        left_collection = click.prompt("The vectors' collection name on the left of operator")
-        left_partition = click.prompt("The vectors' partition name on the left of operator")
-        left_field = click.prompt("The vectors' field name on the left of operator")
+        left_collection = click.prompt(
+            "The vectors' collection name on the left of operator")
+        left_partition = click.prompt(
+            "The vectors' partition name on the left of operator")
+        left_field = click.prompt(
+            "The vectors' field name on the left of operator")
         leftVectorMeta['vec_type'] = 'import'
         leftVectorMeta['ids'] = left_ids
         leftVectorMeta['collection'] = left_collection
         leftVectorMeta['partition'] = left_partition
         leftVectorMeta['field'] = left_field
     else:
-        left_type = click.prompt("The vector's type", type=click.Choice(['float_vectors', 'bin_vectors']), default='float_vectors')
+        left_type = click.prompt("The vector's type", type=click.Choice(
+            ['float_vectors', 'bin_vectors']), default='float_vectors')
         left_vectors = click.prompt("Left vectors")
         leftVectorMeta['vec_type'] = 'raw'
         leftVectorMeta['type'] = left_type
@@ -901,32 +921,39 @@ def calcDistance(obj):
     rightVectorMeta = {}
     if click.confirm('Import right operator vectors from existing collection?'):
         right_ids = click.prompt("The vectors' ids on the right of operator")
-        right_collection = click.prompt("The vectors' collection name on the right of operator")
-        right_partition = click.prompt("The vectors' partition name on the right of operator")
-        right_field = click.prompt("The vectors' field name on the right of operator")
+        right_collection = click.prompt(
+            "The vectors' collection name on the right of operator")
+        right_partition = click.prompt(
+            "The vectors' partition name on the right of operator")
+        right_field = click.prompt(
+            "The vectors' field name on the right of operator")
         rightVectorMeta['vec_type'] = 'import'
         rightVectorMeta['ids'] = right_ids
         rightVectorMeta['collection'] = right_collection
         rightVectorMeta['partition'] = right_partition
         rightVectorMeta['field'] = right_field
     else:
-        right_type = click.prompt("The vector's type", type=click.Choice(['float_vectors', 'bin_vectors']), default='float_vectors')
+        right_type = click.prompt("The vector's type", type=click.Choice(
+            ['float_vectors', 'bin_vectors']), default='float_vectors')
         right_vectors = click.prompt("Right vectors")
         rightVectorMeta['vec_type'] = 'raw'
         rightVectorMeta['type'] = right_type
         rightVectorMeta['vectors'] = right_vectors
-    metric_type = click.prompt('Supported metric type. Default is "L2"', default="L2", type=click.Choice(MetricTypes))
+    metric_type = click.prompt(
+        'Supported metric type. Default is "L2"', default="L2", type=click.Choice(MetricTypes))
     sqrt = None
     if metric_type in ["L2"]:
         sqrt = click.prompt('sqrt', type=bool, default=False)
     dim = None
     if metric_type in ["HAMMING", "TANIMOTO"]:
-        dim = click.prompt('Set this value if dimension is not a multiple of 8, otherwise the dimension will be calculted by list length', type=int, default=None)
+        dim = click.prompt(
+            'Set this value if dimension is not a multiple of 8, otherwise the dimension will be calculted by list length', type=int, default=None)
     timeout = click.prompt('Timeout(optional)', default='')
     try:
         calcParams = validateQueryParams(
             leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout)
-        result = obj.calcDistance(calcParams['vectors_left'], calcParams['vectors_right'], calcParams['params'], calcParams['timeout'])
+        result = obj.calcDistance(
+            calcParams['vectors_left'], calcParams['vectors_right'], calcParams['params'], calcParams['timeout'])
     except ParameterException as pe:
         click.echo("Error!\n{}".format(str(pe)))
     except ConnectException as ce:
