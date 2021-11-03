@@ -786,7 +786,16 @@ def importData(obj, collectionName, partitionName, timeout, path):
 
         Processed 50001 lines.
 
-        Import successfully.
+        Inserting ...
+
+        Insert successfully.
+
+        \b
+    --------------------------  ------------------
+    Total insert entities:                   50000
+    Total collection entities:              150000
+    Milvus timestamp:           428849214449254403
+    --------------------------  ------------------
     """
     try:
         obj.checkConnection()

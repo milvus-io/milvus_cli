@@ -572,7 +572,7 @@ Commands:
 #### `import`
 
 ```
-milvus_cli > import  --help
+milvus_cli > import --help
 Usage: milvus_cli.py import [OPTIONS] PATH
 
   Import data from csv file with headers and insert into target collection.
@@ -587,7 +587,15 @@ Usage: milvus_cli.py import [OPTIONS] PATH
 
       Processed 50001 lines.
 
-      Import successfully.
+      Inserting ...
+
+      Insert successfully.
+
+      --------------------------  ------------------
+      Total insert entities:                   50000
+      Total collection entities:              150000
+      Milvus timestamp:           428849214449254403
+      --------------------------  ------------------
 
 Options:
   -c, --collection TEXT  The name of collection to be imported.
