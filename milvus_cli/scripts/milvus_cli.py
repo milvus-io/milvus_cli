@@ -1003,14 +1003,14 @@ def runCliPrompt():
                 # trap argparse error message
                 # print('error', SystemExit)
                 continue
-            # except ParameterException as pe:
-            #     click.echo(message=f"{str(pe)}", err=True)
-            # except ConnectException as ce:
-            #     click.echo(
-            #         message="Connect to milvus Error!\nPlease check your connection.", err=True)
-            # except Exception as e:
-            #     click.echo(
-            #         message=f"Error occurred!\n{str(e)}", err=True)
+            except ParameterException as pe:
+                click.echo(message=f"{str(pe)}", err=True)
+            except ConnectException as ce:
+                click.echo(
+                    message="Connect to milvus Error!\nPlease check your connection.", err=True)
+            except Exception as e:
+                click.echo(
+                    message=f"Error occurred!\n{str(e)}", err=True)
     except (KeyboardInterrupt, EOFError):
         print()
         sys.exit(0)
