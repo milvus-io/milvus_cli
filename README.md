@@ -5,7 +5,8 @@
   - [Installation](#installation)
     - [Preparation](#preparation)
     - [Install from PYPI(recommend)](#install-from-pypirecommend)
-    - [Install from release/source code](#install-from-releasesource-code)
+    - [Install from release](#install-from-release)
+    - [Install from source code](#install-from-source-code)
   - [Usage](#usage)
     - [commands](#commands)
       - [`calc`](#calc)
@@ -73,11 +74,18 @@ Milvus CLI based on [Milvus Python ORM SDK](https://github.com/milvus-io/pymilvu
 
 ### Install from PYPI(recommend)
 
-`pip install milvus-cli`
+`pip install milvus-cli==0.1.7`
 
-### Install from release/source code
+### Install from release
 
-1. Download [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) or `git clone https://github.com/milvus-io/milvus_cli.git`
+1. Download [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest)
+
+2. Install tar file: `python -m pip install milvus_cli-<version>.tar.gz`
+
+### Install from source code
+
+1. `git clone https://github.com/milvus-io/milvus_cli.git`
+
 2. Enter the direction(`cd milvus_cli/`) and run `python -m pip install --editable .`
 
 ## Usage
