@@ -35,9 +35,9 @@
         - [`list indexes`](#list-indexes)
         - [`list partitions`](#list-partitions)
       - [`load`](#load)
-      - [`query`](#query-prompt-command)
+      - [`query`](#query)
       - [`release`](#release)
-      - [`search`](#search-prompt-command)
+      - [`search`](#search)
       - [`show`](#show)
         - [`show connection`](#show-connection)
         - [`show index_progress`](#show-index_progress)
@@ -691,7 +691,7 @@ Options:
   --help                 Show this message and exit.
 ```
 
-#### `query` (prompt command)
+#### `query`
 
 ```
 milvus_cli > query --help
@@ -700,17 +700,37 @@ Usage: milvus_cli.py query [OPTIONS]
   Query with a set of criteria, and results in a list of records that match
   the query exactly.
 
-  Example:
+  Example 1:
 
       milvus_cli > query
 
       Collection name: car
 
-      The query expression(field_name in [x,y]): id in [ 427284660842954108, 427284660842954199 ]
+      The query expression: id in [ 428960801420883491, 428960801420883492,
+      428960801420883493 ]
 
-      Name of partitions that contain entities(split by "," if multiple) []: default
+      Name of partitions that contain entities(split by "," if multiple) []:
+      default
 
       A list of fields to return(split by "," if multiple) []: color, brand
+
+      timeout []:
+
+  Example 2:
+
+      milvus_cli > query
+
+      Collection name: car
+
+      The query expression: id > 428960801420883491
+
+      Name of partitions that contain entities(split by "," if multiple) []:
+      default
+
+      A list of fields to return(split by "," if multiple) []: id, color,
+      brand
+
+      timeout []:
 
 Options:
   --help  Show this message and exit.
@@ -731,7 +751,7 @@ Options:
   --help                 Show this message and exit.
 ```
 
-#### `search` (prompt command)
+#### `search`
 
 ```
 milvus_cli > search --help

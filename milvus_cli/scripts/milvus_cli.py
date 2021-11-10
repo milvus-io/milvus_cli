@@ -748,7 +748,7 @@ def query(obj):
     """
     Query with a set of criteria, and results in a list of records that match the query exactly.
 
-    Example:
+    Example 1:
 
         milvus_cli > query
 
@@ -759,6 +759,21 @@ def query(obj):
         Name of partitions that contain entities(split by "," if multiple) []: default
 
         A list of fields to return(split by "," if multiple) []: color, brand
+
+        timeout []:
+
+
+    Example 2:
+
+        milvus_cli > query
+
+        Collection name: car
+
+        The query expression: id > 428960801420883491
+
+        Name of partitions that contain entities(split by "," if multiple) []: default
+
+        A list of fields to return(split by "," if multiple) []: id, color, brand
 
         timeout []: 
     """
