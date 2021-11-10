@@ -1,5 +1,5 @@
 from Types import ParameterException
-from Types import FiledDataTypes, IndexTypes, IndexTypesMap, SearchParams, MetricTypes
+from Types import FiledDataTypes, IndexTypes, IndexTypesMap, SearchParams, MetricTypes, Operators
 from Fs import readCsvFile
 
 
@@ -133,7 +133,7 @@ def validateSearchParams(data, annsField, metricType, params,
         raise ParameterException(
             'Format(int) "limit" error! {}'.format(str(e)))
     # Validate expr
-    result['expr'] = expr
+    result['expr'] = expr if expr else None
     # Validate partitionNames
     if partitionNames:
         try:
@@ -167,9 +167,10 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
     result = {}
     if not expr:
         raise ParameterException('expr is empty!')
-    if ' in ' not in expr:
+    # if ' in ' not in expr:
+    if not any(map(lambda x: x in expr, Operators)):
         raise ParameterException(
-            'expr only accepts "<field_name> in [<min>,<max>]"!')
+            f'The query expression only accepts "<field_name> <oprator in {Operators}> [<value>, ...]"!')
     result['expr'] = expr
     if not outputFields:
         result['output_fields'] = None

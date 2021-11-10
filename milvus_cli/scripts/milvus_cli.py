@@ -754,7 +754,7 @@ def query(obj):
 
         Collection name: car
 
-        The query expression(field_name in [x,y]): id in [ 427284660842954108, 427284660842954199 ]
+        The query expression: id in [ 428960801420883491, 428960801420883492, 428960801420883493 ]
 
         Name of partitions that contain entities(split by "," if multiple) []: default
 
@@ -764,7 +764,7 @@ def query(obj):
     """
     collectionName = click.prompt(
         'Collection name', type=click.Choice(obj._list_collection_names()))
-    expr = click.prompt('The query expression(field_name in [x,y])')
+    expr = click.prompt('The query expression')
     partitionNames = click.prompt(
         f'The names of partitions to search (split by "," if multiple) {obj._list_partition_names(collectionName)}', default='')
     outputFields = click.prompt(

@@ -116,3 +116,5 @@ DataTypeByNum = {
     101: 'FLOAT_VECTOR',
     999: 'UNKNOWN',
 }
+
+Operators = ['<', '<=', '>', '>=', '==', '!=', 'in']
