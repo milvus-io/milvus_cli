@@ -185,7 +185,7 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
     return result
 
 
-def validateQueryParams(leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout):
+def validateCalcParams(leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout):
     result = {'params': {}}
     vectors_left = validateVectorMeta(leftVectorMeta)
     result['vectors_left'] = vectors_left

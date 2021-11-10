@@ -7,7 +7,7 @@ parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
 from utils import PyOrm, Completer, getPackageVersion
 from Fs import readCsvFile
-from Validation import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams, validateQueryParams
+from Validation import validateParamsByCustomFunc, validateCollectionParameter, validateIndexParameter, validateSearchParams, validateQueryParams, validateCalcParams
 from Types import ParameterException, ConnectException
 from Types import MetricTypes, IndexTypesMap, IndexTypes
 
@@ -950,7 +950,7 @@ def calcDistance(obj):
             'Set this value if dimension is not a multiple of 8, otherwise the dimension will be calculted by list length', type=int, default=None)
     timeout = click.prompt('Timeout(optional)', default='')
     try:
-        calcParams = validateQueryParams(
+        calcParams = validateCalcParams(
             leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout)
         result = obj.calcDistance(
             calcParams['vectors_left'], calcParams['vectors_right'], calcParams['params'], calcParams['timeout'])
