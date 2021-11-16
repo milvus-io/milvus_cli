@@ -31,7 +31,7 @@ FiledDataTypes = [
     "DOUBLE",
     "STRING",
     "BINARY_VECTOR",
-    "FLOAT_VECTOR"
+    "FLOAT_VECTOR",
 ]
 
 IndexTypes = [
@@ -78,7 +78,12 @@ IndexTypesMap = {
         "search_parameters": ["nprobe"],
     },
     "RNSG": {
-        "index_building_parameters": ["out_degree", "candidate_pool_size", "search_length", "knng"],
+        "index_building_parameters": [
+            "out_degree",
+            "candidate_pool_size",
+            "search_length",
+            "knng",
+        ],
         "search_parameters": ["search_length"],
     },
     "HNSW": {
@@ -92,29 +97,25 @@ IndexTypesMap = {
 }
 
 DupSearchParams = reduce(
-    lambda x, y: x+IndexTypesMap[y]['search_parameters'], IndexTypesMap.keys(), [])
+    lambda x, y: x + IndexTypesMap[y]["search_parameters"], IndexTypesMap.keys(), []
+)
 SearchParams = list(dict.fromkeys(DupSearchParams))
 
-MetricTypes = [
-    "L2",
-    "IP",
-    "HAMMING",
-    "TANIMOTO"
-]
+MetricTypes = ["L2", "IP", "HAMMING", "TANIMOTO"]
 
 DataTypeByNum = {
-    0: 'NONE',
-    1: 'BOOL',
-    2: 'INT8',
-    3: 'INT16',
-    4: 'INT32',
-    5: 'INT64',
-    10: 'FLOAT',
-    11: 'DOUBLE',
-    20: 'STRING',
-    100: 'BINARY_VECTOR',
-    101: 'FLOAT_VECTOR',
-    999: 'UNKNOWN',
+    0: "NONE",
+    1: "BOOL",
+    2: "INT8",
+    3: "INT16",
+    4: "INT32",
+    5: "INT64",
+    10: "FLOAT",
+    11: "DOUBLE",
+    20: "STRING",
+    100: "BINARY_VECTOR",
+    101: "FLOAT_VECTOR",
+    999: "UNKNOWN",
 }
 
-Operators = ['<', '<=', '>', '>=', '==', '!=', 'in']
+Operators = ["<", "<=", ">", ">=", "==", "!=", "in"]

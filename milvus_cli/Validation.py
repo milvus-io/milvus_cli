@@ -1,5 +1,12 @@
 from Types import ParameterException
-from Types import FiledDataTypes, IndexTypes, IndexTypesMap, SearchParams, MetricTypes, Operators
+from Types import (
+    FiledDataTypes,
+    IndexTypes,
+    IndexTypesMap,
+    SearchParams,
+    MetricTypes,
+    Operators,
+)
 from Fs import readCsvFile
 
 
@@ -12,23 +19,27 @@ def validateParamsByCustomFunc(customFunc, errMsg, *params):
 
 def validateCollectionParameter(collectionName, primaryField, fields):
     if not collectionName:
-        raise ParameterException('Missing collection name.')
+        raise ParameterException("Missing collection name.")
     if not primaryField:
-        raise ParameterException('Missing primary field.')
+        raise ParameterException("Missing primary field.")
     if not fields:
-        raise ParameterException('Missing fields.')
+        raise ParameterException("Missing fields.")
     fieldNames = []
     for field in fields:
-        fieldList = field.split(':')
+        fieldList = field.split(":")
         if not (len(fieldList) == 3):
             raise ParameterException(
-                'Field should contain three paremeters and concat by ":".')
+                'Field should contain three paremeters and concat by ":".'
+            )
         [fieldName, fieldType, fieldData] = fieldList
         fieldNames.append(fieldName)
         if fieldType not in FiledDataTypes:
             raise ParameterException(
-                'Invalid field data type, should be one of {}'.format(str(FiledDataTypes)))
-        if fieldType in ['BINARY_VECTOR', 'FLOAT_VECTOR']:
+                "Invalid field data type, should be one of {}".format(
+                    str(FiledDataTypes)
+                )
+            )
+        if fieldType in ["BINARY_VECTOR", "FLOAT_VECTOR"]:
             try:
                 int(fieldData)
             except ValueError as e:
@@ -36,33 +47,40 @@ def validateCollectionParameter(collectionName, primaryField, fields):
     # Dedup field name.
     newNames = list(set(fieldNames))
     if not (len(newNames) == len(fieldNames)):
-        raise ParameterException('Field names are duplicated.')
+        raise ParameterException("Field names are duplicated.")
     if primaryField not in fieldNames:
         raise ParameterException(
-            """Primary field name doesn't exist in input fields.""")
+            """Primary field name doesn't exist in input fields."""
+        )
 
 
 def validateIndexParameter(indexType, metricType, params):
     if indexType not in IndexTypes:
         raise ParameterException(
-            'Invalid index type, should be one of {}'.format(str(IndexTypes)))
+            "Invalid index type, should be one of {}".format(str(IndexTypes))
+        )
     if metricType not in MetricTypes:
         raise ParameterException(
-            'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
+            "Invalid index metric type, should be one of {}".format(str(MetricTypes))
+        )
     # if not params:
     #     raise ParameterException('Missing params')
     paramNames = []
-    buildingParameters = IndexTypesMap[indexType]['index_building_parameters']
+    buildingParameters = IndexTypesMap[indexType]["index_building_parameters"]
     for param in params:
-        paramList = param.split(':')
+        paramList = param.split(":")
         if not (len(paramList) == 2):
             raise ParameterException(
-                'Params should contain two paremeters and concat by ":".')
+                'Params should contain two paremeters and concat by ":".'
+            )
         [paramName, paramValue] = paramList
         paramNames.append(paramName)
         if paramName not in buildingParameters:
             raise ParameterException(
-                'Invalid index param, should be one of {}'.format(str(buildingParameters)))
+                "Invalid index param, should be one of {}".format(
+                    str(buildingParameters)
+                )
+            )
         try:
             int(paramValue)
         except ValueError as e:
@@ -70,183 +88,203 @@ def validateIndexParameter(indexType, metricType, params):
     # Dedup field name.
     newNames = list(set(paramNames))
     if not (len(newNames) == len(paramNames)):
-        raise ParameterException('Index params are duplicated.')
+        raise ParameterException("Index params are duplicated.")
 
 
-def validateSearchParams(data, annsField, metricType, params,
-                         limit, expr, partitionNames, timeout,
-                         roundDecimal, hasIndex=True,
-                         guarantee_timestamp=None, travel_timestamp=None):
+def validateSearchParams(
+    data,
+    annsField,
+    metricType,
+    params,
+    limit,
+    expr,
+    partitionNames,
+    timeout,
+    roundDecimal,
+    hasIndex=True,
+    guarantee_timestamp=None,
+    travel_timestamp=None,
+):
     import json
+
     result = {}
     # Validate data
     try:
-        if '.csv' in data:
+        if ".csv" in data:
             csvData = readCsvFile(data, withCol=False)
-            result['data'] = csvData['data'][0]
+            result["data"] = csvData["data"][0]
         else:
-            result['data'] = json.loads(
-                data.replace('\'', '').replace('\"', ''))
+            result["data"] = json.loads(data.replace("'", "").replace('"', ""))
     except Exception as e:
         raise ParameterException(
-            'Format(list[list[float]]) "Data" error! {}'.format(str(e)))
+            'Format(list[list[float]]) "Data" error! {}'.format(str(e))
+        )
     # Validate annsField
     if not annsField:
-        raise ParameterException('annsField is empty!')
-    result['anns_field'] = annsField
+        raise ParameterException("annsField is empty!")
+    result["anns_field"] = annsField
     if hasIndex:
         # Validate metricType
         if metricType not in MetricTypes:
             raise ParameterException(
-                'Invalid index metric type, should be one of {}'.format(str(MetricTypes)))
+                "Invalid index metric type, should be one of {}".format(
+                    str(MetricTypes)
+                )
+            )
         # Validate params
         paramDict = {}
         if type(params) == str:
-            paramsList = params.replace(' ', '').split(',')
+            paramsList = params.replace(" ", "").split(",")
         else:
             paramsList = params
         for param in paramsList:
             if not param:
                 continue
-            paramList = param.split(':')
+            paramList = param.split(":")
             if not (len(paramList) == 2):
                 raise ParameterException(
-                    'Params should contain two paremeters and concat by ":".')
+                    'Params should contain two paremeters and concat by ":".'
+                )
             [paramName, paramValue] = paramList
             if paramName not in SearchParams:
                 raise ParameterException(
-                    'Invalid search parameter, should be one of {}'.format(str(SearchParams)))
+                    "Invalid search parameter, should be one of {}".format(
+                        str(SearchParams)
+                    )
+                )
             try:
                 paramDict[paramName] = int(paramValue)
             except ValueError as e:
-                raise ParameterException(
-                    """Search parameter's value should be int.""")
-        result['param'] = {"metric_type": metricType}
+                raise ParameterException("""Search parameter's value should be int.""")
+        result["param"] = {"metric_type": metricType}
         if paramDict.keys():
-            result['param']['params'] = paramDict
+            result["param"]["params"] = paramDict
     else:
-        result['param'] = {}
+        result["param"] = {}
     #  Validate limit
     try:
-        result['limit'] = int(limit)
+        result["limit"] = int(limit)
     except Exception as e:
-        raise ParameterException(
-            'Format(int) "limit" error! {}'.format(str(e)))
+        raise ParameterException('Format(int) "limit" error! {}'.format(str(e)))
     # Validate expr
-    result['expr'] = expr if expr else None
+    result["expr"] = expr if expr else None
     # Validate partitionNames
     if partitionNames:
         try:
-            result['partition_names'] = partitionNames.replace(
-                ' ', '').split(',')
+            result["partition_names"] = partitionNames.replace(" ", "").split(",")
         except Exception as e:
             raise ParameterException(
-                'Format(list[str]) "partitionNames" error! {}'.format(str(e)))
+                'Format(list[str]) "partitionNames" error! {}'.format(str(e))
+            )
     # Validate timeout
     if timeout:
-        result['timeout'] = float(timeout)
+        result["timeout"] = float(timeout)
     if roundDecimal:
-        result['round_decimal'] = int(roundDecimal)
+        result["round_decimal"] = int(roundDecimal)
     #  Validate guarantee_timestamp and travel_timestamp
     if guarantee_timestamp:
         try:
-            result['guarantee_timestamp'] = int(guarantee_timestamp)
+            result["guarantee_timestamp"] = int(guarantee_timestamp)
         except Exception as e:
             raise ParameterException(
-                'Format(int) "guarantee_timestamp" error! {}'.format(str(e)))
+                'Format(int) "guarantee_timestamp" error! {}'.format(str(e))
+            )
     if travel_timestamp:
         try:
-            result['travel_timestamp'] = int(travel_timestamp)
+            result["travel_timestamp"] = int(travel_timestamp)
         except Exception as e:
             raise ParameterException(
-                'Format(int) "travel_timestamp" error! {}'.format(str(e)))
+                'Format(int) "travel_timestamp" error! {}'.format(str(e))
+            )
     return result
 
 
 def validateQueryParams(expr, partitionNames, outputFields, timeout):
     result = {}
     if not expr:
-        raise ParameterException('expr is empty!')
+        raise ParameterException("expr is empty!")
     # if ' in ' not in expr:
     if not any(map(lambda x: x in expr, Operators)):
         raise ParameterException(
-            f'The query expression only accepts "<field_name> <oprator in {Operators}> [<value>, ...]"!')
-    result['expr'] = expr
+            f'The query expression only accepts "<field_name> <oprator in {Operators}> [<value>, ...]"!'
+        )
+    result["expr"] = expr
     if not outputFields:
-        result['output_fields'] = None
+        result["output_fields"] = None
     else:
-        nameList = outputFields.replace(' ', '').split(',')
-        result['output_fields'] = nameList
+        nameList = outputFields.replace(" ", "").split(",")
+        result["output_fields"] = nameList
     if not partitionNames:
-        result['partition_names'] = None
+        result["partition_names"] = None
     else:
-        nameList = partitionNames.replace(' ', '').split(',')
-        result['partition_names'] = nameList
-    result['timeout'] = float(timeout) if timeout else None
+        nameList = partitionNames.replace(" ", "").split(",")
+        result["partition_names"] = nameList
+    result["timeout"] = float(timeout) if timeout else None
     return result
 
 
-def validateCalcParams(leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout):
-    result = {'params': {}}
+def validateCalcParams(
+    leftVectorMeta, rightVectorMeta, metric_type, sqrt, dim, timeout
+):
+    result = {"params": {}}
     vectors_left = validateVectorMeta(leftVectorMeta)
-    result['vectors_left'] = vectors_left
+    result["vectors_left"] = vectors_left
     vectors_right = validateVectorMeta(rightVectorMeta)
-    result['vectors_right'] = vectors_right
-    params = result['params']
-    params['metric_type'] = metric_type
+    result["vectors_right"] = vectors_right
+    params = result["params"]
+    params["metric_type"] = metric_type
     if metric_type not in MetricTypes:
         raise ParameterException(
-            'metric_type should be one of {}'.format(str(MetricTypes)))
-    if metric_type == 'L2':
-        params['sqrt'] = sqrt
-    elif metric_type in ['HAMMING', 'TANIMOTO']:
-        params['dim'] = dim
+            "metric_type should be one of {}".format(str(MetricTypes))
+        )
+    if metric_type == "L2":
+        params["sqrt"] = sqrt
+    elif metric_type in ["HAMMING", "TANIMOTO"]:
+        params["dim"] = dim
     if timeout:
-        result['timeout'] = float(timeout)
+        result["timeout"] = float(timeout)
     else:
-        result['timeout'] = None
+        result["timeout"] = None
     return result
 
 
 def validateVectorMeta(vectorMeta):
     import json
-    vec_type = vectorMeta['vec_type']
+
+    vec_type = vectorMeta["vec_type"]
     result = {}
-    if vec_type == 'import':
-        ids_str = vectorMeta['ids']
+    if vec_type == "import":
+        ids_str = vectorMeta["ids"]
         try:
-            ids = json.loads(
-                ids_str.replace('\'', '').replace('\"', ''))
+            ids = json.loads(ids_str.replace("'", "").replace('"', ""))
         except Exception as e:
-            raise ParameterException(
-                'Format(list[int]) "ids" error! {}'.format(str(e)))
-        collection_str = vectorMeta['collection']
-        partition_str = vectorMeta['partition']
-        field_str = vectorMeta['field']
+            raise ParameterException('Format(list[int]) "ids" error! {}'.format(str(e)))
+        collection_str = vectorMeta["collection"]
+        partition_str = vectorMeta["partition"]
+        field_str = vectorMeta["field"]
         if not collection_str or not partition_str or not field_str:
-            raise ParameterException(
-                f"Collection/Partition/Field should not be empty!")
-        result['ids'] = ids
-        result['collection'] = collection_str
-        result['partition'] = partition_str
-        result['field'] = field_str
-    if vec_type == 'raw':
-        vectors_str = vectorMeta['vectors']
-        if vectorMeta['type'] == 'float_vectors':
+            raise ParameterException(f"Collection/Partition/Field should not be empty!")
+        result["ids"] = ids
+        result["collection"] = collection_str
+        result["partition"] = partition_str
+        result["field"] = field_str
+    if vec_type == "raw":
+        vectors_str = vectorMeta["vectors"]
+        if vectorMeta["type"] == "float_vectors":
             try:
-                vectors = json.loads(
-                    vectors_str.replace('\'', '').replace('\"', ''))
+                vectors = json.loads(vectors_str.replace("'", "").replace('"', ""))
             except Exception as e:
                 raise ParameterException(
-                    'Format(list[float]) "ids" error! {}'.format(str(e)))
+                    'Format(list[float]) "ids" error! {}'.format(str(e))
+                )
             else:
-                result[vectorMeta['type']] = vectors
-        elif vectorMeta['type'] == 'bin_vectors':
+                result[vectorMeta["type"]] = vectors
+        elif vectorMeta["type"] == "bin_vectors":
             # """[b'\x94', b'N', b'\xca']"""
             noWhiteSpace = vectors_str.strip()
             noSquareBrackets = noWhiteSpace[1:-1]
             # "b'\x94', b'N', b'Ê'"
-            strList = noSquareBrackets.split(', ')
-            binMap = map(lambda x: x[2:-1].encode('unicode_escape'), strList)
-            result[vectorMeta['type']] = list(binMap)
+            strList = noSquareBrackets.split(", ")
+            binMap = map(lambda x: x[2:-1].encode("unicode_escape"), strList)
+            result[vectorMeta["type"]] = list(binMap)
     return result
