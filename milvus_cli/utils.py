@@ -118,9 +118,14 @@ class PyOrm(object):
             showindex=True,
         )
 
+    def flushCollectionByNumEntities(self, collectionName):
+        col = self.getTargetCollection(collectionName)
+        return col.num_entities
+
     def showCollectionLoadingProgress(self, collectionName, partition_names=None):
         from pymilvus import loading_progress
 
+        self.flushCollectionByNumEntities(collectionName)
         return loading_progress(collectionName, partition_names, self.alias)
 
     def showIndexBuildingProgress(self, collectionName, index_name=""):
