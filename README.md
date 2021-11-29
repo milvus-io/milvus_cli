@@ -17,9 +17,9 @@ More details refer to [Milvus.io](https://milvus.io/docs/v2.0.0/cli_overview.md)
 
 _\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous versions of Milvus 2.0.0 because of some changes made to storage format._
 
-## Installation
+## Installation(choose 1 of 2)
 
-### Installation in python environment
+### 🔝1. Installation in python environment
 
 #### Preparation
 
@@ -40,7 +40,7 @@ _\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous vers
 1. `git clone https://github.com/milvus-io/milvus_cli.git`
 2. Enter the direction(`cd milvus_cli/`) and run `pip install --editable .`
 
-### 🆕Download and use executable file directly
+### 🆕2. Download and use executable file directly
 
 Now we provide Windows `milvus_cli-<version>.exe` file, you directly download it from [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest) and run it.
 
