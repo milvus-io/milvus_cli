@@ -613,3 +613,21 @@ class Completer(object):
             return [cmd + " "][state]
         results = [c + " " for c in self.COMMANDS if c.startswith(cmd)] + [None]
         return results[state]
+
+
+WELCOME_MSG = """
+                                                                      
+                                                                      
+███╗   ███╗██╗██╗    ██╗   ██╗██╗   ██╗███████╗     ██████╗██╗     ██╗
+████╗ ████║██║██║    ██║   ██║██║   ██║██╔════╝    ██╔════╝██║     ██║
+██╔████╔██║██║██║    ██║   ██║██║   ██║███████╗    ██║     ██║     ██║
+██║╚██╔╝██║██║██║    ╚██╗ ██╔╝██║   ██║╚════██║    ██║     ██║     ██║
+██║ ╚═╝ ██║██║███████╗╚████╔╝ ╚██████╔╝███████║    ╚██████╗███████╗██║
+╚═╝     ╚═╝╚═╝╚══════╝ ╚═══╝   ╚═════╝ ╚══════╝     ╚═════╝╚══════╝╚═╝
+                                                                      
+
+Learn more: https://github.com/milvus-io/milvus_cli.
+
+"""
+
+EXIT_MSG = "\n\nThanks for using.\nWe hope your feedback: https://github.com/milvus-io/milvus_cli/issues/new.\n\n"

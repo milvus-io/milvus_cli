@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -13,7 +13,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     license="Apache-2.0",
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     include_package_data=True,
     install_requires=["Click==8.0.1", "pymilvus==2.0.0rc8", "tabulate==0.8.9"],
     entry_points={

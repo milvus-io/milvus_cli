@@ -6,7 +6,7 @@ import click
 currentdir = os.path.dirname(os.path.realpath(__file__))
 parentdir = os.path.dirname(currentdir)
 sys.path.append(parentdir)
-from utils import PyOrm, Completer, getPackageVersion
+from utils import PyOrm, Completer, getPackageVersion, WELCOME_MSG, EXIT_MSG
 from Fs import readCsvFile
 from Validation import (
     validateParamsByCustomFunc,
@@ -1331,6 +1331,7 @@ def runCliPrompt():
         print(f"Milvus Cli v{getPackageVersion()}")
         return
     try:
+        print(WELCOME_MSG)
         while not quitapp:
             import readline
 
@@ -1353,8 +1354,9 @@ def runCliPrompt():
                 )
             except Exception as e:
                 click.echo(message=f"Error occurred!\n{str(e)}", err=True)
+        print(EXIT_MSG)
     except (KeyboardInterrupt, EOFError):
-        print()
+        print(EXIT_MSG)
         sys.exit(0)
 
 
