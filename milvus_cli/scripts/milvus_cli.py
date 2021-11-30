@@ -1109,11 +1109,36 @@ def query(obj):
 @click.pass_obj
 def importData(obj, collectionName, partitionName, timeout, path):
     """
-    Import data from csv file with headers and insert into target collection.
+    Import data from csv file(local or remote) with headers and insert into target collection.
 
-    Example:
+    Example-1:
 
         milvus_cli > import -c car 'examples/import_csv/vectors.csv'
+
+        Reading file from local path.
+
+        Reading csv file...  [####################################]  100%
+
+        Column names are ['vector', 'color', 'brand']
+
+        Processed 50001 lines.
+
+        Inserting ...
+
+        Insert successfully.
+
+        \b
+    --------------------------  ------------------
+    Total insert entities:                   50000
+    Total collection entities:              150000
+    Milvus timestamp:           428849214449254403
+    --------------------------  ------------------
+
+    Example-2:
+
+        milvus_cli > import -c car 'https://raw.githubusercontent.com/milvus-io/milvus_cli/main/examples/import_csv/vectors.csv'
+
+        Reading file from remote URL.
 
         Reading csv file...  [####################################]  100%
 
@@ -1144,7 +1169,7 @@ def importData(obj, collectionName, partitionName, timeout, path):
     except Exception as e:
         click.echo("Error!\n{}".format(str(e)))
     else:
-        click.echo(f"\nInsert successfully.\n")
+        click.echo(f"\nInserted successfully.\n")
         click.echo(result)
 
 
