@@ -23,7 +23,7 @@ _\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous vers
 
 #### Preparation
 
- `Python` >= 3.8.5
+`Python` >= 3.8.5
 
 #### Install from PYPI(recommend)
 
@@ -48,7 +48,7 @@ Now we provide Windows `milvus_cli-<version>.exe` file, you directly download it
 
 ## Usage
 
-Run `milvus_cli` (in python environment), or double click  `milvus_cli-<version>.exe` file (in MS Windows environment).
+Run `milvus_cli` (in python environment), or double click `milvus_cli-<version>.exe` file (in MS Windows environment).
 
 ### commands
 
@@ -208,6 +208,8 @@ Options:
                       `default`.
   -h, --host TEXT     [Optional] - Host name, default is `127.0.0.1`.
   -p, --port INTEGER  [Optional] - Port, default is `19530`.
+  -D, --disconnect    [Optional, Flag] - Disconnect from a Milvus server by
+                      alias, default is `default`.
   --help              Show this message and exit.
 ```
 
@@ -580,11 +582,37 @@ Commands:
 milvus_cli > import --help
 Usage: milvus_cli.py import [OPTIONS] PATH
 
-  Import data from csv file with headers and insert into target collection.
+  Import data from csv file(local or remote) with headers and insert into
+  target collection.
 
-  Example:
+  Example-1:
 
       milvus_cli > import -c car 'examples/import_csv/vectors.csv'
+
+      Reading file from local path.
+
+      Reading csv file...  [####################################]  100%
+
+      Column names are ['vector', 'color', 'brand']
+
+      Processed 50001 lines.
+
+      Inserting ...
+
+      Insert successfully.
+
+      --------------------------  ------------------
+      Total insert entities:                   50000
+      Total collection entities:              150000
+      Milvus timestamp:           428849214449254403
+      --------------------------  ------------------
+
+  Example-2:
+
+      milvus_cli > import -c car 'https://raw.githubusercontent.com/milvus-
+      io/milvus_cli/main/examples/import_csv/vectors.csv'
+
+      Reading file from remote URL.
 
       Reading csv file...  [####################################]  100%
 
@@ -603,15 +631,16 @@ Usage: milvus_cli.py import [OPTIONS] PATH
       --------------------------  ------------------
 
 Options:
-  -c, --collection TEXT  The name of collection to be imported.
-  -p, --partition TEXT   [Optional] - The partition name which the data will
-                         be inserted to, if partition name is not passed, then
-                         the data will be inserted to “_default” partition.
-  -t, --timeout FLOAT    [Optional] - An optional duration of time in seconds
-                         to allow for the RPC. If timeout is not set, the
-                         client keeps waiting until the server responds or an
-                         error occurs.
-  --help                 Show this message and exit.
+  -c, --collection-name TEXT  The name of collection to be imported.
+  -p, --partition TEXT        [Optional] - The partition name which the data
+                              will be inserted to, if partition name is not
+                              passed, then the data will be inserted to
+                              “_default” partition.
+  -t, --timeout FLOAT         [Optional] - An optional duration of time in
+                              seconds to allow for the RPC. If timeout is not
+                              set, the client keeps waiting until the server
+                              responds or an error occurs.
+  --help                      Show this message and exit.
 ```
 
 #### `list`
