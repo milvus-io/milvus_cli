@@ -208,6 +208,8 @@ Options:
                       `default`.
   -h, --host TEXT     [Optional] - Host name, default is `127.0.0.1`.
   -p, --port INTEGER  [Optional] - Port, default is `19530`.
+  -D, --disconnect    [Optional, Flag] - Disconnect from a Milvus server by
+                      alias, default is `default`.
   --help              Show this message and exit.
 ```
 

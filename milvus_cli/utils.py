@@ -29,12 +29,15 @@ class PyOrm(object):
     port = 19530
     alias = "default"
 
-    def connect(self, alias=None, host=None, port=None):
+    def connect(self, alias=None, host=None, port=None, disconnect=False):
         self.alias = alias
         self.host = host
         self.port = port
         from pymilvus import connections
 
+        if disconnect:
+            connections.disconnect(alias)
+            return
         connections.connect(self.alias, host=self.host, port=self.port)
 
     def checkConnection(self):
