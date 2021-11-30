@@ -20,8 +20,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
-          architecture: 'x64'
+          python-version: "3.8"
+          architecture: "x64"
       - name: Install pypa/build
         run: >-
           python -m
@@ -53,3 +53,35 @@ jobs:
           repository_url: https://test.pypi.org/legacy/
           packages_dir: dist/
           verify_metadata: false
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      - name: Install requirements
+        run: >-
+          python -m
+          pip install
+          -e
+          .
+      - name: Install pyreadline
+        run: >-
+          python -m
+          pip install
+          pyreadline
+      - name: Install pyinstaller.
+        run: >-
+          python -m
+          pip install
+          pyinstaller
+      - name: build to dist/
+        run: |
+          pyinstaller -F ./milvus_cli/scripts/milvus_cli.py -p ./milvus_cli --clean --hidden-import pyreadline
+      - name: Update assets
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ./dist/*
