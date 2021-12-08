@@ -42,13 +42,34 @@ _\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous vers
 
 ### 🆕2. Download and use executable file directly
 
+#### MS Windows .exe file
+
 Now we provide Windows `milvus_cli-<version>.exe` file, you directly download it from [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest) and run it.
 
 ![image](https://user-images.githubusercontent.com/83751452/143824714-4d1174e0-ad06-47eb-954f-f2481382bbb4.png)
 
+#### Ubuntu executable file
+
+You can directly download `milvus_cli-<version>-Linux` from [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest).
+
+Add executable permission `sudo chmod +x milvus_cli-<version>-Linux ` and run it `./milvus_cli-<version>-Linux`.
+
+#### MacOS executable file
+
+You can directly download `milvus_cli-<version>-macOS` from [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest).
+
+Add executable permission `sudo chmod +x milvus_cli-<version>-macOS ` and run it `./milvus_cli-<version>-macOS`.
+
 ## Usage
 
 Run `milvus_cli` (in python environment), or double click `milvus_cli-<version>.exe` file (in MS Windows environment).
+
+#### Run Milvus CLI
+
+- Python Environment: `milvus_cli`
+- MS Windows Environment: double click `milvus_cli-<version>.exe` file
+- Ubuntu Environment: run `./milvus_cli-<version>-Linux`
+- MacOS Environment: run `./milvus_cli-<version>-macOS`
 
 ### commands
 
