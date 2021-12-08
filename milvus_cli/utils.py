@@ -11,7 +11,13 @@ from time import time
 def getPackageVersion():
     import pkg_resources  # part of setuptools
 
-    return pkg_resources.require("milvus_cli")[0].version
+    try:
+        version = pkg_resources.require("milvus_cli")[0].version
+    except Exception as e:
+        raise ParameterException(
+            "Could not get version under single executable file mode."
+        )
+    return version
 
 
 def checkEmpty(x):

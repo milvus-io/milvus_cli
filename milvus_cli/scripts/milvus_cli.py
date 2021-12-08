@@ -98,7 +98,7 @@ def connect(obj, alias, host, port, disconnect):
 @cli.command()
 def version():
     """Get Milvus CLI version."""
-    click.echo(f"Milvus Cli v{getPackageVersion()}")
+    click.echo(f"Milvus CLI v{getPackageVersion()}")
 
 
 @cli.command()
@@ -1368,7 +1368,7 @@ comp = Completer()
 def runCliPrompt():
     args = sys.argv
     if args and (args[-1] == "--version"):
-        print(f"Milvus Cli v{getPackageVersion()}")
+        print(f"Milvus CLI v{getPackageVersion()}")
         return
     try:
         print(WELCOME_MSG)
