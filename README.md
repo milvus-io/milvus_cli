@@ -65,7 +65,7 @@ Add executable permission `sudo chmod +x milvus_cli-<version>-macOS ` and run it
 
 Run `milvus_cli` (in python environment), or double click `milvus_cli-<version>.exe` file (in MS Windows environment).
 
-#### Run Milvus CLI
+#### Run Milvus_CLI
 
 - Python Environment: `milvus_cli`
 - MS Windows Environment: double click `milvus_cli-<version>.exe` file
