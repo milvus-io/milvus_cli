@@ -1,3 +1,7 @@
+**Deprecated!**
+
+Please refer to [**Milvus_CLI new repo**](https://github.com/zilliztech/milvus_cli) for subsequent updates.
+
 # Milvus CLI🚀
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/milvus-io/milvus_cli?include_prereleases) ![PyPI](https://img.shields.io/pypi/v/milvus-cli)
@@ -20,6 +24,7 @@ _\* Note that Milvus 2.0.0-RC7 is NOT compatible with previous versions of Milvu
 ## Installation methods
 
 ### 🔝Install in a Python environment
+
 #### Prerequisites
 
 Python >= 3.8.5
@@ -30,15 +35,14 @@ Run `pip install milvus-cli==0.1.8`
 
 #### Install from a tarball
 
-1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of  ` milvus_cli-<version>.tar.gz`.
+1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of ` milvus_cli-<version>.tar.gz`.
 2. Run `pip install milvus_cli-<version>.tar.gz`.
-
 
 #### Install from source code
 
 1. Run `git clone https://github.com/milvus-io/milvus_cli.git`.
 2. Run `cd milvus_cli`.
-2. Run `pip install --editable .`
+3. Run `pip install --editable .`
 
 ### 🆕 Install from an executable file
 
@@ -47,7 +51,6 @@ Run `pip install milvus-cli==0.1.8`
 Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of `milvus_cli.exe` and run it.
 
 ![image](https://user-images.githubusercontent.com/83751452/143824714-4d1174e0-ad06-47eb-954f-f2481382bbb4.png)
-
 
 #### Ubuntu executable file
 
