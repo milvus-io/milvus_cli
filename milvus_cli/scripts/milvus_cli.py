@@ -1151,7 +1151,7 @@ def importData(obj, collectionName, partitionName, timeout, path):
 
     Example-2:
 
-        milvus_cli > import -c car 'https://raw.githubusercontent.com/milvus-io/milvus_cli/main/examples/import_csv/vectors.csv'
+        milvus_cli > import -c car 'https://raw.githubusercontent.com/zilliztech/milvus_cli/main/examples/import_csv/vectors.csv'
 
         Reading file from remote URL.
 
