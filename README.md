@@ -1,8 +1,8 @@
 # Milvus_CLI🚀
 
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/milvus-io/milvus_cli?include_prereleases) ![PyPI](https://img.shields.io/pypi/v/milvus-cli)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/milvus_cli?label=PYPI%20downloads) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/downloads-pre/milvus-io/milvus_cli/latest/total?label=Release%40latest%20downloads)
-![GitHub repo size](https://img.shields.io/github/repo-size/milvus-io/milvus_cli) ![PyPI - License](https://img.shields.io/pypi/l/milvus-cli)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/zilliztech/milvus_cli?include_prereleases) ![PyPI](https://img.shields.io/pypi/v/milvus-cli)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/milvus_cli?label=PYPI%20downloads) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/downloads-pre/zilliztech/milvus_cli/latest/total?label=Release%40latest%20downloads)
+![GitHub repo size](https://img.shields.io/github/repo-size/zilliztech/milvus_cli) ![PyPI - License](https://img.shields.io/pypi/l/milvus-cli)
 
 ## Overview
 
@@ -36,12 +36,12 @@ Run `pip install milvus-cli==0.1.8`
 
 #### Install from a tarball
 
-1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of ` milvus_cli-<version>.tar.gz`.
+1. Download the [latest release](https://github.com/zilliztech/milvus_cli/releases/latest) of ` milvus_cli-<version>.tar.gz`.
 2. Run `pip install milvus_cli-<version>.tar.gz`.
 
 #### Install from source code
 
-1. Run `git clone https://github.com/milvus-io/milvus_cli.git`.
+1. Run `git clone https://github.com/zilliztech/milvus_cli.git`.
 2. Run `cd milvus_cli`.
 3. Run `pip install --editable .`
 
@@ -49,17 +49,17 @@ Run `pip install milvus-cli==0.1.8`
 
 #### Windows .exe file
 
-Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of `milvus_cli.exe` and run it.
+Download the [latest release](https://github.com/zilliztech/milvus_cli/releases/latest) of `milvus_cli.exe` and run it.
 
 #### Ubuntu executable file
 
-1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of `milvus_cli-<version>-Linux`.
+1. Download the [latest release](https://github.com/zilliztech/milvus_cli/releases/latest) of `milvus_cli-<version>-Linux`.
 2. Run `sudo chmod +x milvus_cli-<version>-Linux` to allow executing `milvus_cli-<version>-Linux` as program.
 3. Run `./milvus_cli-<version>-Linux`.
 
 #### MacOS executable file
 
-1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of `milvus_cli-<version>-macOS`.
+1. Download the [latest release](https://github.com/zilliztech/milvus_cli/releases/latest) of `milvus_cli-<version>-macOS`.
 2. Run `sudo chmod +x milvus_cli-<version>-macOS` to allow executing `milvus_cli-<version>-macOS` as program.
 3. Run `./milvus_cli-<version>-macOS`.
 
@@ -76,7 +76,7 @@ Run `milvus_cli` (in a Python environment) or double click `milvus_cli-<version>
 
 ### Document
 
-https://github.com/milvus-io/milvus_cli/doc
+https://github.com/zilliztech/milvus_cli/tree/main/doc
 
 <br><!-- Do not remove start of hero-bot --><br>
 <img src="https://img.shields.io/badge/all--contributors-3-orange"><br>

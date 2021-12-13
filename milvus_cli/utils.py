@@ -639,8 +639,8 @@ WELCOME_MSG = """
  |_|  |_|_|_| \_/  \__,_|___/  \____|_____|___|
                                                
                                                
-Learn more: https://github.com/milvus-io/milvus_cli.
+Learn more: https://github.com/zilliztech/milvus_cli.
 
 """
 
-EXIT_MSG = "\n\nThanks for using.\nWe hope your feedback: https://github.com/milvus-io/milvus_cli/issues/new.\n\n"
+EXIT_MSG = "\n\nThanks for using.\nWe hope your feedback: https://github.com/zilliztech/milvus_cli/issues/new.\n\n"
