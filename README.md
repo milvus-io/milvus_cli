@@ -1,4 +1,4 @@
-# Milvus CLI🚀
+# Milvus_CLI🚀
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/milvus-io/milvus_cli?include_prereleases) ![PyPI](https://img.shields.io/pypi/v/milvus-cli)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/milvus_cli?label=PYPI%20downloads) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/downloads-pre/milvus-io/milvus_cli/latest/total?label=Release%40latest%20downloads)
