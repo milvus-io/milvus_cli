@@ -1,4 +1,4 @@
-# milvus_cli🚀
+# Milvus CLI🚀
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/milvus-io/milvus_cli?include_prereleases) ![PyPI](https://img.shields.io/pypi/v/milvus-cli)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/milvus_cli?label=PYPI%20downloads) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/downloads-pre/milvus-io/milvus_cli/latest/total?label=Release%40latest%20downloads)
@@ -15,63 +15,64 @@ More details refer to [Milvus.io](https://milvus.io/docs/v2.0.0/cli_overview.md)
 |   2.0.0-RC7    |           2.0.0rc7           |          0.1.7          |
 |   2.0.0-RC8    |           2.0.0rc8           |          0.1.8          |
 
-_\*It should be noted that Milvus 2.0.0-RC7 is NOT compatible with previous versions of Milvus 2.0.0 because of some changes made to storage format._
+_\* Note that Milvus 2.0.0-RC7 is NOT compatible with previous versions of Milvus 2.0.0 because of some changes made to the storage format._
 
-## Installation(choose 1 of 2)
+## Installation methods
 
-### 🔝1. Installation in python environment
+### 🔝Install in a Python environment
+#### Prerequisites
 
-#### Preparation
+Python >= 3.8.5
 
-`Python` >= 3.8.5
+#### Install from PyPI (Recommended)
 
-#### Install from PYPI(recommend)
+Run `pip install milvus-cli==0.1.8`
 
-`pip install milvus-cli==0.1.8`
+#### Install from a tarball
 
-#### (Or) Install from release tar
+1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of  ` milvus_cli-<version>.tar.gz`.
+2. Run `pip install milvus_cli-<version>.tar.gz`.
 
-1. Download [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest)
 
-2. Install tar file: `pip install milvus_cli-<version>.tar.gz`
+#### Install from source code
 
-#### (Or) Install from source code
+1. Run `git clone https://github.com/milvus-io/milvus_cli.git`.
+2. Run `cd milvus_cli`.
+2. Run `pip install --editable .`
 
-1. `git clone https://github.com/milvus-io/milvus_cli.git`
-2. Enter the direction(`cd milvus_cli/`) and run `pip install --editable .`
+### 🆕 Install from an executable file
 
-### 🆕2. Download and use executable file directly
+#### Windows .exe file
 
-#### MS Windows .exe file
-
-Now we provide Windows `milvus_cli-<version>.exe` file, you directly download it from [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest) and run it.
+Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of `milvus_cli.exe` and run it.
 
 ![image](https://user-images.githubusercontent.com/83751452/143824714-4d1174e0-ad06-47eb-954f-f2481382bbb4.png)
 
+
 #### Ubuntu executable file
 
-You can directly download `milvus_cli-<version>-Linux` from [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest).
-
-Add executable permission `sudo chmod +x milvus_cli-<version>-Linux ` and run it `./milvus_cli-<version>-Linux`.
+1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of `milvus_cli-<version>-Linux`.
+2. Run `sudo chmod +x milvus_cli-<version>-Linux` to allow executing `milvus_cli-<version>-Linux` as program.
+3. Run `./milvus_cli-<version>-Linux`.
 
 #### MacOS executable file
 
-You can directly download `milvus_cli-<version>-macOS` from [latest build release](https://github.com/milvus-io/milvus_cli/releases/latest).
-
-Add executable permission `sudo chmod +x milvus_cli-<version>-macOS ` and run it `./milvus_cli-<version>-macOS`.
+1. Download the [latest release](https://github.com/milvus-io/milvus_cli/releases/latest) of `milvus_cli-<version>-macOS`.
+2. Run `sudo chmod +x milvus_cli-<version>-macOS` to allow executing `milvus_cli-<version>-macOS` as program.
+3. Run `./milvus_cli-<version>-macOS`.
 
 ## Usage
 
-Run `milvus_cli` (in python environment), or double click `milvus_cli-<version>.exe` file (in MS Windows environment).
+Run `milvus_cli` (in a Python environment) or double click `milvus_cli-<version>.exe` file (in a Windows environment).
 
-#### Run Milvus CLI
+### Run Milvus CLI
 
-- Python Environment: `milvus_cli`
-- MS Windows Environment: double click `milvus_cli-<version>.exe` file
-- Ubuntu Environment: run `./milvus_cli-<version>-Linux`
-- MacOS Environment: run `./milvus_cli-<version>-macOS`
+- In a Python environment, run `milvus_cli`.
+- In a Windows environment, double click `milvus_cli-<version>.exe`.
+- In an Ubuntu environment, run `./milvus_cli-<version>-Linux`.
+- In a MacOS environment, run `./milvus_cli-<version>-macOS`.
 
-### commands
+### Commands
 
 - [`calc`](#calc)
 - [`clear`](#clear)
