@@ -76,7 +76,7 @@ Run `milvus_cli` (in a Python environment) or double click `milvus_cli-<version>
 
 ### Document
 
-https://github.com/zilliztech/milvus_cli/doc
+https://github.com/zilliztech/milvus_cli/tree/main/doc
 
 <br><!-- Do not remove start of hero-bot --><br>
 <img src="https://img.shields.io/badge/all--contributors-3-orange"><br>
