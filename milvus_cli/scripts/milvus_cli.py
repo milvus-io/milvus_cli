@@ -26,7 +26,7 @@ pass_context = click.make_pass_decorator(PyOrm, ensure=True)
 @click.group(no_args_is_help=False, add_help_option=False, invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
-    """Milvus CLI"""
+    """Milvus_CLI"""
     ctx.obj = PyOrm()
 
 
@@ -97,8 +97,8 @@ def connect(obj, alias, host, port, disconnect):
 
 @cli.command()
 def version():
-    """Get Milvus CLI version."""
-    click.echo(f"Milvus CLI v{getPackageVersion()}")
+    """Get Milvus_CLI version."""
+    click.echo(f"Milvus_CLI v{getPackageVersion()}")
 
 
 @cli.command()
@@ -1368,7 +1368,7 @@ comp = Completer()
 def runCliPrompt():
     args = sys.argv
     if args and (args[-1] == "--version"):
-        print(f"Milvus CLI v{getPackageVersion()}")
+        print(f"Milvus_CLI v{getPackageVersion()}")
         return
     try:
         print(WELCOME_MSG)
