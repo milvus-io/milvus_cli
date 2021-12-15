@@ -79,7 +79,8 @@ Run `milvus_cli` (in a Python environment) or double click `milvus_cli-<version>
 https://github.com/zilliztech/milvus_cli/tree/main/doc
 
 <br><!-- Do not remove start of hero-bot --><br>
-<img src="https://img.shields.io/badge/all--contributors-3-orange"><br>
+<img src="https://img.shields.io/badge/all--contributors-4-orange"><br>
+<a href="https://github.com/chris-zilliz"><img src="https://avatars.githubusercontent.com/u/91247127?v=4" width="30px" /></a>
 <a href="https://github.com/czhen-zilliz"><img src="https://avatars.githubusercontent.com/u/83751452?v=4" width="30px" /></a>
 <a href="https://github.com/matrixji"><img src="https://avatars.githubusercontent.com/u/183388?v=4" width="30px" /></a>
 <a href="https://github.com/sre-ci-robot"><img src="https://avatars.githubusercontent.com/u/56469371?v=4" width="30px" /></a>
