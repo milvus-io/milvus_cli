@@ -1085,9 +1085,30 @@ def query(obj):
         default="",
     )
     timeout = click.prompt("timeout", default="")
+    guarantee_timestamp = click.prompt(
+        "This function instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date.",
+        default=0,
+        type=int,
+    )
+    graceful_time = click.prompt(
+        "Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set.",
+        default=5,
+        type=int,
+    )
+    travel_timestamp = click.prompt(
+        "Users can specify a timestamp in a search to get results based on a data view at a specified point in time.",
+        default=0,
+        type=int,
+    )
     try:
         queryParameters = validateQueryParams(
-            expr, partitionNames, outputFields, timeout
+            expr,
+            partitionNames,
+            outputFields,
+            timeout,
+            guarantee_timestamp,
+            graceful_time,
+            travel_timestamp,
         )
         obj.checkConnection()
     except ParameterException as pe:
@@ -1179,7 +1200,6 @@ def importData(obj, collectionName, partitionName, timeout, path):
         )
         result = readCsvFile(path.replace('"', "").replace("'", ""))
         data = result["data"]
-        click.secho("Inserting ...", blink=True, bold=True)
         result = obj.importData(collectionName, data, partitionName, timeout)
     except Exception as e:
         click.echo("Error!\n{}".format(str(e)))

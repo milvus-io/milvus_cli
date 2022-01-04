@@ -199,7 +199,15 @@ def validateSearchParams(
     return result
 
 
-def validateQueryParams(expr, partitionNames, outputFields, timeout):
+def validateQueryParams(
+    expr,
+    partitionNames,
+    outputFields,
+    timeout,
+    guarantee_timestamp,
+    graceful_time,
+    travel_timestamp,
+):
     result = {}
     if not expr:
         raise ParameterException("expr is empty!")
@@ -220,6 +228,12 @@ def validateQueryParams(expr, partitionNames, outputFields, timeout):
         nameList = partitionNames.replace(" ", "").split(",")
         result["partition_names"] = nameList
     result["timeout"] = float(timeout) if timeout else None
+    if guarantee_timestamp:
+        result["guarantee_timestamp"] = guarantee_timestamp
+    if graceful_time and (graceful_time != 5):
+        result["graceful_time"] = graceful_time
+    if travel_timestamp:
+        result["travel_timestamp"] = travel_timestamp
     return result
 
 

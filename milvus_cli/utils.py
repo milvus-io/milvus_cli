@@ -418,6 +418,7 @@ class PyOrm(object):
     def query(self, collectionName, queryParameters):
         collection = self.getTargetCollection(collectionName)
         collection.load()
+        print(queryParameters)
         res = collection.query(**queryParameters)
         # return f"- Query results: {res}"
         if not len(res):
