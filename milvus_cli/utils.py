@@ -546,13 +546,39 @@ class PyOrm(object):
         )
         return res
 
+    def mkts_from_hybridts(self, hybridts, milliseconds=0.0):
+        from pymilvus import utility
+
+        ts_new = utility.mkts_from_hybridts(hybridts, milliseconds)
+        return ts_new
+
+    def mkts_from_unixtime(self, epoch, milliseconds=0.0):
+        from pymilvus import utility
+
+        ts_new = utility.mkts_from_unixtime(epoch, milliseconds)
+        return ts_new
+
+    def hybridts_to_unixtime(self, hybridts):
+        from pymilvus import utility
+
+        ts_new = utility.hybridts_to_unixtime(hybridts)
+        return ts_new
+
+    # pymilvus.utility.mkts_from_datetime(d_time, milliseconds=0.0, delta=None)
+    # pymilvus.utility.hybridts_to_datetime(hybridts, tz=None)
+
 
 class Completer(object):
     # COMMANDS = ['clear', 'connect', 'create', 'delete', 'describe', 'exit',
     #         'list', 'load', 'query', 'release', 'search', 'show', 'version' ]
     RE_SPACE = re.compile(".*\s+$", re.M)
     CMDS_DICT = {
-        "calc": [],
+        "calc": [
+            "distance",
+            "mkts_from_hybridts",
+            "mkts_from_unixtime",
+            "hybridts_to_unixtime",
+        ],
         "clear": [],
         "connect": [],
         "create": ["alias", "collection", "partition", "index"],

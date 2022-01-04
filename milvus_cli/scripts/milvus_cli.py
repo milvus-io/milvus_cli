@@ -1221,7 +1221,14 @@ def importData(obj, collectionName, partitionName, timeout, path):
         click.echo(result)
 
 
-@cli.command("calc")
+@cli.group("calc", no_args_is_help=False)
+@click.pass_obj
+def calcUtils(obj):
+    """Show connection, loading_progress and index_progress."""
+    pass
+
+
+@calcUtils.command("distance")
 @click.pass_obj
 def calcDistance(obj):
     """
@@ -1229,7 +1236,7 @@ def calcDistance(obj):
 
     Example:
 
-        milvus_cli > calc
+        milvus_cli > calc distance
 
         Import left operator vectors from existing collection? [y/N]: n
 
@@ -1385,6 +1392,73 @@ def calcDistance(obj):
         )
         click.echo("Result:\n")
         click.echo(result)
+
+
+@calcUtils.command("mkts_from_hybridts")
+@click.option(
+    "-h",
+    "--hybridts",
+    "hybridts",
+    help="The original hybrid timestamp used to generate a new hybrid timestamp. Non-negative interger range from 0 to 18446744073709551615.",
+    type=int,
+)
+@click.option(
+    "-m",
+    "--milliseconds",
+    "milliseconds",
+    help="Incremental time interval. The unit of time is milliseconds.",
+    type=float,
+    default=0.0,
+)
+# @click.option(
+#     "-d",
+#     "--delta",
+#     "delta",
+#     help="A duration expressing the difference between two date, time, or datetime instances to microsecond resolution.",
+# )
+@click.pass_obj
+def hybridts2mkts(obj, hybridts, milliseconds):
+    """Generate a hybrid timestamp based on an existing hybrid timestamp, timedelta and incremental time internval."""
+    res = obj.mkts_from_hybridts(hybridts, milliseconds)
+    click.echo(res)
+
+
+@calcUtils.command("mkts_from_unixtime")
+@click.option(
+    "-e",
+    "--epoch",
+    "epoch",
+    help="The known Unix Epoch time used to generate a hybrid timestamp. The Unix Epoch time is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT).",
+    type=float,
+)
+@click.option(
+    "-m",
+    "--milliseconds",
+    "milliseconds",
+    help="Incremental time interval. The unit of time is milliseconds.",
+    type=float,
+    default=0.0,
+)
+@click.pass_obj
+def unixtime2mkts(obj, epoch, milliseconds):
+    """Generate a hybrid timestamp based on Unix Epoch time, timedelta and incremental time internval."""
+    res = obj.mkts_from_unixtime(epoch, milliseconds)
+    click.echo(res)
+
+
+@calcUtils.command("hybridts_to_unixtime")
+@click.option(
+    "-h",
+    "--hybridts",
+    "hybridts",
+    help="The known hybrid timestamp to convert to UNIX Epoch time. Non-negative interger range from 0 to 18446744073709551615.",
+    type=int,
+)
+@click.pass_obj
+def hybridts2unixtime(obj, hybridts):
+    """Convert a hybrid timestamp to UNIX Epoch time ignoring the logic part."""
+    res = obj.hybridts_to_unixtime(hybridts)
+    click.echo(res)
 
 
 @cli.command("load_balance")
