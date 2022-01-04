@@ -307,6 +307,26 @@ def listDetails(obj):
     pass
 
 
+# @listDetails.command("alias")
+# @click.option("-c", "--collection-name", "collection", help="The name of collection.")
+# @click.option(
+#     "--timeout",
+#     "-t",
+#     "timeout",
+#     help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.",
+#     default=None,
+#     type=float,
+# )
+# @click.pass_obj
+# def listCollectionAlias(obj, collection, timeout):
+#     """List all alias of the collection."""
+#     try:
+#         obj.checkConnection()
+#         click.echo(obj.listCollectionAlias(collection, timeout))
+#     except Exception as e:
+#         click.echo(message=e, err=True)
+
+
 @listDetails.command()
 @click.option(
     "--timeout",
@@ -663,13 +683,6 @@ def deleteObject(obj):
 
 @deleteObject.command("alias")
 @click.option(
-    "-c",
-    "--collection-name",
-    "collectionName",
-    help="Collection name to be specified alias.",
-    type=str,
-)
-@click.option(
     "-a", "--alias-name", "aliasName", help="The alias of the collection.", type=str
 )
 @click.option(
@@ -681,7 +694,7 @@ def deleteObject(obj):
     type=float,
 )
 @click.pass_obj
-def deleteAlias(obj, collectionName, aliasName, timeout):
+def deleteAlias(obj, aliasName, timeout):
     """
     Delete an alias.
     """
@@ -692,7 +705,7 @@ def deleteAlias(obj, collectionName, aliasName, timeout):
         return
     try:
         obj.checkConnection()
-        obj.dropCollectionAlias(collectionName, aliasName, timeout)
+        obj.dropCollectionAlias(aliasName, timeout)
     except ConnectException as ce:
         click.echo("Error!\n{}".format(str(ce)))
     else:

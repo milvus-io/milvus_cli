@@ -481,36 +481,61 @@ class PyOrm(object):
     def createCollectionAlias(
         self, collectionName, collectionAliasName="", timeout=None
     ):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
-        result = collection.create_alias(collectionAliasName, timeout=timeout)
+        result = utility.create_alias(
+            collection.name, collectionAliasName, timeout=timeout
+        )
         return result
 
-    def dropCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
-        collection = self.getTargetCollection(collectionName)
-        result = collection.drop_alias(collectionAliasName, timeout=timeout)
+    def dropCollectionAlias(self, collectionAliasName="", timeout=None):
+        from pymilvus import utility
+
+        result = utility.drop_alias(collectionAliasName, timeout=timeout)
         return result
 
     def alterCollectionAlias(
         self, collectionName, collectionAliasName="", timeout=None
     ):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
-        result = collection.alter_alias(collectionAliasName, timeout=timeout)
+        result = utility.alter_alias(
+            collection.name, collectionAliasName, timeout=timeout
+        )
         return result
 
     def createCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
         result = []
         for aliasItem in aliasList:
-            aliasResult = collection.create_alias(aliasItem, timeout=timeout)
+            aliasResult = utility.create_alias(
+                collection.name, aliasItem, timeout=timeout
+            )
             result.append(aliasResult)
         return result
 
     def alterCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
         result = []
         for aliasItem in aliasList:
-            aliasResult = collection.alter_alias(aliasItem, timeout=timeout)
+            aliasResult = utility.alter_alias(
+                collection.name, aliasItem, timeout=timeout
+            )
             result.append(aliasResult)
+        return result
+
+    def listCollectionAlias(self, collectionName, timeout=None):
+        from pymilvus import utility
+
+        collection = self.getTargetCollection(collectionName)
+        result = utility.list_aliases(collection.name, timeout=timeout)
+        print("alias==>", result)
         return result
 
     # def loadBalance(self, src_node_id, dst_node_ids, sealed_segment_ids, timeout=None):
