@@ -538,9 +538,13 @@ class PyOrm(object):
         print("alias==>", result)
         return result
 
-    # def loadBalance(self, src_node_id, dst_node_ids, sealed_segment_ids, timeout=None):
-    #     from pymilvus import utility
-    #     utility.load_balance(src_node_id, dst_node_ids, sealed_segment_ids, timeout=timeout)
+    def loadBalance(self, src_node_id, dst_node_ids, sealed_segment_ids, timeout=None):
+        from pymilvus import utility
+
+        res = utility.load_balance(
+            src_node_id, dst_node_ids, sealed_segment_ids, timeout=timeout
+        )
+        return res
 
 
 class Completer(object):
@@ -558,6 +562,7 @@ class Completer(object):
         "help": [],
         "import": [],
         "list": ["collections", "partitions", "indexes"],
+        "load_balance": [],
         "load": [],
         "query": [],
         "release": [],

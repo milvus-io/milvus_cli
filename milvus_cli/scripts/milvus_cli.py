@@ -1387,6 +1387,44 @@ def calcDistance(obj):
         click.echo(result)
 
 
+@cli.command("load_balance")
+@click.option(
+    "-s",
+    "--src-node-id",
+    "src_node_id",
+    help="The source query node id to balance.",
+    type=int,
+)
+@click.option(
+    "-d",
+    "--dst-node-id",
+    "dst_node_ids",
+    help="[Multiple] - The destination query node ids to balance",
+    type=int,
+    multiple=True,
+)
+@click.option(
+    "-ss",
+    "--sealed-segment-ids",
+    "sealed_segment_ids",
+    help="[Multiple] - Sealed segment ids to balance.",
+    type=int,
+)
+@click.option(
+    "-t",
+    "--timeout",
+    "timeout",
+    help="[Optional] - The timeout for this method, unit: second",
+    default=None,
+    type=int,
+)
+@click.pass_obj
+def loadBalance(obj, src_node_id, dst_node_ids, sealed_segment_ids, timeout):
+    """Do load balancing operation from source query node to destination query node."""
+    res = obj.loadBalance(src_node_id, dst_node_ids, sealed_segment_ids, timeout)
+    click.echo(res)
+
+
 @cli.command("exit")
 def quitapp():
     """Exit the CLI."""
