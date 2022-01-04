@@ -22,8 +22,8 @@ jobs:
         with:
           # Required
           token: ${{ secrets.ALL_CONTRIBUTORS_TOKEN }}
-          repos: "milvus-io/milvus_cli"
-          target: "milvus-io/milvus_cli/README.md"
+          repos: "zilliztech/milvus_cli"
+          target: "zilliztech/milvus_cli/README.md"
           # Optional
           isAscend: True
           width: "30px"
