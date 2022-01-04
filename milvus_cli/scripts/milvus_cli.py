@@ -1068,6 +1068,11 @@ def query(obj):
 
         timeout []:
 
+        Guarantee timestamp. This instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date. [0]:
+
+        Graceful time. Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set. [5]:
+
+        Travel timestamp. Users can specify a timestamp in a search to get results based on a data view at a specified point in time. [0]: 428960801420883491
 
     Example 2:
 
@@ -1082,6 +1087,12 @@ def query(obj):
         A list of fields to return(split by "," if multiple) []: id, color, brand
 
         timeout []:
+
+        Guarantee timestamp. This instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date. [0]:
+
+        Graceful time. Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set. [5]:
+
+        Travel timestamp. Users can specify a timestamp in a search to get results based on a data view at a specified point in time. [0]: 428960801420883491
     """
     collectionName = click.prompt(
         "Collection name", type=click.Choice(obj._list_collection_names())
@@ -1097,17 +1108,17 @@ def query(obj):
     )
     timeout = click.prompt("timeout", default="")
     guarantee_timestamp = click.prompt(
-        "This function instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date.",
+        "Guarantee timestamp. This instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date.",
         default=0,
         type=int,
     )
     graceful_time = click.prompt(
-        "Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set.",
+        "Graceful time. Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set.",
         default=5,
         type=int,
     )
     travel_timestamp = click.prompt(
-        "Users can specify a timestamp in a search to get results based on a data view at a specified point in time.",
+        "Travel timestamp. Users can specify a timestamp in a search to get results based on a data view at a specified point in time.",
         default=0,
         type=int,
     )
@@ -1222,7 +1233,7 @@ def importData(obj, collectionName, partitionName, timeout, path):
 @cli.group("calc", no_args_is_help=False)
 @click.pass_obj
 def calcUtils(obj):
-    """Show connection, loading_progress and index_progress."""
+    """Calculate distance, mkts_from_hybridts, mkts_from_unixtime and hybridts_to_unixtime."""
     pass
 
 
