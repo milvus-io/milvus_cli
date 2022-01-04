@@ -875,9 +875,7 @@ def deleteEntities(obj, collectionName, partitionName, timeout):
         partitionValue = partitionName if partitionName else None
         timeoutValue = timeout if timeout else None
         result = obj.deleteEntities(expr, collectionName, partitionValue, timeoutValue)
-        click.echo("Drop index successfully!") if not result else click.echo(
-            "Drop index failed!"
-        )
+        click.echo(result)
 
 
 @cli.command()

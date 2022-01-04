@@ -582,7 +582,7 @@ class Completer(object):
         "clear": [],
         "connect": [],
         "create": ["alias", "collection", "partition", "index"],
-        "delete": ["alias", "collection", "partition", "index"],
+        "delete": ["alias", "collection", "entities", "partition", "index"],
         "describe": ["collection", "partition", "index"],
         "exit": [],
         "help": [],
