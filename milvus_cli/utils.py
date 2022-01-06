@@ -418,6 +418,7 @@ class PyOrm(object):
     def query(self, collectionName, queryParameters):
         collection = self.getTargetCollection(collectionName)
         collection.load()
+        print(queryParameters)
         res = collection.query(**queryParameters)
         # return f"- Query results: {res}"
         if not len(res):
@@ -480,41 +481,91 @@ class PyOrm(object):
     def createCollectionAlias(
         self, collectionName, collectionAliasName="", timeout=None
     ):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
-        result = collection.create_alias(collectionAliasName, timeout=timeout)
+        result = utility.create_alias(
+            collection.name, collectionAliasName, timeout=timeout
+        )
         return result
 
-    def dropCollectionAlias(self, collectionName, collectionAliasName="", timeout=None):
-        collection = self.getTargetCollection(collectionName)
-        result = collection.drop_alias(collectionAliasName, timeout=timeout)
+    def dropCollectionAlias(self, collectionAliasName="", timeout=None):
+        from pymilvus import utility
+
+        result = utility.drop_alias(collectionAliasName, timeout=timeout)
         return result
 
     def alterCollectionAlias(
         self, collectionName, collectionAliasName="", timeout=None
     ):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
-        result = collection.alter_alias(collectionAliasName, timeout=timeout)
+        result = utility.alter_alias(
+            collection.name, collectionAliasName, timeout=timeout
+        )
         return result
 
     def createCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
         result = []
         for aliasItem in aliasList:
-            aliasResult = collection.create_alias(aliasItem, timeout=timeout)
+            aliasResult = utility.create_alias(
+                collection.name, aliasItem, timeout=timeout
+            )
             result.append(aliasResult)
         return result
 
     def alterCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+        from pymilvus import utility
+
         collection = self.getTargetCollection(collectionName)
         result = []
         for aliasItem in aliasList:
-            aliasResult = collection.alter_alias(aliasItem, timeout=timeout)
+            aliasResult = utility.alter_alias(
+                collection.name, aliasItem, timeout=timeout
+            )
             result.append(aliasResult)
         return result
 
-    # def loadBalance(self, src_node_id, dst_node_ids, sealed_segment_ids, timeout=None):
-    #     from pymilvus import utility
-    #     utility.load_balance(src_node_id, dst_node_ids, sealed_segment_ids, timeout=timeout)
+    def listCollectionAlias(self, collectionName, timeout=None):
+        from pymilvus import utility
+
+        collection = self.getTargetCollection(collectionName)
+        result = utility.list_aliases(collection.name, timeout=timeout)
+        print("alias==>", result)
+        return result
+
+    def loadBalance(self, src_node_id, dst_node_ids, sealed_segment_ids, timeout=None):
+        from pymilvus import utility
+
+        res = utility.load_balance(
+            src_node_id, dst_node_ids, sealed_segment_ids, timeout=timeout
+        )
+        return res
+
+    def mkts_from_hybridts(self, hybridts, milliseconds=0.0):
+        from pymilvus import utility
+
+        ts_new = utility.mkts_from_hybridts(hybridts, milliseconds)
+        return ts_new
+
+    def mkts_from_unixtime(self, epoch, milliseconds=0.0):
+        from pymilvus import utility
+
+        ts_new = utility.mkts_from_unixtime(epoch, milliseconds)
+        return ts_new
+
+    def hybridts_to_unixtime(self, hybridts):
+        from pymilvus import utility
+
+        ts_new = utility.hybridts_to_unixtime(hybridts)
+        return ts_new
+
+    # pymilvus.utility.mkts_from_datetime(d_time, milliseconds=0.0, delta=None)
+    # pymilvus.utility.hybridts_to_datetime(hybridts, tz=None)
 
 
 class Completer(object):
@@ -522,16 +573,22 @@ class Completer(object):
     #         'list', 'load', 'query', 'release', 'search', 'show', 'version' ]
     RE_SPACE = re.compile(".*\s+$", re.M)
     CMDS_DICT = {
-        "calc": [],
+        "calc": [
+            "distance",
+            "mkts_from_hybridts",
+            "mkts_from_unixtime",
+            "hybridts_to_unixtime",
+        ],
         "clear": [],
         "connect": [],
         "create": ["alias", "collection", "partition", "index"],
-        "delete": ["alias", "collection", "partition", "index"],
+        "delete": ["alias", "collection", "entities", "partition", "index"],
         "describe": ["collection", "partition", "index"],
         "exit": [],
         "help": [],
         "import": [],
         "list": ["collections", "partitions", "indexes"],
+        "load_balance": [],
         "load": [],
         "query": [],
         "release": [],

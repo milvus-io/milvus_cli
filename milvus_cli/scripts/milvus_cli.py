@@ -307,6 +307,26 @@ def listDetails(obj):
     pass
 
 
+# @listDetails.command("alias")
+# @click.option("-c", "--collection-name", "collection", help="The name of collection.")
+# @click.option(
+#     "--timeout",
+#     "-t",
+#     "timeout",
+#     help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.",
+#     default=None,
+#     type=float,
+# )
+# @click.pass_obj
+# def listCollectionAlias(obj, collection, timeout):
+#     """List all alias of the collection."""
+#     try:
+#         obj.checkConnection()
+#         click.echo(obj.listCollectionAlias(collection, timeout))
+#     except Exception as e:
+#         click.echo(message=e, err=True)
+
+
 @listDetails.command()
 @click.option(
     "--timeout",
@@ -663,13 +683,6 @@ def deleteObject(obj):
 
 @deleteObject.command("alias")
 @click.option(
-    "-c",
-    "--collection-name",
-    "collectionName",
-    help="Collection name to be specified alias.",
-    type=str,
-)
-@click.option(
     "-a", "--alias-name", "aliasName", help="The alias of the collection.", type=str
 )
 @click.option(
@@ -681,7 +694,7 @@ def deleteObject(obj):
     type=float,
 )
 @click.pass_obj
-def deleteAlias(obj, collectionName, aliasName, timeout):
+def deleteAlias(obj, aliasName, timeout):
     """
     Delete an alias.
     """
@@ -692,7 +705,7 @@ def deleteAlias(obj, collectionName, aliasName, timeout):
         return
     try:
         obj.checkConnection()
-        obj.dropCollectionAlias(collectionName, aliasName, timeout)
+        obj.dropCollectionAlias(aliasName, timeout)
     except ConnectException as ce:
         click.echo("Error!\n{}".format(str(ce)))
     else:
@@ -862,9 +875,7 @@ def deleteEntities(obj, collectionName, partitionName, timeout):
         partitionValue = partitionName if partitionName else None
         timeoutValue = timeout if timeout else None
         result = obj.deleteEntities(expr, collectionName, partitionValue, timeoutValue)
-        click.echo("Drop index successfully!") if not result else click.echo(
-            "Drop index failed!"
-        )
+        click.echo(result)
 
 
 @cli.command()
@@ -1057,6 +1068,11 @@ def query(obj):
 
         timeout []:
 
+        Guarantee timestamp. This instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date. [0]:
+
+        Graceful time. Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set. [5]:
+
+        Travel timestamp. Users can specify a timestamp in a search to get results based on a data view at a specified point in time. [0]: 428960801420883491
 
     Example 2:
 
@@ -1071,6 +1087,12 @@ def query(obj):
         A list of fields to return(split by "," if multiple) []: id, color, brand
 
         timeout []:
+
+        Guarantee timestamp. This instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date. [0]:
+
+        Graceful time. Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set. [5]:
+
+        Travel timestamp. Users can specify a timestamp in a search to get results based on a data view at a specified point in time. [0]: 428960801420883491
     """
     collectionName = click.prompt(
         "Collection name", type=click.Choice(obj._list_collection_names())
@@ -1085,9 +1107,30 @@ def query(obj):
         default="",
     )
     timeout = click.prompt("timeout", default="")
+    guarantee_timestamp = click.prompt(
+        "Guarantee timestamp. This instructs Milvus to see all operations performed before a provided timestamp. If no such timestamp is provided, then Milvus will search all operations performed to date.",
+        default=0,
+        type=int,
+    )
+    graceful_time = click.prompt(
+        "Graceful time. Only used in bounded consistency level. If graceful_time is set, PyMilvus will use current timestamp minus the graceful_time as the guarantee_timestamp. This option is 5s by default if not set.",
+        default=5,
+        type=int,
+    )
+    travel_timestamp = click.prompt(
+        "Travel timestamp. Users can specify a timestamp in a search to get results based on a data view at a specified point in time.",
+        default=0,
+        type=int,
+    )
     try:
         queryParameters = validateQueryParams(
-            expr, partitionNames, outputFields, timeout
+            expr,
+            partitionNames,
+            outputFields,
+            timeout,
+            guarantee_timestamp,
+            graceful_time,
+            travel_timestamp,
         )
         obj.checkConnection()
     except ParameterException as pe:
@@ -1179,7 +1222,6 @@ def importData(obj, collectionName, partitionName, timeout, path):
         )
         result = readCsvFile(path.replace('"', "").replace("'", ""))
         data = result["data"]
-        click.secho("Inserting ...", blink=True, bold=True)
         result = obj.importData(collectionName, data, partitionName, timeout)
     except Exception as e:
         click.echo("Error!\n{}".format(str(e)))
@@ -1188,7 +1230,14 @@ def importData(obj, collectionName, partitionName, timeout, path):
         click.echo(result)
 
 
-@cli.command("calc")
+@cli.group("calc", no_args_is_help=False)
+@click.pass_obj
+def calcUtils(obj):
+    """Calculate distance, mkts_from_hybridts, mkts_from_unixtime and hybridts_to_unixtime."""
+    pass
+
+
+@calcUtils.command("distance")
 @click.pass_obj
 def calcDistance(obj):
     """
@@ -1196,7 +1245,7 @@ def calcDistance(obj):
 
     Example:
 
-        milvus_cli > calc
+        milvus_cli > calc distance
 
         Import left operator vectors from existing collection? [y/N]: n
 
@@ -1352,6 +1401,111 @@ def calcDistance(obj):
         )
         click.echo("Result:\n")
         click.echo(result)
+
+
+@calcUtils.command("mkts_from_hybridts")
+@click.option(
+    "-h",
+    "--hybridts",
+    "hybridts",
+    help="The original hybrid timestamp used to generate a new hybrid timestamp. Non-negative interger range from 0 to 18446744073709551615.",
+    type=int,
+)
+@click.option(
+    "-m",
+    "--milliseconds",
+    "milliseconds",
+    help="Incremental time interval. The unit of time is milliseconds.",
+    type=float,
+    default=0.0,
+)
+# @click.option(
+#     "-d",
+#     "--delta",
+#     "delta",
+#     help="A duration expressing the difference between two date, time, or datetime instances to microsecond resolution.",
+# )
+@click.pass_obj
+def hybridts2mkts(obj, hybridts, milliseconds):
+    """Generate a hybrid timestamp based on an existing hybrid timestamp, timedelta and incremental time internval."""
+    res = obj.mkts_from_hybridts(hybridts, milliseconds)
+    click.echo(res)
+
+
+@calcUtils.command("mkts_from_unixtime")
+@click.option(
+    "-e",
+    "--epoch",
+    "epoch",
+    help="The known Unix Epoch time used to generate a hybrid timestamp. The Unix Epoch time is the number of seconds that have elapsed since January 1, 1970 (midnight UTC/GMT).",
+    type=float,
+)
+@click.option(
+    "-m",
+    "--milliseconds",
+    "milliseconds",
+    help="Incremental time interval. The unit of time is milliseconds.",
+    type=float,
+    default=0.0,
+)
+@click.pass_obj
+def unixtime2mkts(obj, epoch, milliseconds):
+    """Generate a hybrid timestamp based on Unix Epoch time, timedelta and incremental time internval."""
+    res = obj.mkts_from_unixtime(epoch, milliseconds)
+    click.echo(res)
+
+
+@calcUtils.command("hybridts_to_unixtime")
+@click.option(
+    "-h",
+    "--hybridts",
+    "hybridts",
+    help="The known hybrid timestamp to convert to UNIX Epoch time. Non-negative interger range from 0 to 18446744073709551615.",
+    type=int,
+)
+@click.pass_obj
+def hybridts2unixtime(obj, hybridts):
+    """Convert a hybrid timestamp to UNIX Epoch time ignoring the logic part."""
+    res = obj.hybridts_to_unixtime(hybridts)
+    click.echo(res)
+
+
+@cli.command("load_balance")
+@click.option(
+    "-s",
+    "--src-node-id",
+    "src_node_id",
+    help="The source query node id to balance.",
+    type=int,
+)
+@click.option(
+    "-d",
+    "--dst-node-id",
+    "dst_node_ids",
+    help="[Multiple] - The destination query node ids to balance",
+    type=int,
+    multiple=True,
+)
+@click.option(
+    "-ss",
+    "--sealed-segment-ids",
+    "sealed_segment_ids",
+    help="[Multiple] - Sealed segment ids to balance.",
+    type=int,
+)
+@click.option(
+    "-t",
+    "--timeout",
+    "timeout",
+    help="[Optional] - The timeout for this method, unit: second",
+    default=None,
+    type=int,
+)
+@click.pass_obj
+def loadBalance(obj, src_node_id, dst_node_ids, sealed_segment_ids, timeout):
+    """Do load balancing operation from source query node to destination query node."""
+    res = obj.loadBalance(src_node_id, dst_node_ids, sealed_segment_ids, timeout)
+    click.echo(res)
 
 
 @cli.command("exit")
