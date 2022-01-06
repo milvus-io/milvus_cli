@@ -6,7 +6,7 @@ summary: Learn how to install Milvus_CLI.
 # 如何安装 Milvus_CLI
 
 Milvus_CLI 的当前版本是 0.1.9。
-如果想查找已安装的版本，并查看是否需要更新，请运行 `shell milvus_cli --version` 命令。
+如果想查找已安装的版本，并查看是否需要更新，请运行 `milvus_cli --version` 命令。
 
 ## 先决条件
 
