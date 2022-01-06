@@ -30,4 +30,4 @@ In the following table, you can find the recommended versions of PyMilvus and Mi
 ## Current version
 
 The current version of Milvus_CLI is 0.1.9.
-To find your installed version and see if you need to update, run `shell milvus_cli --version`.
+To find your installed version and see if you need to update, run `milvus_cli --version`.
