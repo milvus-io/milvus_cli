@@ -29,4 +29,4 @@ Milvus 命令行接口(CLI)是一个支持数据库连接、数据操作、以�
 ## 当前版本
 
 Milvus_CLI 的当前版本是 0.1.9。
-如果想查找已安装的版本，并查看是否需要更新，请运行 `shell milvus_cli --version` 命令。
+如果想查找已安装的版本，并查看是否需要更新，请运行 `milvus_cli --version` 命令。
