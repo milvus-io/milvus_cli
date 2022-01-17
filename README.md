@@ -1,7 +1,7 @@
 # Milvus_CLI🚀
 
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/zilliztech/milvus_cli?include_prereleases) ![PyPI](https://img.shields.io/pypi/v/milvus-cli)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/milvus_cli?label=PYPI%20downloads) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/downloads-pre/zilliztech/milvus_cli/latest/total?label=Release%40latest%20downloads)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/milvus_cli?label=PYPI%20downloads) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/downloads-pre/zilliztech/milvus_cli/latest/total?label=Release%40latest%20downloads) ![Docker Pulls](https://img.shields.io/docker/pulls/zilliz/milvus_cli)
 ![GitHub repo size](https://img.shields.io/github/repo-size/zilliztech/milvus_cli) ![PyPI - License](https://img.shields.io/pypi/l/milvus-cli)
 
 ## Overview
