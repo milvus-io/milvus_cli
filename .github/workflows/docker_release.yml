@@ -2,7 +2,7 @@ name: CLI prod release
 
 on:
   release:
-    types: [released]
+    types: [published]
 
 jobs:
   publish:
