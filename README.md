@@ -45,7 +45,7 @@ Run `pip install milvus-cli==0.1.9`
 2. Run `cd milvus_cli`.
 3. Run `pip install --editable .`
 
-### 🆕 Install from an executable file
+### Install from an executable file
 
 #### Windows .exe file
 
@@ -62,6 +62,10 @@ Download the [latest release](https://github.com/zilliztech/milvus_cli/releases/
 1. Download the [latest release](https://github.com/zilliztech/milvus_cli/releases/latest) of `milvus_cli-<version>-macOS`.
 2. Run `sudo chmod +x milvus_cli-<version>-macOS` to allow executing `milvus_cli-<version>-macOS` as program.
 3. Run `./milvus_cli-<version>-macOS`.
+
+### Docker image in docker hub
+
+`docker run -it zilliz/milvus_cli:latest`
 
 ## Usage
 
