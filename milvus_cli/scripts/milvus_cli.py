@@ -215,6 +215,48 @@ def querySegmentInfo(obj, collection, timeout):
     click.echo(obj.getQuerySegmentInfo(collection, timeout, prettierFormat=True))
 
 
+@show.command("compaction_state")
+@click.option(
+    "-c",
+    "--collection-name",
+    "collection",
+    help="Collection name.",
+)
+@click.option(
+    "-t",
+    "--timeout",
+    "timeout",
+    help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.",
+    default=None,
+    type=float,
+)
+@click.pass_obj
+def compactionStateInfo(obj, collection, timeout):
+    """Return the current collection's compaction state."""
+    click.echo(obj.getCompactCollectionState(collection, timeout))
+
+
+@show.command("compaction_plans")
+@click.option(
+    "-c",
+    "--collection-name",
+    "collection",
+    help="Collection name.",
+)
+@click.option(
+    "-t",
+    "--timeout",
+    "timeout",
+    help="[Optional] - An optional duration of time in seconds to allow for the RPC. When timeout is not set, client waits until server response or error occur.",
+    default=None,
+    type=float,
+)
+@click.pass_obj
+def compactionStateInfo(obj, collection, timeout):
+    """Return the current collection's compaction state."""
+    click.echo(obj.getCompactCollectionPlans(collection, timeout))
+
+
 @cli.command()
 @click.option(
     "-c", "--collection-name", "collection", help="The name of collection to load."
@@ -1506,6 +1548,22 @@ def loadBalance(obj, src_node_id, dst_node_ids, sealed_segment_ids, timeout):
     """Do load balancing operation from source query node to destination query node."""
     res = obj.loadBalance(src_node_id, dst_node_ids, sealed_segment_ids, timeout)
     click.echo(res)
+
+
+@cli.command("compact")
+@click.option("-c", "--collection-name", "collectionName", help="Collection name")
+@click.option(
+    "-t",
+    "--timeout",
+    "timeout",
+    help="[Optional] - An optional duration of time in seconds to allow for the RPC. If timeout is not set, the client keeps waiting until the server responds or an error occurs.",
+    default=None,
+    type=float,
+)
+@click.pass_obj
+def compactCollection(obj, collectionName, timeout):
+    """Compact merge the small segments in a collection."""
+    obj.compactCollection(collectionName, timeout)
 
 
 @cli.command("exit")

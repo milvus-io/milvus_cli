@@ -567,6 +567,18 @@ class PyOrm(object):
     # pymilvus.utility.mkts_from_datetime(d_time, milliseconds=0.0, delta=None)
     # pymilvus.utility.hybridts_to_datetime(hybridts, tz=None)
 
+    def compactCollection(self, collectionName, timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        collection.compact(timeout=timeout)
+
+    def getCompactCollectionState(self, collectionName, timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        return collection.get_compaction_state(timeout=timeout)
+
+    def getCompactCollectionPlans(self, collectionName, timeout=None):
+        collection = self.getTargetCollection(collectionName)
+        return collection.get_compaction_plans(timeout=timeout)
+
 
 class Completer(object):
     # COMMANDS = ['clear', 'connect', 'create', 'delete', 'describe', 'exit',
@@ -580,6 +592,7 @@ class Completer(object):
             "hybridts_to_unixtime",
         ],
         "clear": [],
+        "compact": [],
         "connect": [],
         "create": ["alias", "collection", "partition", "index"],
         "delete": ["alias", "collection", "entities", "partition", "index"],
@@ -593,7 +606,14 @@ class Completer(object):
         "query": [],
         "release": [],
         "search": [],
-        "show": ["connection", "index_progress", "loading_progress", "query_segment"],
+        "show": [
+            "connection",
+            "index_progress",
+            "loading_progress",
+            "query_segment",
+            "compaction_state",
+            "compaction_plans",
+        ],
         "version": [],
     }
 
