@@ -496,7 +496,8 @@ class PyOrm(object):
         result = collection.alter_alias(collectionAliasName, timeout=timeout)
         return result
 
-    def createCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+    def createCollectionAliasList(self, collectionName, aliasList=None, timeout=None):
+        aliasList = aliasList if aliasList is not None else []
         collection = self.getTargetCollection(collectionName)
         result = []
         for aliasItem in aliasList:
@@ -504,7 +505,8 @@ class PyOrm(object):
             result.append(aliasResult)
         return result
 
-    def alterCollectionAliasList(self, collectionName, aliasList=[], timeout=None):
+    def alterCollectionAliasList(self, collectionName, aliasList=None, timeout=None):
+        aliasList = aliasList if aliasList is not None else []
         collection = self.getTargetCollection(collectionName)
         result = []
         for aliasItem in aliasList:

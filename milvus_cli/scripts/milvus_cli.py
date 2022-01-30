@@ -1031,7 +1031,7 @@ def search(obj):
             results = obj.search(collectionName, searchParameters, prettierFormat=False)
         else:
             results = obj.search(collectionName, searchParameters)
-            click.echo(f"Search results:\n")
+            click.echo("Search results:\n")
             for idx, item in enumerate(results):
                 click.echo(f"No.{idx+1}:\n{item}\n")
             # click.echo(obj.search(collectionName, searchParameters))
@@ -1184,7 +1184,7 @@ def importData(obj, collectionName, partitionName, timeout, path):
     except Exception as e:
         click.echo("Error!\n{}".format(str(e)))
     else:
-        click.echo(f"\nInserted successfully.\n")
+        click.echo("\nInserted successfully.\n")
         click.echo(result)
 
 
