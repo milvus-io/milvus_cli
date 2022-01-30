@@ -99,7 +99,7 @@ def formatRowForData(row=[], data=[]):
 
 def writeCsvFile(path, rows, headers=[]):
     if not path:
-        raise ParameterException(f"Path should not be empty")
+        raise ParameterException("Path should not be empty")
     from csv import writer
     import click
 

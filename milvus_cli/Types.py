@@ -1,6 +1,3 @@
-from functools import reduce
-
-
 class ParameterException(Exception):
     "Custom Exception for parameters checking."
 
@@ -96,10 +93,7 @@ IndexTypesMap = {
     },
 }
 
-DupSearchParams = reduce(
-    lambda x, y: x + IndexTypesMap[y]["search_parameters"], IndexTypesMap.keys(), []
-)
-SearchParams = list(dict.fromkeys(DupSearchParams))
+SearchParams = {search_param for index_params in IndexTypesMap.values() for search_param in index_params["search_parameters"]}
 
 MetricTypes = ["L2", "IP", "HAMMING", "TANIMOTO"]
 

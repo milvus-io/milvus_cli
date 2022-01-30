@@ -27,7 +27,7 @@ def validateCollectionParameter(collectionName, primaryField, fields):
     fieldNames = []
     for field in fields:
         fieldList = field.split(":")
-        if not (len(fieldList) == 3):
+        if len(fieldList) != 3:
             raise ParameterException(
                 'Field should contain three paremeters and concat by ":".'
             )
@@ -46,7 +46,7 @@ def validateCollectionParameter(collectionName, primaryField, fields):
                 raise ParameterException("""Vector's dim should be int.""")
     # Dedup field name.
     newNames = list(set(fieldNames))
-    if not (len(newNames) == len(fieldNames)):
+    if len(newNames) != len(fieldNames):
         raise ParameterException("Field names are duplicated.")
     if primaryField not in fieldNames:
         raise ParameterException(
@@ -69,7 +69,7 @@ def validateIndexParameter(indexType, metricType, params):
     buildingParameters = IndexTypesMap[indexType]["index_building_parameters"]
     for param in params:
         paramList = param.split(":")
-        if not (len(paramList) == 2):
+        if len(paramList) != 2:
             raise ParameterException(
                 'Params should contain two paremeters and concat by ":".'
             )
@@ -87,7 +87,7 @@ def validateIndexParameter(indexType, metricType, params):
             raise ParameterException("""Index param's value should be int.""")
     # Dedup field name.
     newNames = list(set(paramNames))
-    if not (len(newNames) == len(paramNames)):
+    if len(newNames) != len(paramNames):
         raise ParameterException("Index params are duplicated.")
 
 
@@ -133,7 +133,7 @@ def validateSearchParams(
             )
         # Validate params
         paramDict = {}
-        if type(params) == str:
+        if isinstance(params, str):
             paramsList = params.replace(" ", "").split(",")
         else:
             paramsList = params
@@ -141,16 +141,14 @@ def validateSearchParams(
             if not param:
                 continue
             paramList = param.split(":")
-            if not (len(paramList) == 2):
+            if len(paramList) != 2:
                 raise ParameterException(
                     'Params should contain two paremeters and concat by ":".'
                 )
             [paramName, paramValue] = paramList
             if paramName not in SearchParams:
                 raise ParameterException(
-                    "Invalid search parameter, should be one of {}".format(
-                        str(SearchParams)
-                    )
+                    f"Invalid search parameter, should be one of {SearchParams}"
                 )
             try:
                 paramDict[paramName] = int(paramValue)
@@ -263,7 +261,7 @@ def validateVectorMeta(vectorMeta):
         partition_str = vectorMeta["partition"]
         field_str = vectorMeta["field"]
         if not collection_str or not partition_str or not field_str:
-            raise ParameterException(f"Collection/Partition/Field should not be empty!")
+            raise ParameterException("Collection/Partition/Field should not be empty!")
         result["ids"] = ids
         result["collection"] = collection_str
         result["partition"] = partition_str
